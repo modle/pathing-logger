@@ -7,11 +7,15 @@ public class Player : MonoBehaviour {
     public static Player player;
     private SpriteRenderer spriteRenderer;
     public Transform transform;
-    private int speedMod = 12;
+    private int speedMod = 120;
     float horizontal = 0f;
     float vertical = 0f;
+    float theX = 0f;
+    float theY = 0f;
     public float xUnit;
     public float yUnit;
+    private GameObject[] tasks;
+    private GameObject target;
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
         {"1,0", "side"},
@@ -53,13 +57,20 @@ public class Player : MonoBehaviour {
     }
 
     bool Move() {
-        SetDefaultAnimationParams();
-        GetCoordinates();
+        SetDefaults();
+        GetManualCoordinates();
+        Debug.Log(string.Format("horizontal is {0:f}, vertical is {0:f}, theX is {0:f}, theY is {0:f}", horizontal, vertical, theX, theY));
+        if (theX == 0 && theY == 0) {
+            GetAutoCoordinates();
+        }
+        if (theX == 0 && theY == 0) {
+            return false;
+        }
         SetDirections();
         return (MoveSprite());
     }
 
-    void SetDefaultAnimationParams() {
+    void SetDefaults() {
         // add parameters with the same names to the Animator
         // on each transition:
             // uncheck "Has Exit Time"
@@ -70,18 +81,42 @@ public class Player : MonoBehaviour {
         anim.SetBool("side", false);
         anim.SetBool("up", false);
         anim.SetBool("down", false);
-    }
-
-    void GetCoordinates() {
-        // be sure to set Body Type to Kinematic on the Box Collider 2D, else physics moves sprite downward
+        theX = 0f;
+        theY = 0f;
         horizontal = 0;
         vertical = 0;
+    }
+
+    void GetManualCoordinates() {
+        // be sure to set Body Type to Kinematic on the Box Collider 2D, else physics moves sprite downward
         Vector2 touchPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
         if (Input.GetMouseButton(0)) {
-            horizontal = touchPosition.x < Screen.width / 2 ? -1 : 1;
-            vertical = touchPosition.y > Screen.height / 2 ? -1 : 1;
+            theX = touchPosition.x;
+            theY = touchPosition.y;
+            horizontal = theX < Screen.width / 2 ? -1 : 1;
+            vertical = theY > Screen.height / 2 ? -1 : 1;
+            if (Mathf.Abs((Mathf.Abs(theX) - Screen.width / 2)) < Mathf.Abs((Mathf.Abs(theY) - Screen.height / 2))) {
+                horizontal = 0;
+            } else {
+                vertical = 0;
+            }
         }
-        if (Mathf.Abs((Mathf.Abs(touchPosition.x) - Screen.width / 2)) < Mathf.Abs((Mathf.Abs(touchPosition.y) - Screen.height / 2))) {
+    }
+
+    void GetAutoCoordinates() {
+        if (tasks == null || tasks.Length <= 0) {
+            tasks = GameObject.FindGameObjectsWithTag("task");
+        }
+        if (tasks.Length <= 0) {
+            return;
+        }
+        target = tasks[0];
+        theX = transform.position.x - target.transform.position.x;
+        theY = transform.position.y - target.transform.position.y;
+        Debug.Log(string.Format("theX is {0:f}; theY is {1:f}", theX, theY));
+        horizontal = theX < 0 ? 1 : -1;
+        vertical = theY < 0 ? 1 : -1;
+        if (Mathf.Abs(theX) < Mathf.Abs(theY)) {
             horizontal = 0;
         } else {
             vertical = 0;
@@ -103,7 +138,6 @@ public class Player : MonoBehaviour {
     }
 
     bool MoveSprite() {
-        Debug.Log(string.Format("horizontal is {0:f}, vertical is {0:f}", horizontal, vertical));
         Vector2 start = transform.position;
         Vector2 end = start + new Vector2(horizontal / speedMod, vertical / speedMod);
 
@@ -140,20 +174,20 @@ public class Player : MonoBehaviour {
     void OnGUI() {
         GUIStyle font = new GUIStyle();
         font.normal.textColor = Color.black;
-        font.fontSize = (int)(xUnit * 10);
+        font.fontSize = (int)(xUnit * 5);
         GUI.Label(
-            new Rect(Screen.width / 2 - xUnit * 10, Screen.height / 2 - xUnit * 50, xUnit * 20, xUnit * 20),
+            new Rect(Screen.width / 2 - xUnit * 10, Screen.height / 2 - xUnit * 20, xUnit * 20, xUnit * 20),
             GetText(horizontal, vertical),
             font
         );
         GUI.Label(
-            new Rect(Screen.width / 2 - xUnit * 10, Screen.height / 2 - xUnit * 30, xUnit * 20, xUnit * 20),
+            new Rect(Screen.width / 2 - xUnit * 10, Screen.height / 2 - xUnit * 25, xUnit * 20, xUnit * 20),
             GetText(transform.position.x, transform.position.y),
             font
         );
     }
 
     string GetText(float x, float y) {
-        return string.Format("x: {0:R}, y: {1:R}", x, y);
+        return string.Format("x: {0:#,##0.00}, y: {1:#,##0.00}", x, y);
     }
 }
