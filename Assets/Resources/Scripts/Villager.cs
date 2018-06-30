@@ -49,14 +49,14 @@ public class Villager : MonoBehaviour {
         Move();
     }
 
-    bool Move() {
+    void Move() {
         SetDefaults();
         GetCoordinates();
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
-            return false;
+            return;
         }
-        return (MoveSprite());
+        MoveSprite();
     }
 
     void SetDefaults() {
@@ -77,13 +77,15 @@ public class Villager : MonoBehaviour {
     }
 
     void GetCoordinates() {
-        if (tasks == null || tasks.Length <= 0) {
+        if (tasks == null || tasks.Length <= 0 || target == null) {
             tasks = GameObject.FindGameObjectsWithTag("task");
         }
         if (tasks.Length <= 0) {
             return;
         }
-        target = tasks[0];
+        if (target == null) {
+            target = tasks[Random.Range(0, tasks.Length)];
+        }
         theX = transform.position.x - target.transform.position.x;
         theY = transform.position.y - target.transform.position.y;
         if (theX < -0.01f) {
@@ -96,7 +98,6 @@ public class Villager : MonoBehaviour {
         } else if (theY > 0.01f) {
             vertical = -1;
         }
-        Debug.Log(string.Format("theX is {0:f}; theY is {1:f}; horizontal is {2:f}; vertical is {3:f}", theX, theY, horizontal, vertical));
     }
 
     void SetDirections() {
@@ -128,4 +129,9 @@ public class Villager : MonoBehaviour {
         return false;
     }
 
+    private void OnTriggerEnter2D (Collider2D other) {
+        if (other.tag == "task") {
+            Destroy(other.gameObject);
+        }
+    }
 }

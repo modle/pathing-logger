@@ -59,7 +59,6 @@ public class Player : MonoBehaviour {
     bool Move() {
         SetDefaults();
         GetManualCoordinates();
-        Debug.Log(string.Format("horizontal is {0:f}, vertical is {0:f}, theX is {0:f}, theY is {0:f}", horizontal, vertical, theX, theY));
         if (theX == 0 && theY == 0) {
             GetAutoCoordinates();
         }
@@ -113,7 +112,6 @@ public class Player : MonoBehaviour {
         target = tasks[0];
         theX = transform.position.x - target.transform.position.x;
         theY = transform.position.y - target.transform.position.y;
-        Debug.Log(string.Format("theX is {0:f}; theY is {1:f}", theX, theY));
         horizontal = theX < 0 ? 1 : -1;
         vertical = theY < 0 ? 1 : -1;
         if (Mathf.Abs(theX) < Mathf.Abs(theY)) {
