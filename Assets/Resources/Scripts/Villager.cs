@@ -6,14 +6,14 @@ public class Villager : MonoBehaviour {
 
     private SpriteRenderer spriteRenderer;
     public Transform transform;
-    private int speedMod = 50;
+    private int speedMod = 20;
     float horizontal = 0f;
     float vertical = 0f;
     float theX = 0f;
     float theY = 0f;
     public float xUnit;
     public float yUnit;
-    private GameObject[] tasks;
+    private List<GameObject> tasks = new List<GameObject>();
     private GameObject target;
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -51,7 +51,7 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        GetCoordinates();
+        GetTargetCoordinates();
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
             return;
@@ -76,15 +76,12 @@ public class Villager : MonoBehaviour {
         vertical = 0;
     }
 
-    void GetCoordinates() {
-        if (tasks == null || tasks.Length <= 0 || target == null) {
-            tasks = GameObject.FindGameObjectsWithTag("task");
-        }
-        if (tasks.Length <= 0) {
-            return;
-        }
+    void GetTargetCoordinates() {
         if (target == null) {
-            target = tasks[Random.Range(0, tasks.Length)];
+            target = GetClosest();
+            if (target == null) {
+                return;
+            }
         }
         theX = transform.position.x - target.transform.position.x;
         theY = transform.position.y - target.transform.position.y;
@@ -98,6 +95,25 @@ public class Villager : MonoBehaviour {
         } else if (theY > 0.01f) {
             vertical = -1;
         }
+    }
+
+    private GameObject GetClosest() {
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("task");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos) {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance) {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        if (closest != null) {
+            closest.tag = "engaged";
+        }
+        return closest;
     }
 
     void SetDirections() {
@@ -130,7 +146,7 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D (Collider2D other) {
-        if (other.tag == "task") {
+        if (other.tag == "engaged") {
             Destroy(other.gameObject);
         }
     }

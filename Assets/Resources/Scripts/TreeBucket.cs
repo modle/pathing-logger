@@ -7,6 +7,7 @@ public class TreeBucket : MonoBehaviour {
     private Transform trees;
     private int treeCount;
     private int maxTrees = 1000;
+    private HashSet<string> treePositions = new HashSet<string>();
 
     void Awake() {
         // singleton pattern
@@ -24,10 +25,20 @@ public class TreeBucket : MonoBehaviour {
         trees = GameObject.Find("TreeBucket").transform;
         Object toInstantiate = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
         while (treeCount < maxTrees) {
+            Vector3 theVector = new Vector3(Random.Range(-9.0f, 9.0f), Random.Range(-5.0f, 5.0f), 0);
             treeCount++;
-            GameObject instance = Instantiate(toInstantiate, new Vector3 (Random.Range(-9.0f, 9.0f), Random.Range(-5.0f, 5.0f), 0), Quaternion.identity) as GameObject;
+
+            // keeps them from being placed too close together
+            string positionString = Mathf.RoundToInt(theVector.x * 5) + "," + Mathf.RoundToInt(theVector.y * 5);
+            if (!treePositions.Add(positionString)) {
+                continue;
+            }
+
+            GameObject instance = Instantiate(toInstantiate, theVector, Quaternion.identity) as GameObject;
+
+            // sort in reverse vertical order
+            instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
             instance.transform.SetParent(trees);
         }
     }
-
 }
