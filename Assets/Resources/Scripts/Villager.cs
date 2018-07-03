@@ -6,15 +6,15 @@ public class Villager : MonoBehaviour {
 
     private SpriteRenderer spriteRenderer;
     public Transform transform;
-    private int speedMod = 20;
+    private int speedMod = 50;
     float horizontal = 0f;
     float vertical = 0f;
     float theX = 0f;
     float theY = 0f;
     public float xUnit;
     public float yUnit;
-    private List<GameObject> tasks = new List<GameObject>();
     private GameObject target;
+
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
         {"1,0", "side"},
@@ -31,6 +31,7 @@ public class Villager : MonoBehaviour {
     public LayerMask blockingLayer;
     Animator anim;
     bool idleFlipX = false;
+    private bool haveMaterials = false;
 
     void Start () {
         xUnit = Screen.width * 0.005f;
@@ -79,9 +80,9 @@ public class Villager : MonoBehaviour {
     void GetTargetCoordinates() {
         if (target == null) {
             target = GetClosest();
-            if (target == null) {
-                return;
-            }
+        }
+        if (target == null) {
+            return;
         }
         theX = transform.position.x - target.transform.position.x;
         theY = transform.position.y - target.transform.position.y;
@@ -148,6 +149,13 @@ public class Villager : MonoBehaviour {
     private void OnTriggerEnter2D (Collider2D other) {
         if (other.tag == "engaged") {
             Destroy(other.gameObject);
+            target = GameObject.Find("Storage");
+            haveMaterials = true;
+            Debug.Log("reached target, target is now: " + target.tag);
+        }
+        else if (other.tag == "storage") {
+            target = null;
+            haveMaterials = false;
         }
     }
 }

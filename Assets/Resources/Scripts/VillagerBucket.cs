@@ -25,7 +25,7 @@ public class VillagerBucket : MonoBehaviour {
         Object toInstantiate = Resources.Load("Prefabs/villager", typeof(GameObject));
         while (villagerCount < maxVillagers) {
             villagerCount++;
-            GameObject instance = Instantiate(toInstantiate, new Vector3 (Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0), Quaternion.identity) as GameObject;
+            GameObject instance = Instantiate(toInstantiate, new Vector3 (Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0), Quaternion.identity) as GameObject;
             instance.transform.SetParent(villagers);
         }
     }

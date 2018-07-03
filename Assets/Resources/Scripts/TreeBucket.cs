@@ -25,7 +25,13 @@ public class TreeBucket : MonoBehaviour {
         trees = GameObject.Find("TreeBucket").transform;
         Object toInstantiate = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
         while (treeCount < maxTrees) {
-            Vector3 theVector = new Vector3(Random.Range(-9.0f, 9.0f), Random.Range(-5.0f, 5.0f), 0);
+            Vector3 theVector = new Vector3(
+                Random.Range(-9.0f, 9.0f),
+                Random.Range(-5.0f, 5.0f),
+                0);
+            if ((new Rect(-1.5f, -1.5f, 3.0f, 3.0f).Contains(new Vector2(theVector.x, theVector.y)))) {
+                continue;
+            }
             treeCount++;
 
             // keeps them from being placed too close together
