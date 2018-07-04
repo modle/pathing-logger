@@ -8,6 +8,7 @@ public class TreeBucket : MonoBehaviour {
     private int treeCount;
     private int maxTrees = 1000;
     private HashSet<string> treePositions = new HashSet<string>();
+    public HashSet<GameObject> targetTrees = new HashSet<GameObject>();
 
     void Awake() {
         // singleton pattern

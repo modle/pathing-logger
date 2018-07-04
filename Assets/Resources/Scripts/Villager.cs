@@ -47,6 +47,7 @@ public class Villager : MonoBehaviour {
     }
 
     void Update () {
+        Debug.Log("available targets: " + TreeBucket.treeBucket.targetTrees.Count);
         Move();
     }
 
@@ -79,7 +80,7 @@ public class Villager : MonoBehaviour {
 
     void GetTargetCoordinates() {
         if (target == null) {
-            target = GetClosest();
+            GetClosest();
         }
         if (target == null) {
             return;
@@ -98,12 +99,17 @@ public class Villager : MonoBehaviour {
         }
     }
 
-    private GameObject GetClosest() {
-        GameObject[] gos = GameObject.FindGameObjectsWithTag("task");
+    private void GetClosest() {
         GameObject closest = null;
         float distance = Mathf.Infinity;
         Vector3 position = transform.position;
-        foreach (GameObject go in gos) {
+        if (target != null) {
+            return;
+        }
+        foreach (GameObject go in TreeBucket.treeBucket.targetTrees) {
+            if (go == null || go.tag != "task" || target != null) {
+                continue;
+            }
             Vector3 diff = go.transform.position - position;
             float curDistance = diff.sqrMagnitude;
             if (curDistance < distance) {
@@ -112,9 +118,10 @@ public class Villager : MonoBehaviour {
             }
         }
         if (closest != null) {
-            closest.tag = "engaged";
+            target = closest;
+            TreeBucket.treeBucket.targetTrees.Remove(closest);
+            target.tag = "engaged";
         }
-        return closest;
     }
 
     void SetDirections() {
@@ -135,11 +142,7 @@ public class Villager : MonoBehaviour {
         Vector2 start = transform.position;
         Vector2 end = start + new Vector2(horizontal / speedMod, vertical / speedMod);
 
-        boxCollider.enabled = false;
-        RaycastHit2D hit = Physics2D.Linecast (start, end, blockingLayer);
-        boxCollider.enabled = true;
-
-        if ((horizontal != 0 || vertical != 0) && hit.transform == null) {
+        if (horizontal != 0 || vertical != 0) {
             transform.position = end;
             return true;
         }
@@ -147,13 +150,11 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D (Collider2D other) {
-        if (other.tag == "engaged") {
+        if (target != null && other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
             Destroy(other.gameObject);
             target = GameObject.Find("Storage");
             haveMaterials = true;
-            Debug.Log("reached target, target is now: " + target.tag);
-        }
-        else if (other.tag == "storage") {
+        } else if (other.tag == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
         }
