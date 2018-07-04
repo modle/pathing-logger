@@ -36,7 +36,7 @@ public class TreeBucket : MonoBehaviour {
             treeCount++;
 
             // keeps them from being placed too close together
-            string positionString = Mathf.RoundToInt(theVector.x * 5) + "," + Mathf.RoundToInt(theVector.y * 5);
+            string positionString = Mathf.RoundToInt(theVector.x * 1.5f) + "," + Mathf.RoundToInt(theVector.y * 1.5f);
             if (!treePositions.Add(positionString)) {
                 continue;
             }
