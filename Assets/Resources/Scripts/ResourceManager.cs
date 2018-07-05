@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResourceManager : MonoBehaviour {
 
     GameObject borderTree;
+    RaycastHit2D hitDown;
 
     void Start() {
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
@@ -14,15 +15,21 @@ public class ResourceManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
         Vector2 touchPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
-        if (Input.GetMouseButton(0)) {
-
-            RaycastHit2D hit = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
-            if (hit.collider != null && hit.collider.tag == "task") {
-                hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
-                TreeBucket.treeBucket.targetTrees.Add(hit.collider.gameObject);
+        if (Input.GetMouseButtonDown(0)) {
+            hitDown = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+        }
+        if (Input.GetMouseButtonUp(0)) {
+            RaycastHit2D hitUp = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            Rect selectionBox = new Rect(hitDown.point.x, hitUp.point.y, hitUp.point.x - hitDown.point.x, hitDown.point.y - hitUp.point.y);
+            foreach (GameObject go in GameObject.FindGameObjectsWithTag("task")) {
+                if (selectionBox.Contains(go.transform.position)) {
+                    go.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
+                    TreeBucket.treeBucket.targetTrees.Add(go);
+                }
             }
 
+            // RaycastHit2D hitUp = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            
         }
 	}
 }
