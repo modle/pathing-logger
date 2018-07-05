@@ -5,18 +5,21 @@ using UnityEngine;
 public class Villager : MonoBehaviour {
 
     private SpriteRenderer spriteRenderer;
-    public Transform transform;
+    private Transform transform;
     private int speedMod = 50;
-    float horizontal = 0f;
-    float vertical = 0f;
-    float theX = 0f;
-    float theY = 0f;
-    public float xUnit;
-    public float yUnit;
+    private float horizontal = 0f;
+    private float vertical = 0f;
+    private float theX = 0f;
+    private float theY = 0f;
+    private float xUnit;
+    private float yUnit;
     private GameObject target;
     private bool chopping;
     private float chopStart = 0f;
     private float chopDone = 1f;
+    private AudioSource audioSource;
+    public AudioClip chopClip;
+    public AudioClip storageClip;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -47,10 +50,10 @@ public class Villager : MonoBehaviour {
         transform = GetComponent<Transform>();
         boxCollider = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update () {
-        Debug.Log("available targets: " + TreeBucket.treeBucket.targetTrees.Count);
         Move();
     }
 
@@ -91,6 +94,9 @@ public class Villager : MonoBehaviour {
         if (chopping && Time.time - chopStart < chopDone) {
             anim.SetBool("side-attack", true);
             anim.speed = 1;
+            if ((int)((Time.time - chopStart) * 100) % 30 == 0) {
+                audioSource.PlayOneShot(chopClip, 0.7F);
+            }
             return;
         }
         chopping = false;
@@ -179,6 +185,7 @@ public class Villager : MonoBehaviour {
         } else if (target.tag == "storage" && other.tag == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
+            audioSource.PlayOneShot(storageClip, 0.7F);
             WoodCounter.counter.count++;
         }
     }
