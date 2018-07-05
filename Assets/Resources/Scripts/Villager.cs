@@ -14,6 +14,9 @@ public class Villager : MonoBehaviour {
     public float xUnit;
     public float yUnit;
     private GameObject target;
+    private bool chopping;
+    private float chopStart = 0f;
+    private float chopDone = 1f;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -53,6 +56,10 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
+        if (chopping) {
+            ProcessChopping();
+            return;
+        }
         GetTargetCoordinates();
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
@@ -63,19 +70,33 @@ public class Villager : MonoBehaviour {
 
     void SetDefaults() {
         // add parameters with the same names to the Animator
-        // on each transition:
+        // on each transition from "Any State" to target state:
             // uncheck "Has Exit Time"
             // Expand "Settings"
             // uncheck "Fixed Duration"
             // set "Transition Duration" to 0
+            // uncheck "Can Transition to Self" if using "Any State" as the from
             // Add appropriate condition (up -> side, side=true, etc.)
         anim.SetBool("side", false);
         anim.SetBool("up", false);
         anim.SetBool("down", false);
+        anim.SetBool("side-attack", false);
         theX = 0f;
         theY = 0f;
         horizontal = 0;
         vertical = 0;
+    }
+
+    void ProcessChopping() {
+        if (chopping && Time.time - chopStart < chopDone) {
+            anim.SetBool("side-attack", true);
+            anim.speed = 1;
+            return;
+        }
+        chopping = false;
+        Destroy(target.gameObject);
+        target = GameObject.Find("Storage");
+        haveMaterials = true;
     }
 
     void GetTargetCoordinates() {
@@ -130,7 +151,6 @@ public class Villager : MonoBehaviour {
         spriteRenderer.flipX = flipX;
         idleFlipX = direction == "idle" ? idleFlipX : flipX;
         if (direction == "idle") {
-            anim.speed = 0;
             spriteRenderer.flipX = idleFlipX;
         } else {
             anim.speed = 1;
@@ -150,13 +170,12 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D (Collider2D other) {
-        if (target == null) {
+        if (target == null || chopping == true) {
             return;
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
-            Destroy(other.gameObject);
-            target = GameObject.Find("Storage");
-            haveMaterials = true;
+            chopping = true;
+            chopStart = Time.time;
         } else if (target.tag == "storage" && other.tag == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
