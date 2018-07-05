@@ -112,8 +112,8 @@ public class Villager : MonoBehaviour {
         if (target == null) {
             return;
         }
-        theX = transform.position.x - target.transform.position.x;
-        theY = transform.position.y - target.transform.position.y;
+        theX = transform.position.x - (target.transform.position.x + target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.x * 0.5f);
+        theY = transform.position.y - (target.transform.position.y - target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.y * 0.3f);
         if (theX < -0.01f) {
             horizontal = 1;
         } else if (theX > 0.01f) {
