@@ -150,13 +150,17 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D (Collider2D other) {
-        if (target != null && other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
+        if (target == null) {
+            return;
+        }
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
             Destroy(other.gameObject);
             target = GameObject.Find("Storage");
             haveMaterials = true;
-        } else if (other.tag == "storage" && haveMaterials) {
+        } else if (target.tag == "storage" && other.tag == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
+            WoodCounter.counter.count++;
         }
     }
 }
