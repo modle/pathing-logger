@@ -5,31 +5,33 @@ using UnityEngine;
 public class ResourceManager : MonoBehaviour {
 
     GameObject borderTree;
-    RaycastHit2D hitDown;
+    Vector3 hitDown;
+    Vector3 hitUp;
+    float selectionAngle = 0f;
+    Vector2 selectionDirection = new Vector2(0, 0);
 
     void Start() {
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
         borderTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
     }
 
-	// Update is called once per frame
 	void Update() {
         Vector2 touchPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
         if (Input.GetMouseButtonDown(0)) {
-            hitDown = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         if (Input.GetMouseButtonUp(0)) {
-            RaycastHit2D hitUp = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            Rect selectionBox = new Rect(hitDown.point.x, hitUp.point.y, hitUp.point.x - hitDown.point.x, hitDown.point.y - hitUp.point.y);
-            foreach (GameObject go in GameObject.FindGameObjectsWithTag("task")) {
-                if (selectionBox.Contains(go.transform.position)) {
-                    go.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
-                    TreeBucket.treeBucket.targetTrees.Add(go);
+            hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 center = (hitDown + hitUp) * 0.5f;
+            Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
+            RaycastHit2D[] check = Physics2D.BoxCastAll(center, size, selectionAngle, selectionDirection);
+
+            foreach (RaycastHit2D hit in check) {
+                if (hit.collider != null && hit.collider.tag == "task") {
+                    hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
+                    TreeBucket.treeBucket.targetTrees.Add(hit.collider.gameObject);
                 }
             }
-
-            // RaycastHit2D hitUp = Physics2D.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            
         }
 	}
 }
