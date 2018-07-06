@@ -15,6 +15,7 @@ public class ResourceManager : MonoBehaviour {
     void Start() {
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
         borderTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
+        borderTree.SetActive(false);
     }
 
 	void Update() {

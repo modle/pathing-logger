@@ -9,6 +9,7 @@ public class TreeBucket : MonoBehaviour {
     private int maxTrees = 1000;
     private HashSet<string> treePositions = new HashSet<string>();
     public HashSet<GameObject> targetTrees = new HashSet<GameObject>();
+    public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
 
     void Awake() {
         // singleton pattern
@@ -20,6 +21,16 @@ public class TreeBucket : MonoBehaviour {
         }
 
         SpawnTrees();
+    }
+
+    void Update() {
+        Debug.Log("targetTrees length:" + targetTrees.Count + "; toDestroy length:" + toDestroy.Count + "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length);
+        foreach (GameObject go in toDestroy) {
+            Destroy(go.gameObject);
+        }
+        if (toDestroy.Count > 50) {
+            toDestroy = new HashSet<GameObject>();
+        }
     }
 
     void SpawnTrees() {

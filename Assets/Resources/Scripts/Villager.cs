@@ -100,7 +100,7 @@ public class Villager : MonoBehaviour {
             return;
         }
         chopping = false;
-        Destroy(target.gameObject);
+        TreeBucket.treeBucket.toDestroy.Add(target);
         target = GameObject.Find("Storage");
         haveMaterials = true;
     }
