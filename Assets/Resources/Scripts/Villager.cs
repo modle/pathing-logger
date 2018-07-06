@@ -14,12 +14,13 @@ public class Villager : MonoBehaviour {
     private float xUnit;
     private float yUnit;
     private GameObject target;
-    private bool chopping;
+    public bool chopping;
     private float chopStart = 0f;
     private float chopDone = 1f;
     private AudioSource audioSource;
     public AudioClip chopClip;
     public AudioClip storageClip;
+    public string job = "chopper";
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -59,8 +60,13 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        if (chopping) {
+        if (chopping && job == "chopper") {
             ProcessChopping();
+            return;
+        } else {
+            anim.SetBool("side", true);
+        }
+        if (job == "hauler") {
             return;
         }
         GetTargetCoordinates();
@@ -100,9 +106,9 @@ public class Villager : MonoBehaviour {
             return;
         }
         chopping = false;
-        TreeBucket.treeBucket.toDestroy.Add(target);
-        target = GameObject.Find("Storage");
-        haveMaterials = true;
+        target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.logs.GetComponent<SpriteRenderer>().sprite;
+        TreeBucket.treeBucket.toHaul.Add(target);
+        target = null;
     }
 
     void GetTargetCoordinates() {
@@ -133,7 +139,15 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
-        foreach (GameObject go in TreeBucket.treeBucket.targetTrees) {
+        HashSet<GameObject> targets;
+        if (job == "chopper") {
+            targets = TreeBucket.treeBucket.toChop;
+        } else if (job == "hauler") {
+            targets = TreeBucket.treeBucket.toHaul;
+        } else {
+            return;
+        }
+        foreach (GameObject go in targets) {
             if (go == null || go.tag != "task" || target != null) {
                 continue;
             }
@@ -146,7 +160,7 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            TreeBucket.treeBucket.targetTrees.Remove(closest);
+            targets.Remove(closest);
             target.tag = "engaged";
         }
     }

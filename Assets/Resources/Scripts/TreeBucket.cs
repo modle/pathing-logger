@@ -8,7 +8,8 @@ public class TreeBucket : MonoBehaviour {
     private int treeCount;
     private int maxTrees = 1000;
     private HashSet<string> treePositions = new HashSet<string>();
-    public HashSet<GameObject> targetTrees = new HashSet<GameObject>();
+    public HashSet<GameObject> toChop = new HashSet<GameObject>();
+    public HashSet<GameObject> toHaul = new HashSet<GameObject>();
     public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
 
     void Awake() {
@@ -19,17 +20,22 @@ public class TreeBucket : MonoBehaviour {
         } else if (treeBucket != this) {
             Destroy(gameObject);
         }
-
         SpawnTrees();
     }
 
     void Update() {
-        foreach (GameObject go in toDestroy) {
-            Destroy(go.gameObject);
-        }
-        if (toDestroy.Count > 50) {
-            toDestroy = new HashSet<GameObject>();
-        }
+        Debug.Log(
+            "toChop length:" + toChop.Count +
+            "; toHaul length:" + toHaul.Count +
+            "; toDestroy length:" + toDestroy.Count +
+            "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length
+        );
+        // foreach (GameObject go in toDestroy) {
+        //     Destroy(go.gameObject);
+        // }
+        // if (toDestroy.Count > 50) {
+        //     toDestroy = new HashSet<GameObject>();
+        // }
     }
 
     void SpawnTrees() {
