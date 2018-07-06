@@ -7,6 +7,8 @@ public class VillagerBucket : MonoBehaviour {
     private Transform villagers;
     private int villagerCount;
     private int maxVillagers = 15;
+    public Dictionary<string, int> jobs;
+    // use list of job strings
 
     void Awake() {
         // singleton pattern
@@ -18,6 +20,21 @@ public class VillagerBucket : MonoBehaviour {
         }
 
         SpawnVillagers();
+    }
+
+    void Update() {
+        ResetJobs();
+        foreach (Transform child in villagers.transform) {
+            jobs[child.gameObject.GetComponent<Villager>().job]++;
+        }
+    }
+
+    void ResetJobs() {
+        // build dictionary from list of job strings
+        jobs = new Dictionary<string, int>() {
+            {"chopper", 0},
+            {"hauler", 0}
+        };
     }
 
     void SpawnVillagers() {
