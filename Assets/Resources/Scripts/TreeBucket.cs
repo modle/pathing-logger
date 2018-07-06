@@ -24,7 +24,6 @@ public class TreeBucket : MonoBehaviour {
     }
 
     void Update() {
-        Debug.Log("targetTrees length:" + targetTrees.Count + "; toDestroy length:" + toDestroy.Count + "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length);
         foreach (GameObject go in toDestroy) {
             Destroy(go.gameObject);
         }
