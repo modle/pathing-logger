@@ -20,7 +20,7 @@ public class Villager : MonoBehaviour {
     private AudioSource audioSource;
     public AudioClip chopClip;
     public AudioClip storageClip;
-    public string job = "chopper";
+    public string job;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -60,7 +60,7 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        if (chopping && job == "chopper") {
+        if (chopping && job == "chopper" && target != null) {
             ProcessChopping();
             return;
         } else {
@@ -187,6 +187,10 @@ public class Villager : MonoBehaviour {
             return true;
         }
         return false;
+    }
+
+    void ChangeJob(string newJob) {
+        job = newJob;
     }
 
     private void OnTriggerEnter2D (Collider2D other) {
