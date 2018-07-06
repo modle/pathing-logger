@@ -19,23 +19,34 @@ public class ResourceManager : MonoBehaviour {
 
 	void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            downMousePos = Input.mousePosition;
-            hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            ProcessMouseDown();
         }
         if (Input.GetMouseButtonUp(0)) {
-            hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 center = (hitDown + hitUp) * 0.5f;
-            Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
-            RaycastHit2D[] check = Physics2D.BoxCastAll(center, size, selectionAngle, selectionDirection);
-
-            foreach (RaycastHit2D hit in check) {
-                if (hit.collider != null && hit.collider.tag == "task") {
-                    hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
-                    TreeBucket.treeBucket.targetTrees.Add(hit.collider.gameObject);
-                }
-            }
+            ProcessMouseUp();
         }
 	}
+
+    void ProcessMouseDown() {
+        downMousePos = Input.mousePosition;
+        hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    void ProcessMouseUp() {
+        hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 center = (hitDown + hitUp) * 0.5f;
+        Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
+        RaycastHit2D[] check = Physics2D.BoxCastAll(center, size, selectionAngle, selectionDirection);
+        AddSelectedObjectsToQueue(check);
+    }
+
+    void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
+        foreach (RaycastHit2D hit in objects) {
+            if (hit.collider != null && hit.collider.tag == "task") {
+                hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
+                TreeBucket.treeBucket.targetTrees.Add(hit.collider.gameObject);
+            }
+        }
+    }
 
     void OnGUI() {
         if (Input.GetMouseButton(0)) {
