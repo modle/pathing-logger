@@ -7,8 +7,10 @@ public class ResourceManager : MonoBehaviour {
     GameObject borderTree;
     Vector3 hitDown;
     Vector3 hitUp;
+    Vector3 downMousePos;
     float selectionAngle = 0f;
     Vector2 selectionDirection = new Vector2(0, 0);
+    public GUISkin skin;
 
     void Start() {
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
@@ -16,8 +18,8 @@ public class ResourceManager : MonoBehaviour {
     }
 
 	void Update() {
-        Vector2 touchPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
         if (Input.GetMouseButtonDown(0)) {
+            downMousePos = Input.mousePosition;
             hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         if (Input.GetMouseButtonUp(0)) {
@@ -34,4 +36,12 @@ public class ResourceManager : MonoBehaviour {
             }
         }
 	}
+
+    void OnGUI() {
+        if (Input.GetMouseButton(0)) {
+            Vector3 currentPos = Input.mousePosition;
+            Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
+            GUI.Box(boxRect, "", skin.box);
+        }
+    }
 }
