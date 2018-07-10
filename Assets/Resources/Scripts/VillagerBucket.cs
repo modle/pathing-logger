@@ -6,7 +6,7 @@ public class VillagerBucket : MonoBehaviour {
     public static VillagerBucket villagerBucket;
     private Transform villagers;
     private int villagerCount;
-    private int maxVillagers = 15;
+    private int maxVillagers = 2;
     public Dictionary<string, int> jobs;
     public List<string> availableJobs = new List<string>() {
         "chopper", "hauler"
@@ -29,11 +29,7 @@ public class VillagerBucket : MonoBehaviour {
         foreach (Transform child in villagers.transform) {
             jobs[child.gameObject.GetComponent<Villager>().job]++;
         }
-        string currentAssignments = "";
-        foreach (KeyValuePair<string, int> entry in jobs) {
-            currentAssignments += entry.Key + ":" + entry.Value + "; ";
-        };
-        Debug.Log(currentAssignments);
+        ShowCurrentAssignments();
     }
 
     void ResetJobs() {
@@ -43,14 +39,30 @@ public class VillagerBucket : MonoBehaviour {
         }
     }
 
+    void ShowCurrentAssignments() {
+        string currentAssignments = "";
+        foreach (KeyValuePair<string, int> entry in jobs) {
+            currentAssignments += entry.Key + ":" + entry.Value + "; ";
+        };
+        // Debug.Log(currentAssignments);
+    }
+
     void SpawnVillagers() {
         villagers = GameObject.Find("VillagerBucket").transform;
-        Object toInstantiate = Resources.Load("Prefabs/villager", typeof(GameObject));
+        Object toInstantiateSprite = Resources.Load("Prefabs/villager", typeof(GameObject));
+        Object toInstantiateLabel = Resources.Load("Prefabs/villager-label", typeof(GameObject));
+        Vector3 labelOffset = new Vector3(0.125f, 0.125f, 0);
         while (villagerCount < maxVillagers) {
             villagerCount++;
-            GameObject instance = Instantiate(toInstantiate, new Vector3 (Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0), Quaternion.identity) as GameObject;
-            instance.GetComponent<Villager>().job = availableJobs[Random.Range(0, availableJobs.Count)];
-            instance.transform.SetParent(villagers);
+            Vector3 spritePosition = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0);
+            Vector3 labelPosition = spritePosition + labelOffset;
+            GameObject sprite = Instantiate(toInstantiateSprite, spritePosition, Quaternion.identity) as GameObject;
+            GameObject label = Instantiate(toInstantiateLabel, labelPosition, Quaternion.identity) as GameObject;
+            label.transform.SetParent(sprite.transform);
+            label.GetComponent<TextMesh>().text = villagerCount.ToString();
+            sprite.GetComponent<Villager>().id = villagerCount;
+            sprite.GetComponent<Villager>().job = availableJobs[Random.Range(0, availableJobs.Count)];
+            sprite.transform.SetParent(villagers);
         }
     }
 

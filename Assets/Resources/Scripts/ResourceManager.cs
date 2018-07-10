@@ -60,7 +60,7 @@ public class ResourceManager : MonoBehaviour {
         foreach (RaycastHit2D hit in objects) {
             if (hit.collider != null && hit.collider.tag == "task") {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
-                TreeBucket.treeBucket.toChop.Add(hit.collider.gameObject);
+                TreeBucket.bucket.toChop.Add(hit.collider.gameObject);
             }
         }
     }

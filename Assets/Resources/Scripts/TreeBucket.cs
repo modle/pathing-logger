@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TreeBucket : MonoBehaviour {
-    public static TreeBucket treeBucket;
+    public static TreeBucket bucket;
     private Transform trees;
     private int treeCount;
     private int maxTrees = 1000;
@@ -14,10 +14,10 @@ public class TreeBucket : MonoBehaviour {
 
     void Awake() {
         // singleton pattern
-        if (treeBucket == null) {
+        if (bucket == null) {
             DontDestroyOnLoad(gameObject);
-            treeBucket = this;
-        } else if (treeBucket != this) {
+            bucket = this;
+        } else if (bucket != this) {
             Destroy(gameObject);
         }
         SpawnTrees();
@@ -30,12 +30,12 @@ public class TreeBucket : MonoBehaviour {
         //     "; toDestroy length:" + toDestroy.Count +
         //     "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length
         // );
-        // foreach (GameObject go in toDestroy) {
-        //     Destroy(go.gameObject);
-        // }
-        // if (toDestroy.Count > 50) {
-        //     toDestroy = new HashSet<GameObject>();
-        // }
+        foreach (GameObject go in toDestroy) {
+            Destroy(go.gameObject);
+        }
+        if (toDestroy.Count > 50) {
+            toDestroy = new HashSet<GameObject>();
+        }
     }
 
     void SpawnTrees() {

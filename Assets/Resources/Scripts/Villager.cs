@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Villager : MonoBehaviour {
@@ -11,8 +12,6 @@ public class Villager : MonoBehaviour {
     private float vertical = 0f;
     private float theX = 0f;
     private float theY = 0f;
-    private float xUnit;
-    private float yUnit;
     private GameObject target;
     public bool chopping;
     private float chopStart = 0f;
@@ -21,6 +20,9 @@ public class Villager : MonoBehaviour {
     public AudioClip chopClip;
     public AudioClip storageClip;
     public string job;
+    public int id;
+    private Rect idRect;
+    private Vector3 lastPos;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -41,8 +43,6 @@ public class Villager : MonoBehaviour {
     private bool haveMaterials = false;
 
     void Start () {
-        xUnit = Screen.width * 0.005f;
-        yUnit = Screen.height * 0.005f;
         SetInitialReferences();
     }
 
@@ -55,7 +55,18 @@ public class Villager : MonoBehaviour {
     }
 
     void Update () {
+        UnstickVillager();
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = GetRepr();
         Move();
+    }
+
+    void UnstickVillager() {
+        Vector3 thePos = transform.position;
+        if (target != null && thePos.Equals(lastPos) && !chopping) {
+            target.tag = "task";
+            target = null;
+        }
+        lastPos = thePos;
     }
 
     void Move() {
@@ -63,12 +74,8 @@ public class Villager : MonoBehaviour {
         if (chopping && job == "chopper" && target != null) {
             ProcessChopping();
             return;
-        } else {
-            anim.SetBool("side", true);
         }
-        if (job == "hauler") {
-            return;
-        }
+
         GetTargetCoordinates();
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
@@ -97,7 +104,7 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessChopping() {
-        if (chopping && Time.time - chopStart < chopDone) {
+        if (chopping && (Time.time - chopStart) < chopDone) {
             anim.SetBool("side-attack", true);
             anim.speed = 1;
             if ((int)((Time.time - chopStart) * 100) % 30 == 0) {
@@ -107,7 +114,9 @@ public class Villager : MonoBehaviour {
         }
         chopping = false;
         target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.logs.GetComponent<SpriteRenderer>().sprite;
-        TreeBucket.treeBucket.toHaul.Add(target);
+        target.tag = "task";
+        TreeBucket.bucket.toChop.Remove(target);
+        TreeBucket.bucket.toHaul.Add(target);
         target = null;
     }
 
@@ -141,14 +150,14 @@ public class Villager : MonoBehaviour {
         }
         HashSet<GameObject> targets;
         if (job == "chopper") {
-            targets = TreeBucket.treeBucket.toChop;
+            targets = TreeBucket.bucket.toChop;
         } else if (job == "hauler") {
-            targets = TreeBucket.treeBucket.toHaul;
+            targets = TreeBucket.bucket.toHaul;
         } else {
             return;
         }
         foreach (GameObject go in targets) {
-            if (go == null || go.tag != "task" || target != null) {
+            if (go == null || go.tag != "task") {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -160,7 +169,6 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            targets.Remove(closest);
             target.tag = "engaged";
         }
     }
@@ -193,18 +201,35 @@ public class Villager : MonoBehaviour {
         job = newJob;
     }
 
-    private void OnTriggerEnter2D (Collider2D other) {
-        if (target == null || chopping == true) {
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (target == null) {
+            return;
+        }
+        if (target.tag != "engaged" && target.tag != "storage") {
+            target = null;
             return;
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
-            chopping = true;
-            chopStart = Time.time;
+            if (job == "chopper") {
+                Debug.Log("starting chop with villager:" + id + "; " + other.gameObject.GetInstanceID() + "|" + target.GetInstanceID());
+                chopping = true;
+                chopStart = Time.time;
+            } else {
+                TreeBucket.bucket.toDestroy.Add(target);
+                target = GameObject.Find("Storage");
+                haveMaterials = true;
+            }
         } else if (target.tag == "storage" && other.tag == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
             audioSource.PlayOneShot(storageClip, 0.7F);
             WoodCounter.counter.count++;
+        } else {
+            Debug.Log("no match for villager:" + id + "-" + job + "; " + other.gameObject.GetInstanceID() + "|" + target.GetInstanceID() + ", " + target.tag);
         }
+    }
+
+    string GetRepr() {
+        return id + " | " + job + (target != null ? "\n" + target.name + " | " + target.tag : "");
     }
 }
