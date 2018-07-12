@@ -58,7 +58,7 @@ public class ResourceManager : MonoBehaviour {
 
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
         foreach (RaycastHit2D hit in objects) {
-            if (hit.collider != null && hit.collider.tag == "task") {
+            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<Identifier>().type == "tree") {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
                 TreeBucket.bucket.toChop.Add(hit.collider.gameObject);
             }

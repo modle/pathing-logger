@@ -106,6 +106,7 @@ public class Villager : MonoBehaviour {
         target.tag = "task";
         TreeBucket.bucket.toChop.Remove(target);
         TreeBucket.bucket.toHaul.Add(target);
+        target.gameObject.GetComponent<Identifier>().type = "logs";
         target = null;
     }
 
