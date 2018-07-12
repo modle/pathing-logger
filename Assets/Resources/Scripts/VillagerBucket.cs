@@ -3,48 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VillagerBucket : MonoBehaviour {
-    public static VillagerBucket villagerBucket;
-    private Transform villagers;
+    public static VillagerBucket bucket;
+    public Transform villagers;
     private int villagerCount;
     private int maxVillagers = 40;
-    public Dictionary<string, int> jobs;
-    public List<string> availableJobs = new List<string>() {
-        "chopper", "hauler"
-    };
 
     void Awake() {
         // singleton pattern
-        if (villagerBucket == null) {
+        if (bucket == null) {
             DontDestroyOnLoad(gameObject);
-            villagerBucket = this;
-        } else if (villagerBucket != this) {
+            bucket = this;
+        } else if (bucket != this) {
             Destroy(gameObject);
         }
+    }
 
+    void Start() {
         SpawnVillagers();
-    }
-
-    void Update() {
-        ResetJobs();
-        foreach (Transform child in villagers.transform) {
-            jobs[child.gameObject.GetComponent<Villager>().job]++;
-        }
-        ShowCurrentAssignments();
-    }
-
-    void ResetJobs() {
-        jobs = new Dictionary<string, int>();
-        foreach (string job in availableJobs) {
-            jobs.Add(job, 0);
-        }
-    }
-
-    void ShowCurrentAssignments() {
-        string currentAssignments = "";
-        foreach (KeyValuePair<string, int> entry in jobs) {
-            currentAssignments += entry.Key + ":" + entry.Value + "; ";
-        };
-        // Debug.Log(currentAssignments);
     }
 
     void SpawnVillagers() {
@@ -61,7 +36,8 @@ public class VillagerBucket : MonoBehaviour {
             label.transform.SetParent(sprite.transform);
             label.GetComponent<TextMesh>().text = villagerCount.ToString();
             sprite.GetComponent<Villager>().id = villagerCount;
-            sprite.GetComponent<Villager>().job = availableJobs[Random.Range(0, availableJobs.Count)];
+            sprite.GetComponent<Villager>().job = AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)];
+            AssignmentCounter.counter.jobs[sprite.GetComponent<Villager>().job]++;
             sprite.transform.SetParent(villagers);
         }
     }
