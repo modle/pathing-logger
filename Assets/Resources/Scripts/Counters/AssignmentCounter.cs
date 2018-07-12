@@ -5,14 +5,12 @@ using UnityEngine.UI;
 
 public class AssignmentCounter : MonoBehaviour {
     public static AssignmentCounter counter;
-    public int chopper;
-    public int hauler;
     public Text chopperText;
     public Text haulerText;
+    public Text idleText;
     public Dictionary<string, int> jobs;
-    public List<string> availableJobs = new List<string>() {
-        "chopper", "hauler"
-    };
+    [HideInInspector]
+    public List<string> availableJobs;
 
     void Awake() {
         // singleton pattern
@@ -22,18 +20,19 @@ public class AssignmentCounter : MonoBehaviour {
         } else if (counter != this) {
             Destroy(gameObject);
         }
+        availableJobs = new List<string>() {"chopper", "hauler", "idle"};
         jobs = new Dictionary<string, int>();
         foreach (string job in availableJobs) {
+            Debug.Log("adding job " + job);
             jobs.Add(job, 0);
         }
     }
 
     void Update() {
         ShowCurrentAssignments();
-        chopper = jobs["chopper"];
-        hauler = jobs["hauler"];
-        chopperText.text = chopper.ToString();
-        haulerText.text = hauler.ToString();
+        chopperText.text = jobs["chopper"].ToString();
+        haulerText.text = jobs["hauler"].ToString();
+        idleText.text = jobs["idle"].ToString();
     }
 
     void ShowCurrentAssignments() {
