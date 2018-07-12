@@ -22,7 +22,6 @@ public class Villager : MonoBehaviour {
     public string job;
     public int id;
     private Rect idRect;
-    private Vector3 lastPos;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -55,18 +54,8 @@ public class Villager : MonoBehaviour {
     }
 
     void Update () {
-        UnstickVillager();
         transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = GetRepr();
         Move();
-    }
-
-    void UnstickVillager() {
-        Vector3 thePos = transform.position;
-        if (target != null && thePos.Equals(lastPos) && !chopping) {
-            target.tag = "task";
-            target = null;
-        }
-        lastPos = thePos;
     }
 
     void Move() {
@@ -201,7 +190,17 @@ public class Villager : MonoBehaviour {
         job = newJob;
     }
 
+    private void OnTriggerStay2D(Collider2D other) {
+        if (target != null && !chopping && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
+            ProcessTrigger(other.gameObject);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other) {
+        ProcessTrigger(other.gameObject);
+    }
+
+    void ProcessTrigger(GameObject other) {
         if (target == null) {
             return;
         }
@@ -224,12 +223,11 @@ public class Villager : MonoBehaviour {
             haveMaterials = false;
             audioSource.PlayOneShot(storageClip, 0.7F);
             WoodCounter.counter.count++;
-        } else {
-            Debug.Log("no match for villager:" + id + "-" + job + "; " + other.gameObject.GetInstanceID() + "|" + target.GetInstanceID() + ", " + target.tag);
         }
     }
 
     string GetRepr() {
-        return id + " | " + job + (target != null ? "\n" + target.name + " | " + target.tag : "");
+        return id.ToString();
+        // return id + " | " + job + (target != null ? "\n" + target.name + " | " + target.tag : "");
     }
 }

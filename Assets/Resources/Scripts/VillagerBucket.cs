@@ -6,7 +6,7 @@ public class VillagerBucket : MonoBehaviour {
     public static VillagerBucket villagerBucket;
     private Transform villagers;
     private int villagerCount;
-    private int maxVillagers = 2;
+    private int maxVillagers = 40;
     public Dictionary<string, int> jobs;
     public List<string> availableJobs = new List<string>() {
         "chopper", "hauler"
