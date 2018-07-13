@@ -211,7 +211,6 @@ public class Villager : MonoBehaviour {
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
             if (job == "chopper") {
-                Debug.Log("starting chop with villager:" + id + "; " + other.gameObject.GetInstanceID() + "|" + target.GetInstanceID());
                 chopping = true;
                 chopStart = Time.time;
             } else {

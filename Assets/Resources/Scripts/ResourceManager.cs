@@ -14,6 +14,7 @@ public class ResourceManager : MonoBehaviour {
     float selectionAngle = 0f;
     Vector2 selectionDirection = new Vector2(0, 0);
     public GUISkin skin;
+    private bool select;
 
     void Awake() {
         // singleton pattern
@@ -35,6 +36,11 @@ public class ResourceManager : MonoBehaviour {
     }
 
 	void Update() {
+        if (UIActive()) {
+            select = false;
+            return;
+        }
+        select = true;
         if (Input.GetMouseButtonDown(0)) {
             ProcessMouseDown();
         }
@@ -43,12 +49,25 @@ public class ResourceManager : MonoBehaviour {
         }
 	}
 
+    bool UIActive() {
+        bool active = false;
+        foreach (GameObject uiElement in GameObject.FindGameObjectsWithTag("ui-container")) {
+            if (active) {
+                break;
+            }
+            active = uiElement.GetComponent<UIManager>().isActive;
+        }
+        return active;
+    }
+
     void ProcessMouseDown() {
+        print("processing mouse button down");
         downMousePos = Input.mousePosition;
         hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     void ProcessMouseUp() {
+        print("processing mouse button up");
         hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 center = (hitDown + hitUp) * 0.5f;
         Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
@@ -66,7 +85,7 @@ public class ResourceManager : MonoBehaviour {
     }
 
     void OnGUI() {
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButton(0) && select) {
             Vector3 currentPos = Input.mousePosition;
             Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
             GUI.Box(boxRect, "", skin.box);

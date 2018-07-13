@@ -23,7 +23,6 @@ public class AssignmentCounter : MonoBehaviour {
         availableJobs = new List<string>() {"chopper", "hauler", "idle"};
         jobs = new Dictionary<string, int>();
         foreach (string job in availableJobs) {
-            Debug.Log("adding job " + job);
             jobs.Add(job, 0);
         }
     }
