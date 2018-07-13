@@ -6,7 +6,7 @@ public class VillagerBucket : MonoBehaviour {
     public static VillagerBucket bucket;
     public Transform villagers;
     private int villagerCount;
-    private int maxVillagers = 40;
+    private int maxVillagers = 10;
 
     void Awake() {
         // singleton pattern
@@ -39,6 +39,15 @@ public class VillagerBucket : MonoBehaviour {
             sprite.GetComponent<Villager>().job = AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)];
             AssignmentCounter.counter.jobs[sprite.GetComponent<Villager>().job]++;
             sprite.transform.SetParent(villagers);
+        }
+    }
+
+    public void ReassignVillager(string from, string to) {
+        foreach(Transform villager in villagers) {
+            if (villager.gameObject.GetComponent<Villager>().GetJob() == from) {
+                villager.gameObject.GetComponent<Villager>().ChangeJob(to);
+                return;
+            }
         }
     }
 

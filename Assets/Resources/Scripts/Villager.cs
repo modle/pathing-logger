@@ -187,8 +187,19 @@ public class Villager : MonoBehaviour {
         return false;
     }
 
-    void ChangeJob(string newJob) {
+    public string GetJob() {
+        return job;
+    }
+
+    public void ChangeJob(string newJob) {
         job = newJob;
+        // TODO if carrying resource, don't do this until they reach the storage
+        if (target != null) {
+            if (target.tag != "storage") {
+                target.tag = "task";
+            }
+            target = null;
+        }
     }
 
     private void OnTriggerStay2D(Collider2D other) {

@@ -55,7 +55,7 @@ public class ResourceManager : MonoBehaviour {
             if (active) {
                 break;
             }
-            active = uiElement.GetComponent<UIManager>().isActive;
+            active = uiElement.GetComponent<UIState>().isActive;
         }
         return active;
     }

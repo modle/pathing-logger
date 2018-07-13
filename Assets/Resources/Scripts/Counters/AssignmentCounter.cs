@@ -28,10 +28,22 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void Update() {
-        ShowCurrentAssignments();
+        CountVillagers();
+        // ShowCurrentAssignments();
         chopperText.text = jobs["chopper"].ToString();
         haulerText.text = jobs["hauler"].ToString();
         idleText.text = jobs["idle"].ToString();
+    }
+
+    void CountVillagers() {
+        Dictionary<string, int> theJobs = new Dictionary<string, int>();
+        foreach (string job in availableJobs) {
+            theJobs.Add(job, 0);
+        }
+        foreach(Transform villager in VillagerBucket.bucket.villagers) {
+            theJobs[villager.gameObject.GetComponent<Villager>().job]++;
+        }
+        jobs = theJobs;
     }
 
     void ShowCurrentAssignments() {

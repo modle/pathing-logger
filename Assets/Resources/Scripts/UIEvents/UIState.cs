@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UIManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+public class UIState : EventTrigger {
 
     public bool isActive;
 
-    public void OnPointerEnter(PointerEventData eventData) {
+    public override void OnPointerEnter(PointerEventData eventData) {
         isActive = true;
     }
 
-    public void OnPointerExit(PointerEventData eventData) {
+    public override void OnPointerExit(PointerEventData eventData) {
         isActive = false;
     }
 }
