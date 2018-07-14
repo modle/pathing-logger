@@ -15,6 +15,8 @@ public class ResourceManager : MonoBehaviour {
     Vector2 selectionDirection = new Vector2(0, 0);
     public GUISkin skin;
     private bool select;
+    public string targetType;
+    private Transform selectors;
 
     void Awake() {
         // singleton pattern
@@ -24,6 +26,7 @@ public class ResourceManager : MonoBehaviour {
         } else if (manager != this) {
             Destroy(gameObject);
         }
+        selectors = GameObject.Find("Selectors").transform;
     }
 
     void Start() {
@@ -36,8 +39,11 @@ public class ResourceManager : MonoBehaviour {
     }
 
 	void Update() {
+        select = false;
         if (UIActive()) {
-            select = false;
+            return;
+        }
+        if (targetType == "") {
             return;
         }
         select = true;
@@ -61,13 +67,11 @@ public class ResourceManager : MonoBehaviour {
     }
 
     void ProcessMouseDown() {
-        print("processing mouse button down");
         downMousePos = Input.mousePosition;
         hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     void ProcessMouseUp() {
-        print("processing mouse button up");
         hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 center = (hitDown + hitUp) * 0.5f;
         Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
@@ -76,8 +80,9 @@ public class ResourceManager : MonoBehaviour {
     }
 
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
+        print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
-            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<Identifier>().type == "tree") {
+            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<Identifier>().type == targetType) {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
                 hit.collider.gameObject.GetComponent<Identifier>().selected = true;
             }
@@ -85,7 +90,7 @@ public class ResourceManager : MonoBehaviour {
     }
 
     void OnGUI() {
-        if (Input.GetMouseButton(0) && select) {
+        if (Input.GetMouseButton(0) && select && targetType != "") {
             Vector3 currentPos = Input.mousePosition;
             Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
             GUI.Box(boxRect, "", skin.box);
