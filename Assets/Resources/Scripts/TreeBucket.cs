@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class TreeBucket : MonoBehaviour {
     public static TreeBucket bucket;
-    private Transform trees;
     private int treeCount;
     private int maxTrees = 1000;
     private HashSet<string> treePositions = new HashSet<string>();
     public HashSet<GameObject> toChop = new HashSet<GameObject>();
     public HashSet<GameObject> toHaul = new HashSet<GameObject>();
     public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
+    public List<GameObject> trees = new List<GameObject>();
 
     void Awake() {
         // singleton pattern
@@ -39,7 +39,6 @@ public class TreeBucket : MonoBehaviour {
     }
 
     void SpawnTrees() {
-        trees = GameObject.Find("TreeBucket").transform;
         Object toInstantiate = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
         while (treeCount < maxTrees) {
             Vector3 theVector = new Vector3(
@@ -61,7 +60,11 @@ public class TreeBucket : MonoBehaviour {
 
             // sort in reverse vertical order
             instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
-            instance.transform.SetParent(trees);
+            instance.transform.SetParent(transform);
+        }
+
+        foreach (Transform child in transform) {
+            trees.Add(child.gameObject);
         }
     }
 }

@@ -5,9 +5,6 @@ using UnityEngine.UI;
 
 public class AssignmentCounter : MonoBehaviour {
     public static AssignmentCounter counter;
-    // public Text chopperText;
-    // public Text haulerText;
-    // public Text idleText;
     public Dictionary<string, int> jobs;
     public Dictionary<string, Text> counters;
     [HideInInspector]
@@ -49,7 +46,6 @@ public class AssignmentCounter : MonoBehaviour {
             Object textPrefab = Resources.Load("Prefabs/text-default", typeof(GameObject));
             GameObject jobText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
             jobText.name = "counter";
-            // jobText.transform.SetParent(jobContainer.transform);
             jobText.GetComponent<RectTransform>().anchorMin = leftAlignVector;
             jobText.GetComponent<RectTransform>().anchorMax = leftAlignVector;
             jobText.GetComponent<RectTransform>().localPosition = counterVector;

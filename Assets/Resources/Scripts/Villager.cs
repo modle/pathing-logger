@@ -12,7 +12,7 @@ public class Villager : MonoBehaviour {
     private float vertical = 0f;
     private float theX = 0f;
     private float theY = 0f;
-    private GameObject target;
+    public GameObject target;
     public bool chopping;
     private float chopStart = 0f;
     private float chopDone = 1f;
@@ -103,10 +103,8 @@ public class Villager : MonoBehaviour {
         }
         chopping = false;
         target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.logs.GetComponent<SpriteRenderer>().sprite;
-        target.tag = "task";
-        TreeBucket.bucket.toChop.Remove(target);
-        TreeBucket.bucket.toHaul.Add(target);
-        target.gameObject.GetComponent<Identifier>().type = "logs";
+        Identifier id = target.gameObject.GetComponent<Identifier>();
+        id.Logify();
         target = null;
     }
 
@@ -138,16 +136,12 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
-        HashSet<GameObject> targets;
-        if (job == "chopper") {
-            targets = TreeBucket.bucket.toChop;
-        } else if (job == "hauler") {
-            targets = TreeBucket.bucket.toHaul;
-        } else {
-            return;
-        }
-        foreach (GameObject go in targets) {
-            if (go == null || go.tag != "task") {
+        foreach (GameObject go in TreeBucket.bucket.trees) {
+            if (go == null) {
+                continue;
+            }
+            Identifier id = go.GetComponent<Identifier>();
+            if (!id.selected || id.engaged || id.job != job) {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -159,7 +153,7 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            target.tag = "engaged";
+            target.GetComponent<Identifier>().engaged = true;
         }
     }
 
@@ -195,10 +189,7 @@ public class Villager : MonoBehaviour {
         job = newJob;
         // TODO if carrying resource, don't do this until they reach the storage
         if (target != null) {
-            if (target.tag != "storage") {
-                target.tag = "task";
-            }
-            target = null;
+            target.GetComponent<Identifier>().AbandonTask();
         }
     }
 
@@ -216,20 +207,21 @@ public class Villager : MonoBehaviour {
         if (target == null) {
             return;
         }
-        if (target.tag != "engaged" && target.tag != "storage") {
+        Identifier id = target.GetComponent<Identifier>();
+        if (!id.engaged && id.type != "storage") {
             target = null;
             return;
         }
-        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && target.tag == "engaged") {
-            if (job == "chopper") {
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.engaged) {
+            if (id.job == "chopper") {
                 chopping = true;
                 chopStart = Time.time;
             } else {
-                TreeBucket.bucket.toDestroy.Add(target);
+                Destroy(target);
                 target = GameObject.Find("Storage");
                 haveMaterials = true;
             }
-        } else if (target.tag == "storage" && other.tag == "storage" && haveMaterials) {
+        } else if (id.type == "storage" && other.GetComponent<Identifier>().type == "storage" && haveMaterials) {
             target = null;
             haveMaterials = false;
             audioSource.PlayOneShot(storageClip, 0.7F);
