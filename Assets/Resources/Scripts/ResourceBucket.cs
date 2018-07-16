@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreeBucket : MonoBehaviour {
-    public static TreeBucket bucket;
+public class ResourceBucket : MonoBehaviour {
+    public static ResourceBucket bucket;
     private int treeCount;
     private int maxTrees = 1000;
     private HashSet<string> treePositions = new HashSet<string>();
@@ -20,7 +20,7 @@ public class TreeBucket : MonoBehaviour {
         } else if (bucket != this) {
             Destroy(gameObject);
         }
-        SpawnTrees();
+        SpawnResources();
     }
 
     void Update() {
@@ -38,8 +38,11 @@ public class TreeBucket : MonoBehaviour {
         }
     }
 
-    void SpawnTrees() {
-        Object toInstantiate = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
+    void SpawnResources() {
+        Object tree = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
+        Object rock = Resources.Load("Prefabs/rock", typeof(GameObject));
+        List<Object> instantiables = new List<Object>() {tree, rock};
+        print("instantiables length is " + instantiables.Count);
         while (treeCount < maxTrees) {
             Vector3 theVector = new Vector3(
                 Random.Range(-9.0f, 9.0f),
@@ -56,8 +59,8 @@ public class TreeBucket : MonoBehaviour {
                 continue;
             }
 
-            GameObject instance = Instantiate(toInstantiate, theVector, Quaternion.identity) as GameObject;
-
+            GameObject instance = Instantiate(instantiables[Random.Range(0, instantiables.Count)], theVector, Quaternion.identity) as GameObject;
+            print("instance is " + instance);
             // sort in reverse vertical order
             instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
             instance.transform.SetParent(transform);

@@ -102,7 +102,8 @@ public class Villager : MonoBehaviour {
             return;
         }
         chopping = false;
-        target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.logs.GetComponent<SpriteRenderer>().sprite;
+        Identifier identifier = target.GetComponent<Identifier>();
+        target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.choppedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
         Identifier id = target.gameObject.GetComponent<Identifier>();
         id.Logify();
         target = null;
@@ -136,7 +137,7 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
-        foreach (GameObject go in TreeBucket.bucket.trees) {
+        foreach (GameObject go in ResourceBucket.bucket.trees) {
             if (go == null) {
                 continue;
             }

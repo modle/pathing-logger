@@ -6,8 +6,6 @@ public class ResourceManager : MonoBehaviour {
 
     public static ResourceManager manager;
 
-    GameObject borderTree;
-    public GameObject logs;
     Vector3 hitDown;
     Vector3 hitUp;
     Vector3 downMousePos;
@@ -17,6 +15,8 @@ public class ResourceManager : MonoBehaviour {
     private bool select;
     public string targetType;
     private Transform selectors;
+    Dictionary<string, GameObject> selectedSprites = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> choppedSprites = new Dictionary<string, GameObject>();
 
     void Awake() {
         // singleton pattern
@@ -31,11 +31,24 @@ public class ResourceManager : MonoBehaviour {
 
     void Start() {
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
-        borderTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
-        borderTree.SetActive(false);
+        GameObject theTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
+        theTree.SetActive(false);
+        selectedSprites.Add("tree", theTree);
+
+        Object highlightedRocksPrefab = Resources.Load("Prefabs/rock-highlighted", typeof(GameObject));
+        GameObject theRock = Instantiate(highlightedRocksPrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
+        theRock.SetActive(false);
+        selectedSprites.Add("rock", theRock);
+
         Object logPrefab = Resources.Load("Prefabs/logs", typeof(GameObject));
-        logs = Instantiate(logPrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
-        logs.SetActive(false);
+        GameObject theLogs = Instantiate(logPrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
+        theLogs.SetActive(false);
+        choppedSprites.Add("tree", theLogs);
+
+        Object rubblePrefab = Resources.Load("Prefabs/rubble", typeof(GameObject));
+        GameObject theRubble = Instantiate(rubblePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
+        theRubble.SetActive(false);
+        choppedSprites.Add("rock", theRubble);
     }
 
 	void Update() {
@@ -83,7 +96,7 @@ public class ResourceManager : MonoBehaviour {
         print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
             if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<Identifier>().type == targetType) {
-                hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = borderTree.GetComponent<SpriteRenderer>().sprite;
+                hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = selectedSprites[targetType].GetComponent<SpriteRenderer>().sprite;
                 hit.collider.gameObject.GetComponent<Identifier>().selected = true;
             }
         }
