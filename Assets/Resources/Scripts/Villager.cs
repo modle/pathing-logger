@@ -103,7 +103,8 @@ public class Villager : MonoBehaviour {
         }
         chopping = false;
         Identifier identifier = target.GetComponent<Identifier>();
-        target.gameObject.GetComponent<SpriteRenderer>().sprite = ResourceManager.manager.choppedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
+        target.gameObject.GetComponent<SpriteRenderer>().sprite =
+            ResourceManager.manager.choppedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
         Identifier id = target.gameObject.GetComponent<Identifier>();
         id.Logify();
         target = null;
