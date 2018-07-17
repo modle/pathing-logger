@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class ResourceBucket : MonoBehaviour {
     public static ResourceBucket bucket;
-    private int treeCount;
-    private int maxTrees = 1000;
-    private HashSet<string> treePositions = new HashSet<string>();
+    private int resourceCount;
+    private int maxResources = 1000;
+    private HashSet<string> resourcePositions = new HashSet<string>();
     public HashSet<GameObject> toChop = new HashSet<GameObject>();
     public HashSet<GameObject> toHaul = new HashSet<GameObject>();
     public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
-    public List<GameObject> trees = new List<GameObject>();
+    public List<GameObject> resources = new List<GameObject>();
+    private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();
 
     void Awake() {
         // singleton pattern
@@ -20,6 +21,8 @@ public class ResourceBucket : MonoBehaviour {
         } else if (bucket != this) {
             Destroy(gameObject);
         }
+        colliderWidths.Add("tree", 0.5f);
+        colliderWidths.Add("rock", 1.0f);
         SpawnResources();
     }
 
@@ -43,7 +46,7 @@ public class ResourceBucket : MonoBehaviour {
         Object rock = Resources.Load("Prefabs/rock", typeof(GameObject));
         List<Object> instantiables = new List<Object>() {tree, rock};
         print("instantiables length is " + instantiables.Count);
-        while (treeCount < maxTrees) {
+        while (resourceCount < maxResources) {
             Vector3 theVector = new Vector3(
                 Random.Range(-9.0f, 9.0f),
                 Random.Range(-5.0f, 5.0f),
@@ -51,23 +54,26 @@ public class ResourceBucket : MonoBehaviour {
             if ((new Rect(-1.5f, -1.5f, 3.0f, 3.0f).Contains(new Vector2(theVector.x, theVector.y)))) {
                 continue;
             }
-            treeCount++;
+            resourceCount++;
 
             // keeps them from being placed too close together
             string positionString = Mathf.RoundToInt(theVector.x * 1.5f) + "," + Mathf.RoundToInt(theVector.y * 1.5f);
-            if (!treePositions.Add(positionString)) {
+            if (!resourcePositions.Add(positionString)) {
                 continue;
             }
 
             GameObject instance = Instantiate(instantiables[Random.Range(0, instantiables.Count)], theVector, Quaternion.identity) as GameObject;
-            print("instance is " + instance);
+            Vector2 instanceSize = instance.GetComponent<SpriteRenderer>().bounds.size;
+            instanceSize.x *= colliderWidths[instance.GetComponent<Identifier>().type];
+            ((BoxCollider2D)instance.GetComponent<BoxCollider2D>()).size = instanceSize;
+
             // sort in reverse vertical order
             instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
             instance.transform.SetParent(transform);
         }
 
         foreach (Transform child in transform) {
-            trees.Add(child.gameObject);
+            resources.Add(child.gameObject);
         }
     }
 }

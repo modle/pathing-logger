@@ -137,7 +137,7 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
-        foreach (GameObject go in ResourceBucket.bucket.trees) {
+        foreach (GameObject go in ResourceBucket.bucket.resources) {
             if (go == null) {
                 continue;
             }
