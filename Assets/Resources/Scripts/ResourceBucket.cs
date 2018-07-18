@@ -45,7 +45,6 @@ public class ResourceBucket : MonoBehaviour {
         Object tree = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
         Object rock = Resources.Load("Prefabs/rock", typeof(GameObject));
         List<Object> instantiables = new List<Object>() {tree, rock};
-        print("instantiables length is " + instantiables.Count);
         while (resourceCount < maxResources) {
             Vector3 theVector = new Vector3(
                 Random.Range(-9.0f, 9.0f),
