@@ -10,8 +10,11 @@ public class Selector : EventTrigger {
     Transform cursorImage;
 
     public void Awake() {
-        cursor = CursorPrefabs.cursors.cursorSprites[name];
         cursorImage = GameObject.Find("CursorImage").transform;
+    }
+
+    public void Start() {
+        cursor = CursorPrefabs.cursors.cursorSprites[name];
     }
 
     public override void OnPointerClick(PointerEventData eventData) {

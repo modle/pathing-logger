@@ -1,8 +1,9 @@
 using UnityEngine;
 
 public class Identifier : MonoBehaviour {
-    public string type = "tree";
-    public string job = "chopper";
+    public string type;
+    public string produces;
+    public string job;
     public bool engaged = false;
     public int targetedBy = 0;
     public bool selected = false;

@@ -22,6 +22,7 @@ public class Villager : MonoBehaviour {
     public string job;
     public int id;
     private Rect idRect;
+    private string material;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -219,15 +220,17 @@ public class Villager : MonoBehaviour {
                 chopping = true;
                 chopStart = Time.time;
             } else {
+                material = target.GetComponent<Identifier>().produces;
                 Destroy(target);
                 target = GameObject.Find("Storage");
                 haveMaterials = true;
             }
-        } else if (id.type == "storage" && other.GetComponent<Identifier>().type == "storage" && haveMaterials) {
+        } else if (id.type == "storage" && other.GetComponent<Identifier>().type == "storage" && haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
             target = null;
             haveMaterials = false;
             audioSource.PlayOneShot(storageClip, 0.7F);
-            WoodCounter.counter.count++;
+            ResourceCounter.counter.counts[material]++;
+            material = "";
         }
     }
 
