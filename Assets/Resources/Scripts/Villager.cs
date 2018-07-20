@@ -207,7 +207,7 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessTrigger(GameObject other) {
-        if (target == null) {
+        if (target == null || other.GetComponent<TargetID>() == null) {
             return;
         }
         TargetID id = target.GetComponent<TargetID>();

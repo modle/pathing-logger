@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BuildingPrefabs : MonoBehaviour {
 
     public static BuildingPrefabs buildings;
-    public Dictionary<string, Object> buildingSprites = new Dictionary<string, Object>();
+    public Dictionary<string, Object> buildingSprites;
 
     void Awake() {
         // singleton pattern
@@ -20,6 +20,7 @@ public class BuildingPrefabs : MonoBehaviour {
     }
 
     void LoadPrefabs() {
+        buildingSprites = new Dictionary<string, Object>();
         buildingSprites.Add("woodcutter", Resources.Load("Prefabs/woodcutter-building", typeof(GameObject)));
     }
 }

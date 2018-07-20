@@ -58,6 +58,7 @@ public class ResourceManager : MonoBehaviour {
             return;
         }
         if (placeable) {
+            PlaceTarget();
             return;
         }
         if (targetType == "") {
@@ -65,10 +66,10 @@ public class ResourceManager : MonoBehaviour {
         }
         select = true;
         if (Input.GetMouseButtonDown(0)) {
-            ProcessMouseDown();
+            StartSelection();
         }
         if (Input.GetMouseButtonUp(0)) {
-            ProcessMouseUp();
+            EndSelection();
         }
 	}
 
@@ -83,12 +84,24 @@ public class ResourceManager : MonoBehaviour {
         return active;
     }
 
-    void ProcessMouseDown() {
+    void PlaceTarget() {
+        Object targetPrefab = BuildingPrefabs.buildings.buildingSprites[targetType];
+        if (targetPrefab == null) {
+            print("no prefab found for " + targetType);
+        }
+        if (Input.GetMouseButtonDown(0)) {
+            Vector3 placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
+            GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
+        }
+    }
+
+    void StartSelection() {
         downMousePos = Input.mousePosition;
         hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    void ProcessMouseUp() {
+    void EndSelection() {
         hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 center = (hitDown + hitUp) * 0.5f;
         Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
@@ -99,6 +112,9 @@ public class ResourceManager : MonoBehaviour {
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
         print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
+            if (hit.collider.gameObject.GetComponent<TargetID>() == null) {
+                continue;
+            }
             if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<TargetID>().type == targetType) {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = selectedSprites[targetType].GetComponent<SpriteRenderer>().sprite;
                 hit.collider.gameObject.GetComponent<TargetID>().selected = true;
