@@ -17,6 +17,7 @@ public class ResourceManager : MonoBehaviour {
     private Transform selectors;
     Dictionary<string, GameObject> selectedSprites = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> choppedSprites = new Dictionary<string, GameObject>();
+    public bool placeable;
 
     void Awake() {
         // singleton pattern
@@ -54,6 +55,9 @@ public class ResourceManager : MonoBehaviour {
 	void Update() {
         select = false;
         if (UIActive()) {
+            return;
+        }
+        if (placeable) {
             return;
         }
         if (targetType == "") {
@@ -95,15 +99,15 @@ public class ResourceManager : MonoBehaviour {
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
         print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
-            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<Identifier>().type == targetType) {
+            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<TargetID>().type == targetType) {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = selectedSprites[targetType].GetComponent<SpriteRenderer>().sprite;
-                hit.collider.gameObject.GetComponent<Identifier>().selected = true;
+                hit.collider.gameObject.GetComponent<TargetID>().selected = true;
             }
         }
     }
 
     void OnGUI() {
-        if (Input.GetMouseButton(0) && select && targetType != "") {
+        if (Input.GetMouseButton(0) && select && targetType != "" && !placeable) {
             Vector3 currentPos = Input.mousePosition;
             Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
             GUI.Box(boxRect, "", skin.box);

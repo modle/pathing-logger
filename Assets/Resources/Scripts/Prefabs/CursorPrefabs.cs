@@ -32,5 +32,4 @@ public class CursorPrefabs : MonoBehaviour {
 
         cursorSprites.Add("stop", null);
     }
-
 }

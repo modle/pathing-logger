@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Identifier : MonoBehaviour {
+public class TargetID : MonoBehaviour {
     public string type;
     public string produces;
     public string job;

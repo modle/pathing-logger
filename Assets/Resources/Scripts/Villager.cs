@@ -22,7 +22,7 @@ public class Villager : MonoBehaviour {
     public string job;
     public int id;
     private Rect idRect;
-    private string material;
+    public string material;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -103,10 +103,10 @@ public class Villager : MonoBehaviour {
             return;
         }
         chopping = false;
-        Identifier identifier = target.GetComponent<Identifier>();
+        TargetID identifier = target.GetComponent<TargetID>();
         target.gameObject.GetComponent<SpriteRenderer>().sprite =
             ResourceManager.manager.choppedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
-        Identifier id = target.gameObject.GetComponent<Identifier>();
+        TargetID id = target.gameObject.GetComponent<TargetID>();
         id.Logify();
         target = null;
     }
@@ -143,7 +143,7 @@ public class Villager : MonoBehaviour {
             if (go == null) {
                 continue;
             }
-            Identifier id = go.GetComponent<Identifier>();
+            TargetID id = go.GetComponent<TargetID>();
             if (!id.selected || id.engaged || id.job != job) {
                 continue;
             }
@@ -156,7 +156,7 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            target.GetComponent<Identifier>().engaged = true;
+            target.GetComponent<TargetID>().engaged = true;
         }
     }
 
@@ -192,7 +192,7 @@ public class Villager : MonoBehaviour {
         job = newJob;
         // TODO if carrying resource, don't do this until they reach the storage
         if (target != null) {
-            target.GetComponent<Identifier>().AbandonTask();
+            target.GetComponent<TargetID>().AbandonTask();
         }
     }
 
@@ -210,7 +210,7 @@ public class Villager : MonoBehaviour {
         if (target == null) {
             return;
         }
-        Identifier id = target.GetComponent<Identifier>();
+        TargetID id = target.GetComponent<TargetID>();
         if (!id.engaged && id.type != "storage") {
             target = null;
             return;
@@ -220,12 +220,12 @@ public class Villager : MonoBehaviour {
                 chopping = true;
                 chopStart = Time.time;
             } else {
-                material = target.GetComponent<Identifier>().produces;
+                material = target.GetComponent<TargetID>().produces;
                 Destroy(target);
                 target = GameObject.Find("Storage");
                 haveMaterials = true;
             }
-        } else if (id.type == "storage" && other.GetComponent<Identifier>().type == "storage" && haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
+        } else if (id.type == "storage" && other.GetComponent<TargetID>().type == "storage" && haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
             target = null;
             haveMaterials = false;
             audioSource.PlayOneShot(storageClip, 0.7F);

@@ -63,7 +63,7 @@ public class ResourceBucket : MonoBehaviour {
 
             GameObject instance = Instantiate(instantiables[Random.Range(0, instantiables.Count)], theVector, Quaternion.identity) as GameObject;
             Vector2 instanceSize = instance.GetComponent<SpriteRenderer>().bounds.size;
-            instanceSize.x *= colliderWidths[instance.GetComponent<Identifier>().type];
+            instanceSize.x *= colliderWidths[instance.GetComponent<TargetID>().type];
             ((BoxCollider2D)instance.GetComponent<BoxCollider2D>()).size = instanceSize;
 
             // sort in reverse vertical order

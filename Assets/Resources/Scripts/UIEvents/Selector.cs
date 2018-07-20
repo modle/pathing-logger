@@ -8,6 +8,7 @@ public class Selector : EventTrigger {
 
     GameObject cursor;
     Transform cursorImage;
+    string type;
 
     public void Awake() {
         cursorImage = GameObject.Find("CursorImage").transform;
@@ -18,7 +19,7 @@ public class Selector : EventTrigger {
     }
 
     public override void OnPointerClick(PointerEventData eventData) {
-        string type = "";
+        // somehow indicate that this is placeable and not selectable
         if (name != "stop") {
             type = name;
         }
@@ -27,9 +28,11 @@ public class Selector : EventTrigger {
 
         if (cursor == null) {
             cursorImage.gameObject.SetActive(false);
+            ResourceManager.manager.placeable = false;
         } else {
             cursorImage.gameObject.SetActive(true);
             cursorImage.GetComponent<Image>().sprite = cursor.GetComponent<SpriteRenderer>().sprite;
+            ResourceManager.manager.placeable = cursor.GetComponent<SelectorID>().placeable;
         }
     }
 }
