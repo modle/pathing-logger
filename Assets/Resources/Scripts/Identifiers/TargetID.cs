@@ -13,8 +13,8 @@ public class TargetID : MonoBehaviour {
         SetDefaults();
     }
 
-    public void Logify() {
-        type = "logs";
+    public void Woodify() {
+        type = "wood";
         job = "hauler";
         SetDefaults();
     }

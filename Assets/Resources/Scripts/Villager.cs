@@ -107,7 +107,8 @@ public class Villager : MonoBehaviour {
         target.gameObject.GetComponent<SpriteRenderer>().sprite =
             ResourceManager.manager.harvestedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
         TargetID id = target.gameObject.GetComponent<TargetID>();
-        id.Logify();
+        id.Woodify();
+        target.name = "wood";
         target = null;
     }
 
@@ -194,6 +195,11 @@ public class Villager : MonoBehaviour {
         // or have them drop the resource where they are
         if (target != null) {
             target.GetComponent<TargetID>().AbandonTask();
+            target = null;
+            if (material != "") {
+                GameObject newSprite = ResourceBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
+                newSprite.GetComponent<TargetID>().selected = true;
+            }
         }
     }
 

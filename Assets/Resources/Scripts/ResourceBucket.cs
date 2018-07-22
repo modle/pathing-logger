@@ -5,13 +5,12 @@ using UnityEngine;
 public class ResourceBucket : MonoBehaviour {
     public static ResourceBucket bucket;
     private int resourceCount;
-    private int maxResources = 1000;
+    private int maxResources = 10;
     private HashSet<string> resourcePositions = new HashSet<string>();
-    public HashSet<GameObject> toHarvest = new HashSet<GameObject>();
-    public HashSet<GameObject> toHaul = new HashSet<GameObject>();
-    public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
     public List<GameObject> resources = new List<GameObject>();
     private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();
+    private List<Object> instantiables;
+    private Rect noResourceZone = new Rect(-1.5f, -1.5f, 3.0f, 3.0f);
 
     void Awake() {
         // singleton pattern
@@ -21,58 +20,68 @@ public class ResourceBucket : MonoBehaviour {
         } else if (bucket != this) {
             Destroy(gameObject);
         }
-        colliderWidths.Add("tree", 0.5f);
-        colliderWidths.Add("rock", 1.0f);
+    }
+
+    void Start() {
+        LoadColliders();
         SpawnResources();
     }
 
-    void Update() {
-        // Debug.Log(
-        //     "toHarvest length:" + toHarvest.Count +
-        //     "; toHaul length:" + toHaul.Count +
-        //     "; toDestroy length:" + toDestroy.Count +
-        //     "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length
-        // );
-        foreach (GameObject go in toDestroy) {
-            Destroy(go.gameObject);
-        }
-        if (toDestroy.Count > 50) {
-            toDestroy = new HashSet<GameObject>();
-        }
+    void LoadColliders() {
+        colliderWidths.Add("tree", 0.5f);
+        colliderWidths.Add("rock", 1.0f);
     }
 
     void SpawnResources() {
-        Object tree = Resources.Load("Prefabs/tree-orange", typeof(GameObject));
-        Object rock = Resources.Load("Prefabs/rock", typeof(GameObject));
-        List<Object> instantiables = new List<Object>() {tree, rock};
         while (resourceCount < maxResources) {
-            Vector3 theVector = new Vector3(
-                Random.Range(-9.0f, 9.0f),
-                Random.Range(-5.0f, 5.0f),
-                0);
-            if ((new Rect(-1.5f, -1.5f, 3.0f, 3.0f).Contains(new Vector2(theVector.x, theVector.y)))) {
-                continue;
-            }
+            Vector3 theVector = GetValidPosition();
+
             resourceCount++;
-
-            // keeps them from being placed too close together
-            string positionString = Mathf.RoundToInt(theVector.x * 1.5f) + "," + Mathf.RoundToInt(theVector.y * 1.5f);
-            if (!resourcePositions.Add(positionString)) {
+            if (TooCloseToOthers(theVector)) {
                 continue;
             }
 
-            GameObject instance = Instantiate(instantiables[Random.Range(0, instantiables.Count)], theVector, Quaternion.identity) as GameObject;
-            Vector2 instanceSize = instance.GetComponent<SpriteRenderer>().bounds.size;
-            instanceSize.x *= colliderWidths[instance.GetComponent<TargetID>().type];
-            ((BoxCollider2D)instance.GetComponent<BoxCollider2D>()).size = instanceSize;
-
-            // sort in reverse vertical order
-            instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
-            instance.transform.SetParent(transform);
+            InstantiateResource(theVector, ResourcePrefabs.resources.GetRandom("raw"));
         }
+    }
 
-        foreach (Transform child in transform) {
-            resources.Add(child.gameObject);
+    Vector3 GetValidPosition() {
+        Vector3 thePosition = new Vector3(
+            Random.Range(-9.0f, 9.0f),
+            Random.Range(-5.0f, 5.0f),
+            0
+        );
+        if (noResourceZone.Contains(new Vector2(thePosition.x, thePosition.y))) {
+            return GetValidPosition();
+        } else {
+            return thePosition;
         }
+    }
+
+    bool TooCloseToOthers(Vector3 theVector) {
+        string testPositionString = Mathf.RoundToInt(theVector.x * 1.5f) + "," + Mathf.RoundToInt(theVector.y * 1.5f);
+        return !resourcePositions.Add(testPositionString);
+    }
+
+    public GameObject InstantiateResource(Vector3 theVector, Object theObject) {
+        GameObject instance = Instantiate(theObject, theVector, Quaternion.identity) as GameObject;
+
+        SetColliderWidth(instance, instance.GetComponent<TargetID>().type);
+
+        // sort in reverse vertical order
+        instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
+        instance.transform.SetParent(transform);
+        resources.Add(instance);
+        return instance;
+    }
+
+    private void SetColliderWidth(GameObject instance, string type) {
+        List<string> customColliders = new List<string>(colliderWidths.Keys);
+        if (!customColliders.Contains(type)) {
+            return;
+        }
+        Vector2 instanceSize = instance.GetComponent<SpriteRenderer>().bounds.size;
+        instanceSize.x *= colliderWidths[type];
+        ((BoxCollider2D)instance.GetComponent<BoxCollider2D>()).size = instanceSize;
     }
 }
