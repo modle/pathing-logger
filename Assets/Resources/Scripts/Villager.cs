@@ -191,14 +191,11 @@ public class Villager : MonoBehaviour {
 
     public void ChangeJob(string newJob) {
         job = newJob;
-        // TODO if carrying resource, don't do this until they reach the storage
-        // or have them drop the resource where they are
         if (target != null) {
             target.GetComponent<TargetID>().AbandonTask();
             target = null;
             if (material != "") {
-                GameObject newSprite = ResourceBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
-                newSprite.GetComponent<TargetID>().selected = true;
+                ResourceBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
             }
         }
     }
