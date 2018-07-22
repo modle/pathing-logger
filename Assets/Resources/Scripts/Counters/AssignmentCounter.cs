@@ -28,7 +28,7 @@ public class AssignmentCounter : MonoBehaviour {
         counters = new Dictionary<string, Text>();
 
         Vector3 baseVector = new Vector3(25, 60, 0);
-        Vector3 addRowVector = new Vector3(0, -20, 0);
+        Vector3 addRowVector = new Vector3(0, -25, 0);
         Vector3 counterVector = new Vector3(20, 5, 0);
         Vector3 nameVector = new Vector3(-40, 5, 0);
         Vector2 leftAlignVector = new Vector2(0, 0.5f);
