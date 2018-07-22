@@ -95,20 +95,26 @@ public class Villager : MonoBehaviour {
 
     void ProcessHarvesting() {
         if (harvesting && (Time.time - harvestStart) < harvestDone) {
-            anim.SetBool("side-attack", true);
-            anim.speed = 1;
-            if ((int)((Time.time - harvestStart) * 100) % 30 == 0) {
-                audioSource.PlayOneShot(harvestClip, 0.7F);
-            }
+            PerformHarvestActions();
             return;
         }
+        FinishHarvesting();
+    }
+
+    void PerformHarvestActions() {
+        anim.SetBool("side-attack", true);
+        anim.speed = 1;
+        if ((int)((Time.time - harvestStart) * 100) % 30 == 0) {
+            audioSource.PlayOneShot(harvestClip, 0.7F);
+        }
+    }
+
+    void FinishHarvesting() {
+        anim.SetBool("side", true);
         harvesting = false;
-        TargetID identifier = target.GetComponent<TargetID>();
-        target.gameObject.GetComponent<SpriteRenderer>().sprite =
-            ResourceManager.manager.harvestedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
-        TargetID id = target.gameObject.GetComponent<TargetID>();
-        id.Woodify();
-        target.name = "wood";
+        TargetID id = target.GetComponent<TargetID>();
+        id.Haulify();
+        id.ChangeSprite();
         target = null;
     }
 

@@ -13,8 +13,7 @@ public class TargetID : MonoBehaviour {
         SetDefaults();
     }
 
-    public void Woodify() {
-        type = "wood";
+    public void Haulify() {
         job = "hauler";
         SetDefaults();
     }
@@ -26,5 +25,11 @@ public class TargetID : MonoBehaviour {
 
     public void AbandonTask() {
         SetDefaults();
+    }
+
+    public void ChangeSprite() {
+        name = produces;
+        GetComponent<SpriteRenderer>().sprite =
+            ResourceManager.manager.harvestedSprites[type].GetComponent<SpriteRenderer>().sprite;
     }
 }
