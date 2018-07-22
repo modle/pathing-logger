@@ -8,8 +8,8 @@ public class TargetID : MonoBehaviour {
     public int targetedBy = 0;
     public bool selected = false;
 
-    public void Chopify() {
-        job = "chopper";
+    public void Harvestify() {
+        job = "harvester";
         SetDefaults();
     }
 

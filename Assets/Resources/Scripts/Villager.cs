@@ -13,11 +13,11 @@ public class Villager : MonoBehaviour {
     private float theX = 0f;
     private float theY = 0f;
     public GameObject target;
-    public bool chopping;
-    private float chopStart = 0f;
-    private float chopDone = 1f;
+    public bool harvesting;
+    private float harvestStart = 0f;
+    private float harvestDone = 1f;
     private AudioSource audioSource;
-    public AudioClip chopClip;
+    public AudioClip harvestClip;
     public AudioClip storageClip;
     public string job;
     public int id;
@@ -61,8 +61,8 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        if (chopping && job == "chopper" && target != null) {
-            ProcessChopping();
+        if (harvesting && job == "harvester" && target != null) {
+            ProcessHarvesting();
             return;
         }
 
@@ -93,19 +93,19 @@ public class Villager : MonoBehaviour {
         vertical = 0;
     }
 
-    void ProcessChopping() {
-        if (chopping && (Time.time - chopStart) < chopDone) {
+    void ProcessHarvesting() {
+        if (harvesting && (Time.time - harvestStart) < harvestDone) {
             anim.SetBool("side-attack", true);
             anim.speed = 1;
-            if ((int)((Time.time - chopStart) * 100) % 30 == 0) {
-                audioSource.PlayOneShot(chopClip, 0.7F);
+            if ((int)((Time.time - harvestStart) * 100) % 30 == 0) {
+                audioSource.PlayOneShot(harvestClip, 0.7F);
             }
             return;
         }
-        chopping = false;
+        harvesting = false;
         TargetID identifier = target.GetComponent<TargetID>();
         target.gameObject.GetComponent<SpriteRenderer>().sprite =
-            ResourceManager.manager.choppedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
+            ResourceManager.manager.harvestedSprites[identifier.type].GetComponent<SpriteRenderer>().sprite;
         TargetID id = target.gameObject.GetComponent<TargetID>();
         id.Logify();
         target = null;
@@ -191,13 +191,14 @@ public class Villager : MonoBehaviour {
     public void ChangeJob(string newJob) {
         job = newJob;
         // TODO if carrying resource, don't do this until they reach the storage
+        // or have them drop the resource where they are
         if (target != null) {
             target.GetComponent<TargetID>().AbandonTask();
         }
     }
 
     private void OnTriggerStay2D(Collider2D other) {
-        if (target != null && !chopping && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
+        if (target != null && !harvesting && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
             ProcessTrigger(other.gameObject);
         }
     }
@@ -216,9 +217,9 @@ public class Villager : MonoBehaviour {
             return;
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.engaged) {
-            if (id.job == "chopper") {
-                chopping = true;
-                chopStart = Time.time;
+            if (id.job == "harvester") {
+                harvesting = true;
+                harvestStart = Time.time;
             } else {
                 material = target.GetComponent<TargetID>().produces;
                 Destroy(target);

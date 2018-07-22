@@ -16,7 +16,7 @@ public class ResourceManager : MonoBehaviour {
     public string targetType;
     private Transform selectors;
     Dictionary<string, GameObject> selectedSprites = new Dictionary<string, GameObject>();
-    public Dictionary<string, GameObject> choppedSprites = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> harvestedSprites = new Dictionary<string, GameObject>();
     public bool placeable;
 
     void Awake() {
@@ -44,12 +44,12 @@ public class ResourceManager : MonoBehaviour {
         Object logPrefab = Resources.Load("Prefabs/logs", typeof(GameObject));
         GameObject theLogs = Instantiate(logPrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
         theLogs.SetActive(false);
-        choppedSprites.Add("tree", theLogs);
+        harvestedSprites.Add("tree", theLogs);
 
         Object rubblePrefab = Resources.Load("Prefabs/rubble", typeof(GameObject));
         GameObject theRubble = Instantiate(rubblePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
         theRubble.SetActive(false);
-        choppedSprites.Add("rock", theRubble);
+        harvestedSprites.Add("rock", theRubble);
     }
 
 	void Update() {

@@ -23,7 +23,7 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void BuildAssignments() {
-        availableJobs = new List<string>() {"chopper", "hauler", "idle"};
+        availableJobs = new List<string>() {"harvester", "hauler", "idle"};
         jobs = new Dictionary<string, int>();
         counters = new Dictionary<string, Text>();
 

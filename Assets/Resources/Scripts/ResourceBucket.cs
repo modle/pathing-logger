@@ -7,7 +7,7 @@ public class ResourceBucket : MonoBehaviour {
     private int resourceCount;
     private int maxResources = 1000;
     private HashSet<string> resourcePositions = new HashSet<string>();
-    public HashSet<GameObject> toChop = new HashSet<GameObject>();
+    public HashSet<GameObject> toHarvest = new HashSet<GameObject>();
     public HashSet<GameObject> toHaul = new HashSet<GameObject>();
     public HashSet<GameObject> toDestroy = new HashSet<GameObject>();
     public List<GameObject> resources = new List<GameObject>();
@@ -28,7 +28,7 @@ public class ResourceBucket : MonoBehaviour {
 
     void Update() {
         // Debug.Log(
-        //     "toChop length:" + toChop.Count +
+        //     "toHarvest length:" + toHarvest.Count +
         //     "; toHaul length:" + toHaul.Count +
         //     "; toDestroy length:" + toDestroy.Count +
         //     "; trees length:" + GameObject.FindGameObjectsWithTag("task").Length
