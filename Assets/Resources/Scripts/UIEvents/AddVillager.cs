@@ -6,6 +6,6 @@ using UnityEngine.EventSystems;
 public class AddVillager : EventTrigger {
 
     public override void OnPointerClick(PointerEventData eventData) {
-        VillagerBucket.bucket.ReassignVillager("idle", tag);
+        VillagerBucket.bucket.ReassignVillager("hauler", tag);
     }
 }

@@ -4,6 +4,7 @@ public class TargetID : MonoBehaviour {
     public string type;
     public string produces;
     public string job;
+    public bool targeted;
     public bool engaged;
     public int targetedBy = 0;
     public bool selected;
@@ -12,6 +13,10 @@ public class TargetID : MonoBehaviour {
 
     public void Harvestify() {
         job = "harvester";
+        Workify();
+    }
+
+    public void Workify() {
         workable = true;
         destructable = false;
         SetDefaults();
@@ -25,6 +30,7 @@ public class TargetID : MonoBehaviour {
     }
 
     private void SetDefaults() {
+        targeted = false;
         engaged = false;
         targetedBy = 0;
     }

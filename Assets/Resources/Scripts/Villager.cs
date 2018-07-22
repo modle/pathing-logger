@@ -13,11 +13,11 @@ public class Villager : MonoBehaviour {
     private float theX = 0f;
     private float theY = 0f;
     public GameObject target;
-    public bool harvesting;
-    private float harvestStart = 0f;
-    private float harvestDone = 1f;
+    public bool working;
+    private float workStart = 0f;
+    private float workDone = 1f;
     private AudioSource audioSource;
-    public AudioClip harvestClip;
+    public AudioClip workClip;
     public AudioClip storageClip;
     public string job;
     public int id;
@@ -61,8 +61,8 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        if (harvesting && job == "harvester" && target != null) {
-            ProcessHarvesting();
+        if (working && job != "hauler" && target != null) {
+            ProcessWorking();
             return;
         }
 
@@ -93,25 +93,30 @@ public class Villager : MonoBehaviour {
         vertical = 0;
     }
 
-    void ProcessHarvesting() {
-        if (harvesting && (Time.time - harvestStart) < harvestDone) {
-            PerformHarvestActions();
+    void ProcessWorking() {
+        if (working && (Time.time - workStart) < workDone) {
+            PerformWorkActions();
             return;
         }
-        FinishHarvesting();
+        if (target.GetComponent<TargetID>().type == "building") {
+            target.GetComponent<Building>().Produce();
+            workStart = Time.time;
+            return;
+        }
+        FinishWorking();
     }
 
-    void PerformHarvestActions() {
+    void PerformWorkActions() {
         anim.SetBool("side-attack", true);
         anim.speed = 1;
-        if ((int)((Time.time - harvestStart) * 100) % 30 == 0) {
-            audioSource.PlayOneShot(harvestClip, 0.7F);
+        if ((int)((Time.time - workStart) * 100) % 30 == 0) {
+            audioSource.PlayOneShot(workClip, 0.7F);
         }
     }
 
-    void FinishHarvesting() {
+    void FinishWorking() {
         anim.SetBool("side", true);
-        harvesting = false;
+        working = false;
         TargetID id = target.GetComponent<TargetID>();
         id.Haulify();
         id.ChangeSprite();
@@ -151,7 +156,7 @@ public class Villager : MonoBehaviour {
                 continue;
             }
             TargetID id = go.GetComponent<TargetID>();
-            if (!id.selected || id.engaged || id.job != job) {
+            if (!id.selected || id.targeted || id.job != job) {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -163,7 +168,7 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            target.GetComponent<TargetID>().engaged = true;
+            target.GetComponent<TargetID>().targeted = true;
         }
     }
 
@@ -207,7 +212,7 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerStay2D(Collider2D other) {
-        if (target != null && !harvesting && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
+        if (target != null && !working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
             ProcessTrigger(other.gameObject);
         }
     }
@@ -224,14 +229,15 @@ public class Villager : MonoBehaviour {
             return;
         }
         TargetID id = target.GetComponent<TargetID>();
-        if (!id.engaged && id.type != "storage") {
+        if (!id.targeted && id.type != "storage") {
             target = null;
             return;
         }
-        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.engaged) {
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.targeted) {
             if (id.workable) {
-                harvesting = true;
-                harvestStart = Time.time;
+                working = true;
+                id.engaged = true;
+                workStart = Time.time;
             } else {
                 CollectTarget(id);
             }
