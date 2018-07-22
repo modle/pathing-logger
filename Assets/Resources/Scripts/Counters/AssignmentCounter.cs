@@ -23,11 +23,11 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void BuildAssignments() {
-        availableJobs = new List<string>() {"harvester", "hauler", "idle"};
+        availableJobs = new List<string>() {"harvester", "hauler", "woodcutter", "idle"};
         jobs = new Dictionary<string, int>();
         counters = new Dictionary<string, Text>();
 
-        Vector3 baseVector = new Vector3(-25, 10, 0);
+        Vector3 baseVector = new Vector3(25, 60, 0);
         Vector3 addRowVector = new Vector3(0, -20, 0);
         Vector3 counterVector = new Vector3(20, 5, 0);
         Vector3 nameVector = new Vector3(-40, 5, 0);
