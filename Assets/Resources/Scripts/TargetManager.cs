@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceManager : MonoBehaviour {
+public class TargetManager : MonoBehaviour {
 
-    public static ResourceManager manager;
+    public static TargetManager manager;
 
     Vector3 hitDown;
     Vector3 hitUp;
@@ -93,6 +93,7 @@ public class ResourceManager : MonoBehaviour {
             Vector3 placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
             GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
+            TargetBucket.bucket.targets.Add(theObject);
         }
     }
 

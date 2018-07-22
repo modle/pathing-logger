@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResourceBucket : MonoBehaviour {
-    public static ResourceBucket bucket;
+public class TargetBucket : MonoBehaviour {
+    public static TargetBucket bucket;
     private int resourceCount;
-    private int maxResources = 10;
+    private int maxResources = 100;
     private HashSet<string> resourcePositions = new HashSet<string>();
-    public List<GameObject> resources = new List<GameObject>();
+    public List<GameObject> targets = new List<GameObject>();
     private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();
     private List<Object> instantiables;
     private Rect noResourceZone = new Rect(-1.5f, -1.5f, 3.0f, 3.0f);
@@ -71,7 +71,7 @@ public class ResourceBucket : MonoBehaviour {
         // sort in reverse vertical order
         instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;
         instance.transform.SetParent(transform);
-        resources.Add(instance);
+        targets.Add(instance);
         return instance;
     }
 

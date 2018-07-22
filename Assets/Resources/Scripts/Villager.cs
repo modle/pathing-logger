@@ -146,7 +146,7 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
-        foreach (GameObject go in ResourceBucket.bucket.resources) {
+        foreach (GameObject go in TargetBucket.bucket.targets) {
             if (go == null) {
                 continue;
             }
@@ -199,10 +199,10 @@ public class Villager : MonoBehaviour {
         job = newJob;
         if (target != null) {
             target.GetComponent<TargetID>().AbandonTask();
-            target = null;
             if (material != "") {
-                ResourceBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
+                TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
             }
+            target = null;
         }
     }
 
@@ -217,6 +217,9 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessTrigger(GameObject other) {
+        // TODO this is a bit of a mess; not clear what purpose is
+        // it's handling what villager does when colliding with
+        // an interactable object
         if (target == null || other.GetComponent<TargetID>() == null) {
             return;
         }
@@ -226,14 +229,11 @@ public class Villager : MonoBehaviour {
             return;
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.engaged) {
-            if (id.job == "harvester") {
+            if (id.workable) {
                 harvesting = true;
                 harvestStart = Time.time;
             } else {
-                material = target.GetComponent<TargetID>().produces;
-                Destroy(target);
-                target = GameObject.Find("Storage");
-                haveMaterials = true;
+                CollectTarget(id);
             }
         } else if (id.type == "storage" && other.GetComponent<TargetID>().type == "storage" && haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
             target = null;
@@ -242,6 +242,16 @@ public class Villager : MonoBehaviour {
             ResourceCounter.counter.counts[material]++;
             material = "";
         }
+    }
+
+    void CollectTarget(TargetID id) {
+        material = target.GetComponent<TargetID>().produces;
+        if (id.destructable) {
+            Destroy(target);
+        }
+        target = GameObject.Find("Storage");
+        haveMaterials = true;
+
     }
 
     string GetRepr() {

@@ -23,16 +23,16 @@ public class Selector : EventTrigger {
         if (name != "stop") {
             type = name;
         }
-        ResourceManager.manager.targetType = type;
-        print("clicked thing: " + name + "; targetType is: " + ResourceManager.manager.targetType + "; cursor is: " + cursor);
+        TargetManager.manager.targetType = type;
+        print("clicked thing: " + name + "; targetType is: " + TargetManager.manager.targetType + "; cursor is: " + cursor);
 
         if (cursor == null) {
             cursorImage.gameObject.SetActive(false);
-            ResourceManager.manager.placeable = false;
+            TargetManager.manager.placeable = false;
         } else {
             cursorImage.gameObject.SetActive(true);
             cursorImage.GetComponent<Image>().sprite = cursor.GetComponent<SpriteRenderer>().sprite;
-            ResourceManager.manager.placeable = cursor.GetComponent<SelectorID>().placeable;
+            TargetManager.manager.placeable = cursor.GetComponent<SelectorID>().placeable;
         }
     }
 }
