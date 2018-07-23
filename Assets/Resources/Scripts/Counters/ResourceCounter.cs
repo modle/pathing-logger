@@ -21,7 +21,7 @@ public class ResourceCounter : MonoBehaviour {
 
         counts = new Dictionary<string, int>();
         counters = new Dictionary<string, Text>();
-        resources = new List<string>() {"wood", "rock"};
+        resources = new List<string>() {"wood", "rock", "plank"};
 
         foreach (Transform child in transform) {
             if (resources.Contains(child.gameObject.name)) {

@@ -28,6 +28,7 @@ public class ResourcePrefabs : MonoBehaviour {
         gatherableResourceSprites = new Dictionary<string, Object>();
         gatherableResourceSprites.Add("wood", Resources.Load("Prefabs/logs", typeof(GameObject)));
         gatherableResourceSprites.Add("rock", Resources.Load("Prefabs/rubble", typeof(GameObject)));
+        gatherableResourceSprites.Add("plank", Resources.Load("Prefabs/plank", typeof(GameObject)));
     }
 
     public Object GetRandom(string type) {

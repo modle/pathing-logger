@@ -115,11 +115,15 @@ public class Villager : MonoBehaviour {
     }
 
     void FinishWorking() {
-        anim.SetBool("side", true);
-        working = false;
         TargetID id = target.GetComponent<TargetID>();
         id.Haulify();
         id.ChangeSprite();
+        StopWorking();
+    }
+
+    void StopWorking() {
+        anim.SetBool("side", true);
+        working = false;
         target = null;
     }
 
@@ -130,8 +134,12 @@ public class Villager : MonoBehaviour {
         if (target == null) {
             return;
         }
-        theX = transform.position.x - (target.transform.position.x + target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.x * 0.5f);
-        theY = transform.position.y - (target.transform.position.y - target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.y * 0.3f);
+        theX = transform.position.x - target.transform.position.x;
+        theY = transform.position.y - target.transform.position.y;
+        if (target.GetComponent<TargetID>().type == "tree") {
+            theX = transform.position.x - (target.transform.position.x + target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.x * 0.5f);
+            theY = transform.position.y - (target.transform.position.y - target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.y * 0.3f);
+        }
         if (theX < -0.01f) {
             horizontal = 1;
         } else if (theX > 0.01f) {
@@ -207,7 +215,7 @@ public class Villager : MonoBehaviour {
             if (material != "") {
                 TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
             }
-            target = null;
+            StopWorking();
         }
     }
 
