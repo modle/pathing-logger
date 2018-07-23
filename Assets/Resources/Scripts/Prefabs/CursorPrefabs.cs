@@ -22,7 +22,7 @@ public class CursorPrefabs : MonoBehaviour {
         Dictionary<string, Object> instantiables = new Dictionary<string, Object>();
         instantiables.Add("tree", Resources.Load("Prefabs/tree-orange-cursor", typeof(GameObject)));
         instantiables.Add("rock", Resources.Load("Prefabs/rock-cursor", typeof(GameObject)));
-        instantiables.Add("woodcutter", Resources.Load("Prefabs/woodcutter-cursor", typeof(GameObject)));
+        instantiables.Add("sawyer", Resources.Load("Prefabs/sawyer-cursor", typeof(GameObject)));
 
         foreach (KeyValuePair<string, Object> entry in instantiables) {
             GameObject theObject = Instantiate(entry.Value, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;

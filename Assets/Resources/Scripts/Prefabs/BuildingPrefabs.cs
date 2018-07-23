@@ -21,6 +21,6 @@ public class BuildingPrefabs : MonoBehaviour {
 
     void LoadPrefabs() {
         buildingSprites = new Dictionary<string, Object>();
-        buildingSprites.Add("woodcutter", Resources.Load("Prefabs/woodcutter-building", typeof(GameObject)));
+        buildingSprites.Add("sawyer", Resources.Load("Prefabs/sawyer-building", typeof(GameObject)));
     }
 }
