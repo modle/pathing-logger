@@ -15,7 +15,7 @@ public class Villager : MonoBehaviour {
     public GameObject target;
     public bool working;
     private float workStart = 0f;
-    private float workDone = 1f;
+    private float workDone = 2f;
     private AudioSource audioSource;
     public AudioClip workClip;
     public AudioClip storageClip;
@@ -62,6 +62,7 @@ public class Villager : MonoBehaviour {
     void Move() {
         SetDefaults();
         if (working && job != "hauler" && target != null) {
+            PerformWorkActions();
             ProcessWorking();
             return;
         }
@@ -93,24 +94,36 @@ public class Villager : MonoBehaviour {
         vertical = 0;
     }
 
-    void ProcessWorking() {
-        if (working && (Time.time - workStart) < workDone) {
-            PerformWorkActions();
-            return;
-        }
-        if (target.GetComponent<TargetID>().type == "building") {
-            target.GetComponent<Building>().Produce();
-            workStart = Time.time;
-            return;
-        }
-        FinishWorking();
-    }
-
     void PerformWorkActions() {
         anim.SetBool("side-attack", true);
         anim.speed = 1;
         if ((int)((Time.time - workStart) * 100) % 30 == 0) {
             audioSource.PlayOneShot(workClip, 0.7F);
+        }
+    }
+
+    void ProcessWorking() {
+        if ((Time.time - workStart) < workDone) {
+            return;
+        }
+
+        if (target.GetComponent<TargetID>().type == "building") {
+            DoBuildingThings();
+            return;
+        }
+
+        FinishWorking();
+    }
+
+    void DoBuildingThings() {
+        Building building = target.GetComponent<Building>();
+        if (building.Consume()) {
+            workStart = Time.time;
+            return;
+        }
+        if (building.CanProduce()) {
+            building.Produce();
+            workStart = Time.time;
         }
     }
 

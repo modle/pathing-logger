@@ -58,7 +58,7 @@ public class TargetManager : MonoBehaviour {
             return;
         }
         if (placeable) {
-            PlaceTarget();
+            BuildingManager.manager.PlaceBuilding(targetType);
             return;
         }
         if (targetType == "") {
@@ -82,19 +82,6 @@ public class TargetManager : MonoBehaviour {
             active = uiElement.GetComponent<UIState>().isActive;
         }
         return active;
-    }
-
-    void PlaceTarget() {
-        Object targetPrefab = BuildingPrefabs.buildings.buildingSprites[targetType];
-        if (targetPrefab == null) {
-            print("no prefab found for " + targetType);
-        }
-        if (Input.GetMouseButtonDown(0)) {
-            Vector3 placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
-            GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
-            TargetBucket.bucket.targets.Add(theObject);
-        }
     }
 
     void StartSelection() {
