@@ -35,6 +35,7 @@ public class ResourcePrefabs : MonoBehaviour {
         if (type == "raw") {
             return GetRandomFromDict(rawResourceSprites);
         } else if (type == "gatherable") {
+            // we'll use this later for randomly spawned gatherable resources, maybe
             return GetRandomFromDict(gatherableResourceSprites);
         } else {
             // yep

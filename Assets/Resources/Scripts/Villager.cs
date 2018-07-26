@@ -13,6 +13,7 @@ public class Villager : MonoBehaviour {
     private float theX = 0f;
     private float theY = 0f;
     public GameObject target;
+    public Building building;
     public bool working;
     private float workStart = 0f;
     private float workDone = 2f;
@@ -61,12 +62,13 @@ public class Villager : MonoBehaviour {
 
     void Move() {
         SetDefaults();
-        if (working && job != "hauler" && target != null) {
+        if (working && IsStillWorking()) {
             PerformWorkActions();
+        }
+        if (working && job != "hauler" && target != null && material == "" && !IsStillWorking()) {
             ProcessWorking();
             return;
         }
-
         GetTargetCoordinates();
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
@@ -103,11 +105,19 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessWorking() {
-        if ((Time.time - workStart) < workDone) {
+        if (target.GetComponent<TargetID>().type == "building") {
+            building = target.GetComponent<Building>();
+        }
+
+        if (IsStillWorking() && building == null) {
             return;
         }
 
-        if (target.GetComponent<TargetID>().type == "building") {
+        if (building != null) {
+            if (!building.ReadyToProduce() && !building.Producing() && material == "") {
+                GoGetTheThing();
+                return;
+            }
             DoBuildingThings();
             return;
         }
@@ -115,16 +125,20 @@ public class Villager : MonoBehaviour {
         FinishWorking();
     }
 
+    bool IsStillWorking() {
+        return (Time.time - workStart) < workDone;
+    }
+
     void DoBuildingThings() {
-        Building building = target.GetComponent<Building>();
-        if (building.Consume()) {
-            workStart = Time.time;
-            return;
-        }
-        if (building.CanProduce()) {
+        if (building.Producing()) {
             building.Produce();
-            workStart = Time.time;
         }
+    }
+
+    void GoGetTheThing() {
+        material = building.NextStockToGet();
+        target = GameObject.Find("Storage");
+        return;
     }
 
     void FinishWorking() {
@@ -138,6 +152,7 @@ public class Villager : MonoBehaviour {
         anim.SetBool("side", true);
         working = false;
         target = null;
+        building = null;
     }
 
     void GetTargetCoordinates() {
@@ -247,27 +262,57 @@ public class Villager : MonoBehaviour {
         // it's handling what villager does when colliding with
         // an interactable object
         if (target == null || other.GetComponent<TargetID>() == null) {
+            // nothing to do
             return;
         }
+        // FIXME use something other than id here; that's an instance var
         TargetID id = target.GetComponent<TargetID>();
         if (!id.targeted && id.type != "storage") {
+            // this is probably a mistake, so clear the target
             target = null;
             return;
         }
         if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.targeted) {
+            // we ran into the thing we care about
             if (id.workable) {
-                working = true;
-                id.engaged = true;
-                workStart = Time.time;
+                print("ran into " + id.type + "; is workable?: " + id.workable + "; have materials?: " + haveMaterials);
+                // do something with it
+                if (haveMaterials) {
+                    building.AddStock(material);
+                    haveMaterials = false;
+                    material = "";
+                    workStart = Time.time;
+                } else {
+                    working = true;
+                    id.engaged = true;
+                }
+                if (id.type != "building" || haveMaterials) {
+                    workStart = Time.time;
+                }
             } else {
+                // just grab it
                 CollectTarget(id);
             }
-        } else if (id.type == "storage" && other.GetComponent<TargetID>().type == "storage" && haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
-            target = null;
-            haveMaterials = false;
-            audioSource.PlayOneShot(storageClip, 0.7F);
-            ResourceCounter.counter.counts[material]++;
-            material = "";
+        } else if (id.type == "storage" && other.GetComponent<TargetID>().type == "storage") {
+            if (haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
+                print ("putting something in storage");
+                // then we're putting something in storage
+                target = null;
+                haveMaterials = false;
+                audioSource.PlayOneShot(storageClip, 0.7F);
+                ResourceCounter.counter.counts[material]++;
+                material = "";
+            } else if (building != null && !haveMaterials && ResourceCounter.counter.counts[material] > 0) {
+                print ("getting something from storage");
+                // then we're getting something from storage
+                // go back to the building
+                target = building.transform.gameObject;
+                // have the thing
+                // material was already set by the material picker
+                haveMaterials = true;
+                // decrement it
+                ResourceCounter.counter.counts[material]--;
+            }
         }
     }
 

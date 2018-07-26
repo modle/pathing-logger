@@ -43,6 +43,7 @@ public class TargetBucket : MonoBehaviour {
 
             InstantiateResource(theVector, ResourcePrefabs.resources.GetRandom("raw"));
         }
+        print ("made " + targets.Count + " targets");
     }
 
     Vector3 GetValidPosition() {
