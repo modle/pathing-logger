@@ -24,6 +24,8 @@ public class Villager : MonoBehaviour {
     public int id;
     private Rect idRect;
     public string material;
+    private bool retrigger;
+    GameObject triggerObject;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -57,6 +59,10 @@ public class Villager : MonoBehaviour {
 
     void Update () {
         transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = GetRepr();
+        if (retrigger && triggerObject != null) {
+            ProcessTrigger(triggerObject);
+            return;
+        }
         Move();
     }
 
@@ -153,6 +159,8 @@ public class Villager : MonoBehaviour {
         working = false;
         target = null;
         building = null;
+        retrigger = false;
+        triggerObject = null;
     }
 
     void GetTargetCoordinates() {
@@ -248,6 +256,9 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerStay2D(Collider2D other) {
+        if (building != null && target.GetComponent<Properties>().type == "storage") {
+            print("in OnTriggerStay2D " + Time.time);
+        }
         if (target != null && !working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
             ProcessTrigger(other.gameObject);
         }
@@ -301,16 +312,23 @@ public class Villager : MonoBehaviour {
                 audioSource.PlayOneShot(storageClip, 0.7F);
                 ResourceCounter.counter.counts[material]++;
                 material = "";
-            } else if (building != null && !haveMaterials && ResourceCounter.counter.counts[material] > 0) {
-                print ("getting something from storage");
-                // then we're getting something from storage
-                // go back to the building
-                target = building.transform.gameObject;
-                // have the thing
-                // material was already set by the material picker
-                haveMaterials = true;
-                // decrement it
-                ResourceCounter.counter.counts[material]--;
+            } else if (building != null && !haveMaterials) {
+                if (ResourceCounter.counter.counts[material] > 0) {
+                    print ("getting something from storage");
+                    // then we're getting something from storage
+                    // go back to the building
+                    target = building.transform.gameObject;
+                    // have the thing
+                    // material was already set by the material picker
+                    haveMaterials = true;
+                    // decrement it
+                    ResourceCounter.counter.counts[material]--;
+                    retrigger = false;
+                    triggerObject = null;
+                } else {
+                    retrigger = true;
+                    triggerObject = other;
+                }
             }
         }
     }
@@ -326,7 +344,7 @@ public class Villager : MonoBehaviour {
     }
 
     string GetRepr() {
-        return id.ToString();
+        return id.ToString() + " - " + job;
         // return id + " | " + job + (target != null ? "\n" + target.name + " | " + target.tag : "");
     }
 }
