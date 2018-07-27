@@ -105,7 +105,7 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessWorking() {
-        if (target.GetComponent<TargetID>().type == "building") {
+        if (target.GetComponent<Properties>().type == "building") {
             building = target.GetComponent<Building>();
         }
 
@@ -142,9 +142,9 @@ public class Villager : MonoBehaviour {
     }
 
     void FinishWorking() {
-        TargetID id = target.GetComponent<TargetID>();
-        id.Haulify();
-        id.ChangeSprite();
+        Properties props = target.GetComponent<Properties>();
+        props.Haulify();
+        props.ChangeSprite();
         StopWorking();
     }
 
@@ -164,7 +164,7 @@ public class Villager : MonoBehaviour {
         }
         theX = transform.position.x - target.transform.position.x;
         theY = transform.position.y - target.transform.position.y;
-        if (target.GetComponent<TargetID>().type == "tree") {
+        if (target.GetComponent<Properties>().type == "tree") {
             theX = transform.position.x - (target.transform.position.x + target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.x * 0.5f);
             theY = transform.position.y - (target.transform.position.y - target.transform.gameObject.GetComponent<SpriteRenderer>().bounds.size.y * 0.3f);
         }
@@ -191,8 +191,8 @@ public class Villager : MonoBehaviour {
             if (go == null) {
                 continue;
             }
-            TargetID id = go.GetComponent<TargetID>();
-            if (!id.selected || id.targeted || id.job != job) {
+            Properties props = go.GetComponent<Properties>();
+            if (!props.selected || props.targeted || props.job != job) {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -204,7 +204,7 @@ public class Villager : MonoBehaviour {
         }
         if (closest != null) {
             target = closest;
-            target.GetComponent<TargetID>().targeted = true;
+            target.GetComponent<Properties>().targeted = true;
         }
     }
 
@@ -239,7 +239,7 @@ public class Villager : MonoBehaviour {
     public void ChangeJob(string newJob) {
         job = newJob;
         if (target != null) {
-            target.GetComponent<TargetID>().AbandonTask();
+            target.GetComponent<Properties>().AbandonTask();
             if (material != "") {
                 TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
             }
@@ -261,39 +261,38 @@ public class Villager : MonoBehaviour {
         // TODO this is a bit of a mess; not clear what purpose is
         // it's handling what villager does when colliding with
         // an interactable object
-        if (target == null || other.GetComponent<TargetID>() == null) {
+        if (target == null || other.GetComponent<Properties>() == null) {
             // nothing to do
             return;
         }
-        // FIXME use something other than id here; that's an instance var
-        TargetID id = target.GetComponent<TargetID>();
-        if (!id.targeted && id.type != "storage") {
+        Properties props = target.GetComponent<Properties>();
+        if (!props.targeted && props.type != "storage") {
             // this is probably a mistake, so clear the target
             target = null;
             return;
         }
-        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && id.targeted) {
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && props.targeted) {
             // we ran into the thing we care about
-            if (id.workable) {
-                print("ran into " + id.type + "; is workable?: " + id.workable + "; have materials?: " + haveMaterials);
+            if (props.workable) {
+                print("ran into " + props.type + "; is workable?: " + props.workable + "; have materials?: " + haveMaterials);
                 // do something with it
-                if (haveMaterials) {
+                if (haveMaterials && building != null) {
                     building.AddStock(material);
                     haveMaterials = false;
                     material = "";
                     workStart = Time.time;
                 } else {
                     working = true;
-                    id.engaged = true;
+                    props.engaged = true;
                 }
-                if (id.type != "building" || haveMaterials) {
+                if (props.type != "building" || haveMaterials) {
                     workStart = Time.time;
                 }
             } else {
                 // just grab it
-                CollectTarget(id);
+                CollectTarget(props);
             }
-        } else if (id.type == "storage" && other.GetComponent<TargetID>().type == "storage") {
+        } else if (props.type == "storage" && other.GetComponent<Properties>().type == "storage") {
             if (haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
                 print ("putting something in storage");
                 // then we're putting something in storage
@@ -316,9 +315,9 @@ public class Villager : MonoBehaviour {
         }
     }
 
-    void CollectTarget(TargetID id) {
-        material = target.GetComponent<TargetID>().produces;
-        if (id.destructable) {
+    void CollectTarget(Properties props) {
+        material = target.GetComponent<Properties>().produces;
+        if (props.destructable) {
             Destroy(target);
         }
         target = GameObject.Find("Storage");

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Building : MonoBehaviour {
 
-    TargetID id;
+    Properties props;
     Vector3 productionOffset = new Vector3(0f, 0f, 0f);
     Vector3 baseOffset = new Vector3(-0.5f, -0.5f, 0f);
     int numProduced;
@@ -12,13 +12,15 @@ public class Building : MonoBehaviour {
     bool producing;
 
     public void Start() {
-        id = GetComponent<TargetID>();
+        props = GetComponent<Properties>();
     }
 
     public void Produce() {
         productionOffset.x = (numProduced % 10) * 0.1f;
         Vector3 position = transform.position;
-        TargetBucket.bucket.InstantiateResource(position + baseOffset + productionOffset, ResourcePrefabs.resources.gatherableResourceSprites[id.produces]);
+        TargetBucket.bucket.InstantiateResource(
+            position + baseOffset + productionOffset, ResourcePrefabs.resources.gatherableResourceSprites[props.produces]
+        );
         numProduced++;
         producing = false;
         InitializeStock();

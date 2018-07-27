@@ -67,7 +67,7 @@ public class TargetBucket : MonoBehaviour {
     public GameObject InstantiateResource(Vector3 theVector, Object theObject) {
         GameObject instance = Instantiate(theObject, theVector, Quaternion.identity) as GameObject;
 
-        SetColliderWidth(instance, instance.GetComponent<TargetID>().type);
+        SetColliderWidth(instance, instance.GetComponent<Properties>().type);
 
         // sort in reverse vertical order
         instance.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(theVector.y * 100f) * -1;

@@ -100,12 +100,13 @@ public class TargetManager : MonoBehaviour {
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
         print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
-            if (hit.collider.gameObject.GetComponent<TargetID>() == null) {
+            Properties props = hit.collider.gameObject.GetComponent<Properties>();
+            if (props == null) {
                 continue;
             }
-            if (hit.collider != null && hit.collider.tag == "task" && hit.collider.gameObject.GetComponent<TargetID>().type == targetType) {
+            if (hit.collider != null && hit.collider.tag == "task" && props.type == targetType && !props.selected) {
                 hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = selectedSprites[targetType].GetComponent<SpriteRenderer>().sprite;
-                hit.collider.gameObject.GetComponent<TargetID>().selected = true;
+                props.selected = true;
             }
         }
     }
