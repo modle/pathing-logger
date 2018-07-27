@@ -195,6 +195,7 @@ public class Villager : MonoBehaviour {
         if (target != null) {
             return;
         }
+        // TODO: subfunction, closest = CompareToTargets();
         foreach (GameObject go in TargetBucket.bucket.targets) {
             if (go == null) {
                 continue;
@@ -272,51 +273,7 @@ public class Villager : MonoBehaviour {
         }
         Properties props = target.GetComponent<Properties>();
         string state = DetermineState(props, other);
-        print ("state is " + state);
-        if (state == "ResetTarget") {
-            target = null;
-            return;
-        }
-        if (state == "AddStock") {
-            building.AddStock(material);
-            haveMaterials = false;
-            material = "";
-            workStart = Time.time;
-            return;
-        }
-        if (state == "StartWork") {
-            working = true;
-            props.engaged = true;
-            if (props.type != "building" || haveMaterials) {
-                workStart = Time.time;
-            }
-            return;
-        }
-        if (state == "CollectTarget") {
-            CollectTarget(props);
-            return;
-        }
-        if (state == "PutInStorage") {
-            target = null;
-            haveMaterials = false;
-            audioSource.PlayOneShot(storageClip, 0.7F);
-            ResourceCounter.counter.counts[material]++;
-            material = "";
-            return;
-        }
-        if (state == "GetFromStorage") {
-            if (ResourceCounter.counter.counts[material] > 0) {
-                target = building.transform.gameObject;
-                haveMaterials = true;
-                ResourceCounter.counter.counts[material]--;
-                retrigger = false;
-                triggerObject = null;
-            } else {
-                retrigger = true;
-                triggerObject = other;
-            }
-            return;
-        }
+        ExecuteStateAction(props, other, state);
     }
 
     string DetermineState(Properties props, GameObject other) {
@@ -335,6 +292,48 @@ public class Villager : MonoBehaviour {
         return state;
     }
 
+    void ExecuteStateAction(Properties props, GameObject other, string state) {
+        if (state == "ResetTarget") {
+            target = null;
+            return;
+        }
+        if (state == "AddStock") {
+            AddStock();
+            return;
+        }
+        if (state == "StartWork") {
+            StartWork(props);
+            return;
+        }
+        if (state == "CollectTarget") {
+            CollectTarget(props);
+            return;
+        }
+        if (state == "PutInStorage") {
+            PutInStorage();
+            return;
+        }
+        if (state == "GetFromStorage") {
+            GetFromStorage(other);
+            return;
+        }
+    }
+
+    void AddStock() {
+        building.AddStock(material);
+        haveMaterials = false;
+        material = "";
+        workStart = Time.time;
+    }
+
+    void StartWork(Properties props) {
+        working = true;
+        props.engaged = true;
+        if (props.type != "building" || haveMaterials) {
+            workStart = Time.time;
+        }
+    }
+
     void CollectTarget(Properties props) {
         material = target.GetComponent<Properties>().produces;
         if (props.destructable) {
@@ -343,6 +342,27 @@ public class Villager : MonoBehaviour {
         target = GameObject.Find("Storage");
         haveMaterials = true;
 
+    }
+
+    void PutInStorage() {
+        target = null;
+        haveMaterials = false;
+        audioSource.PlayOneShot(storageClip, 0.7F);
+        ResourceCounter.counter.counts[material]++;
+        material = "";
+    }
+
+    void GetFromStorage(GameObject other) {
+        if (ResourceCounter.counter.counts[material] > 0) {
+            target = building.transform.gameObject;
+            haveMaterials = true;
+            ResourceCounter.counter.counts[material]--;
+            retrigger = false;
+            triggerObject = null;
+        } else {
+            retrigger = true;
+            triggerObject = other;
+        }
     }
 
     string GetRepr() {
