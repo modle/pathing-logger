@@ -98,7 +98,6 @@ public class TargetManager : MonoBehaviour {
     }
 
     void AddSelectedObjectsToQueue(RaycastHit2D[] objects) {
-        print("targetType at selector is " + targetType);
         foreach (RaycastHit2D hit in objects) {
             Properties props = hit.collider.gameObject.GetComponent<Properties>();
             if (props == null) {

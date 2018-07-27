@@ -24,7 +24,6 @@ public class Selector : EventTrigger {
             type = name;
         }
         TargetManager.manager.targetType = type;
-        print("clicked thing: " + name + "; targetType is: " + TargetManager.manager.targetType + "; cursor is: " + cursor);
 
         if (cursor == null) {
             cursorImage.gameObject.SetActive(false);

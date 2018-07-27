@@ -256,9 +256,6 @@ public class Villager : MonoBehaviour {
     }
 
     private void OnTriggerStay2D(Collider2D other) {
-        if (building != null && target.GetComponent<Properties>().type == "storage") {
-            print("in OnTriggerStay2D " + Time.time);
-        }
         if (target != null && !working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
             ProcessTrigger(other.gameObject);
         }
@@ -269,68 +266,73 @@ public class Villager : MonoBehaviour {
     }
 
     void ProcessTrigger(GameObject other) {
-        // TODO this is a bit of a mess; not clear what purpose is
-        // it's handling what villager does when colliding with
-        // an interactable object
         if (target == null || other.GetComponent<Properties>() == null) {
             // nothing to do
             return;
         }
         Properties props = target.GetComponent<Properties>();
-        if (!props.targeted && props.type != "storage") {
-            // this is probably a mistake, so clear the target
+        string state = DetermineState(props, other);
+        print ("state is " + state);
+        if (state == "ResetTarget") {
             target = null;
             return;
         }
-        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && props.targeted) {
-            // we ran into the thing we care about
-            if (props.workable) {
-                print("ran into " + props.type + "; is workable?: " + props.workable + "; have materials?: " + haveMaterials);
-                // do something with it
-                if (haveMaterials && building != null) {
-                    building.AddStock(material);
-                    haveMaterials = false;
-                    material = "";
-                    workStart = Time.time;
-                } else {
-                    working = true;
-                    props.engaged = true;
-                }
-                if (props.type != "building" || haveMaterials) {
-                    workStart = Time.time;
-                }
-            } else {
-                // just grab it
-                CollectTarget(props);
-            }
-        } else if (props.type == "storage" && other.GetComponent<Properties>().type == "storage") {
-            if (haveMaterials && ResourceCounter.counter.resources.Contains(material)) {
-                print ("putting something in storage");
-                // then we're putting something in storage
-                target = null;
-                haveMaterials = false;
-                audioSource.PlayOneShot(storageClip, 0.7F);
-                ResourceCounter.counter.counts[material]++;
-                material = "";
-            } else if (building != null && !haveMaterials) {
-                if (ResourceCounter.counter.counts[material] > 0) {
-                    print ("getting something from storage");
-                    // then we're getting something from storage
-                    // go back to the building
-                    target = building.transform.gameObject;
-                    // have the thing
-                    // material was already set by the material picker
-                    haveMaterials = true;
-                    // decrement it
-                    ResourceCounter.counter.counts[material]--;
-                    retrigger = false;
-                    triggerObject = null;
-                } else {
-                    retrigger = true;
-                    triggerObject = other;
-                }
-            }
+        if (state == "AddStock") {
+            building.AddStock(material);
+            haveMaterials = false;
+            material = "";
+            workStart = Time.time;
+            return;
         }
+        if (state == "StartWork") {
+            working = true;
+            props.engaged = true;
+            if (props.type != "building" || haveMaterials) {
+                workStart = Time.time;
+            }
+            return;
+        }
+        if (state == "CollectTarget") {
+            CollectTarget(props);
+            return;
+        }
+        if (state == "PutInStorage") {
+            target = null;
+            haveMaterials = false;
+            audioSource.PlayOneShot(storageClip, 0.7F);
+            ResourceCounter.counter.counts[material]++;
+            material = "";
+            return;
+        }
+        if (state == "GetFromStorage") {
+            if (ResourceCounter.counter.counts[material] > 0) {
+                target = building.transform.gameObject;
+                haveMaterials = true;
+                ResourceCounter.counter.counts[material]--;
+                retrigger = false;
+                triggerObject = null;
+            } else {
+                retrigger = true;
+                triggerObject = other;
+            }
+            return;
+        }
+    }
+
+    string DetermineState(Properties props, GameObject other) {
+        string state = "";
+        state = state == "" && !props.targeted && props.type != "storage" ? "ResetTarget" : state;
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && props.targeted) {
+            state = state == "" && !props.workable ? "CollectTarget" : state;
+            state = state == "" && haveMaterials && building != null ? "AddStock" : state;
+            state = state == "" ? "StartWork" : state;
+            return state;
+        }
+        if (props.type == "storage" && other.GetComponent<Properties>().type == "storage") {
+            state = state == "" && haveMaterials && ResourceCounter.counter.resources.Contains(material) ? "PutInStorage" : state;
+            state = state == "" && building != null && !haveMaterials ? "GetFromStorage" : state;
+        }
+        return state;
     }
 
     void CollectTarget(Properties props) {
