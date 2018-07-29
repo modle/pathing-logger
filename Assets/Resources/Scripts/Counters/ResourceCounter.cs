@@ -7,7 +7,7 @@ public class ResourceCounter : MonoBehaviour {
     public static ResourceCounter counter;
     public Dictionary<string, int> counts;
     public Dictionary<string, Text> counters;
-    private int startingCount = 10;
+    private int startingCount = 100;
 
     public List<string> resources;
 

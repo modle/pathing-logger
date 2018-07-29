@@ -60,7 +60,6 @@ public class Building : MonoBehaviour {
     }
 
     public bool Producing() {
-        print ("Producing?: " + producing);
         return producing;
     }
 

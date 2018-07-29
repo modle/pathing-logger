@@ -26,6 +26,11 @@ public class Villager : MonoBehaviour {
     public string material;
     private bool retrigger;
     GameObject triggerObject;
+    private BoxCollider2D boxCollider;
+    public LayerMask blockingLayer;
+    Animator anim;
+    bool idleFlipX = false;
+    public bool haveMaterials = false;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -38,12 +43,6 @@ public class Villager : MonoBehaviour {
         {"-1,-1", "side"},
         {"0,0", "idle"}
     };
-
-    private BoxCollider2D boxCollider;
-    public LayerMask blockingLayer;
-    Animator anim;
-    bool idleFlipX = false;
-    private bool haveMaterials = false;
 
     void Start () {
         SetInitialReferences();
@@ -256,13 +255,19 @@ public class Villager : MonoBehaviour {
 
     public void ChangeJob(string newJob) {
         job = newJob;
+        DropMaterial();
         if (target != null) {
             target.GetComponent<Properties>().AbandonTask();
-            if (material != "") {
-                TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
-            }
             StopWorking();
         }
+    }
+
+    private void DropMaterial() {
+        if (haveMaterials && material != "") {
+            TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
+        }
+        haveMaterials = false;
+        material = "";
     }
 
     private void OnTriggerStay2D(Collider2D other) {
@@ -372,6 +377,7 @@ public class Villager : MonoBehaviour {
             retrigger = false;
             triggerObject = null;
         } else {
+            print ("retriggering");
             retrigger = true;
             triggerObject = other;
         }
