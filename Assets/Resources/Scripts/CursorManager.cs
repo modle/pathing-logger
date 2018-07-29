@@ -11,7 +11,6 @@ public class CursorManager : MonoBehaviour {
     void Awake() {
         // singleton pattern
         if (manager == null) {
-            DontDestroyOnLoad(gameObject);
             manager = this;
         } else if (manager != this) {
             Destroy(gameObject);

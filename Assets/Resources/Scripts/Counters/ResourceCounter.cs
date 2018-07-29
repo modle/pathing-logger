@@ -14,7 +14,6 @@ public class ResourceCounter : MonoBehaviour {
     void Awake() {
         // singleton pattern
         if (counter == null) {
-            DontDestroyOnLoad(gameObject);
             counter = this;
         } else if (counter != this) {
             Destroy(gameObject);
