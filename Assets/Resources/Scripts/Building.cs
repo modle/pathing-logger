@@ -4,7 +4,7 @@ using UnityEngine;
 public class Building : MonoBehaviour {
 
     Properties props;
-    string name;
+    public string name;
     Vector3 productionOffset = new Vector3(0f, 0f, 0f);
     Vector3 baseOffset = new Vector3(-0.5f, -0.5f, 0f);
     int numProduced;
@@ -79,5 +79,9 @@ public class Building : MonoBehaviour {
     void ChangeSprite() {
         GetComponent<SpriteRenderer>().sprite = BuildingPrefabs.buildings.templateSprites[name].GetComponent<SpriteRenderer>().sprite;
         props.job = name;
+    }
+
+    public string GetRepr() {
+        return name + "\n" + (built ? "Construction complete" : "Constructing...");
     }
 }
