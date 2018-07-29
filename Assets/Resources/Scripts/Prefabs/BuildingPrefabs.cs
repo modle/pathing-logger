@@ -28,10 +28,6 @@ public class BuildingPrefabs : MonoBehaviour {
         buildingSprites = new Dictionary<string, Object>();
         buildingSprites.Add("sawyer", Resources.Load("Prefabs/sawyer-building", typeof(GameObject)));
 
-        foreach (KeyValuePair<string, Object> entry in buildingSprites) {
-            GameObject theObject = Instantiate(entry.Value, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
-            theObject.SetActive(false);
-            templateSprites.Add(entry.Key, theObject);
-        }
+        templateSprites = PrefabUtils.utils.Load(buildingSprites);
     }
 }

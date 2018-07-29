@@ -24,12 +24,7 @@ public class CursorPrefabs : MonoBehaviour {
         instantiables.Add("rock", Resources.Load("Prefabs/rock-cursor", typeof(GameObject)));
         instantiables.Add("sawyer", Resources.Load("Prefabs/sawyer-cursor", typeof(GameObject)));
 
-        foreach (KeyValuePair<string, Object> entry in instantiables) {
-            GameObject theObject = Instantiate(entry.Value, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
-            theObject.SetActive(false);
-            cursorSprites.Add(entry.Key, theObject);
-        }
-
+        cursorSprites = PrefabUtils.utils.Load(instantiables);
         cursorSprites.Add("stop", null);
     }
 }
