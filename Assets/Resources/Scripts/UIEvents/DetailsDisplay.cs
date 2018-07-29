@@ -11,7 +11,10 @@ public class DetailsDisplay : EventTrigger {
 
     void Awake() {
         string type = GetComponent<Properties>().type;
-        display = Instantiate(DetailsPrefabs.details.objects[type],Input.mousePosition, Quaternion.identity) as GameObject;
+        Object uninstantiated = DetailsPrefabs.details.objects[type];
+        Vector3 position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
+        display = Instantiate(uninstantiated, position, Quaternion.identity) as GameObject;
         display.transform.SetParent(GameObject.Find("Canvas").transform);
         display.SetActive(false);
     }
