@@ -8,10 +8,22 @@ public class DetailsDisplay : EventTrigger {
 
     string type;
     int count = 0;
+    bool shown;
+    GameObject display;
+
+    void Awake() {
+        type = GetComponent<Properties>().type;
+        print ("Houston, we have a " + type);
+    }
 
     public void OnMouseDown() {
-        count++;
-        print ("clicked " + name + " " + count + " times");
-
+        if (shown) {
+            Destroy(display);
+            shown = false;
+            return;
+        }
+        display = Instantiate(DetailsPrefabs.details.objects[type],Input.mousePosition, Quaternion.identity) as GameObject;
+        display.transform.SetParent(GameObject.Find("Canvas").transform);
+        shown = true;
     }
 }
