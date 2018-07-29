@@ -29,7 +29,7 @@ public class BuildingManager : MonoBehaviour {
     }
 
     public void PlaceBuilding(string targetType) {
-        Object targetPrefab = BuildingPrefabs.buildings.buildingSprites[targetType];
+        Object targetPrefab = BuildingPrefabs.buildings.inProgressSprites[targetType];
         if (targetPrefab == null) {
             print("no prefab found for " + targetType);
         }
@@ -72,7 +72,9 @@ public class BuildingManager : MonoBehaviour {
         Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
         GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
         theObject.GetComponent<Building>().SetConsumes(productionCost[targetType]);
+        theObject.GetComponent<Building>().SetName(targetType);
         TargetBucket.bucket.targets.Add(theObject);
         theObject.transform.SetParent(transform);
+        theObject.name = targetType;
     }
 }

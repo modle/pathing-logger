@@ -4,15 +4,18 @@ using UnityEngine;
 public class Building : MonoBehaviour {
 
     Properties props;
+    string name;
     Vector3 productionOffset = new Vector3(0f, 0f, 0f);
     Vector3 baseOffset = new Vector3(-0.5f, -0.5f, 0f);
     int numProduced;
     Dictionary<string, int> consumes;
     Dictionary<string, int> rawStock;
     bool producing;
+    float startTime;
 
     public void Start() {
         props = GetComponent<Properties>();
+        Invoke("ChangeSprite", 2);
     }
 
     public void Produce() {
@@ -29,6 +32,10 @@ public class Building : MonoBehaviour {
     public void SetConsumes(Dictionary<string, int> materials) {
         consumes = materials;
         InitializeStock();
+    }
+
+    public void SetName(string _name) {
+        name = _name;
     }
 
     void InitializeStock() {
@@ -62,5 +69,9 @@ public class Building : MonoBehaviour {
 
     public void AddStock(string material) {
         rawStock[material]++;
+    }
+
+    void ChangeSprite() {
+        GetComponent<SpriteRenderer>().sprite = BuildingPrefabs.buildings.templateSprites[name].GetComponent<SpriteRenderer>().sprite;
     }
 }
