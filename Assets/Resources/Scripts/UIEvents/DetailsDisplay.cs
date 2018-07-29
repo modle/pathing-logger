@@ -13,7 +13,6 @@ public class DetailsDisplay : EventTrigger {
 
     void Awake() {
         type = GetComponent<Properties>().type;
-        print ("Houston, we have a " + type);
     }
 
     public void OnMouseDown() {

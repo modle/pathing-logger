@@ -18,6 +18,7 @@ public class TargetManager : MonoBehaviour {
     Dictionary<string, GameObject> selectedSprites = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> harvestedSprites = new Dictionary<string, GameObject>();
     public bool placeable;
+    public bool targetMode;
 
     void Awake() {
         // singleton pattern
@@ -31,6 +32,8 @@ public class TargetManager : MonoBehaviour {
     }
 
     void Start() {
+
+        // use PrefabUtils here
         Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
         GameObject theTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
         theTree.SetActive(false);
@@ -116,5 +119,10 @@ public class TargetManager : MonoBehaviour {
             Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
             GUI.Box(boxRect, "", skin.box);
         }
+    }
+
+    public void SetTarget(string name) {
+        targetType = name;
+        placeable = CursorManager.manager.SetCursorImage(name);
     }
 }

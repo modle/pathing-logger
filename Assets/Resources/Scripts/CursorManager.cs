@@ -7,6 +7,7 @@ public class CursorManager : MonoBehaviour {
 
     public static CursorManager manager;
     private Vector3 offset = new Vector3(20.0f, 0f, 0f);
+    GameObject cursor;
 
     void Awake() {
         // singleton pattern
@@ -23,5 +24,17 @@ public class CursorManager : MonoBehaviour {
 
     void Update() {
         transform.position = Input.mousePosition + offset;
+    }
+
+    public bool SetCursorImage(string name) {
+        cursor = CursorPrefabs.cursors.cursorSprites[name];
+        if (cursor == null) {
+            transform.gameObject.SetActive(false);
+            return false;
+        } else {
+            transform.gameObject.SetActive(true);
+            transform.GetComponent<Image>().sprite = cursor.GetComponent<SpriteRenderer>().sprite;
+            return cursor.GetComponent<SelectorID>().placeable;
+        }
     }
 }
