@@ -20,7 +20,11 @@ public class DetailsDisplay : EventTrigger {
         if (CursorManager.manager.transform.gameObject.activeSelf) {
             return;
         }
-        shown = !shown;
+        shown = true;
         display.SetActive(shown);
+    }
+
+    public void DeactivateDisplay() {
+        display.SetActive(false);
     }
 }
