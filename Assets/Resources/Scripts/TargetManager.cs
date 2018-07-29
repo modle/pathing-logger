@@ -64,7 +64,7 @@ public class TargetManager : MonoBehaviour {
             BuildingManager.manager.PlaceBuilding(targetType);
             return;
         }
-        if (targetType == "") {
+        if (targetType == "" || !CursorManager.manager.selectable) {
             return;
         }
         select = true;

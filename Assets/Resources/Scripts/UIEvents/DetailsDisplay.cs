@@ -6,23 +6,21 @@ using UnityEngine.UI;
 
 public class DetailsDisplay : EventTrigger {
 
-    string type;
-    int count = 0;
     bool shown;
     GameObject display;
 
     void Awake() {
-        type = GetComponent<Properties>().type;
+        string type = GetComponent<Properties>().type;
+        display = Instantiate(DetailsPrefabs.details.objects[type],Input.mousePosition, Quaternion.identity) as GameObject;
+        display.transform.SetParent(GameObject.Find("Canvas").transform);
+        display.SetActive(false);
     }
 
     public void OnMouseDown() {
-        if (shown) {
-            Destroy(display);
-            shown = false;
+        if (CursorManager.manager.transform.gameObject.activeSelf) {
             return;
         }
-        display = Instantiate(DetailsPrefabs.details.objects[type],Input.mousePosition, Quaternion.identity) as GameObject;
-        display.transform.SetParent(GameObject.Find("Canvas").transform);
-        shown = true;
+        shown = !shown;
+        display.SetActive(shown);
     }
 }
