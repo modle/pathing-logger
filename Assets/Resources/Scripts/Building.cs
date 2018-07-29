@@ -73,5 +73,6 @@ public class Building : MonoBehaviour {
 
     void ChangeSprite() {
         GetComponent<SpriteRenderer>().sprite = BuildingPrefabs.buildings.templateSprites[name].GetComponent<SpriteRenderer>().sprite;
+        props.job = name;
     }
 }
