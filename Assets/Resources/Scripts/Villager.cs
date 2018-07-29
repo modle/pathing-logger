@@ -220,6 +220,9 @@ public class Villager : MonoBehaviour {
         if (closest != null) {
             target = closest;
             target.GetComponent<Properties>().targeted = true;
+            if (target.GetComponent<Properties>().type == "building") {
+                ProcessTrigger(target);
+            }
         }
     }
 
