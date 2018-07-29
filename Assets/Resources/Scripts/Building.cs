@@ -11,21 +11,27 @@ public class Building : MonoBehaviour {
     Dictionary<string, int> consumes;
     Dictionary<string, int> rawStock;
     bool producing;
-    float startTime;
+    public bool built;
 
     public void Start() {
         props = GetComponent<Properties>();
-        Invoke("ChangeSprite", 2);
     }
 
     public void Produce() {
+        producing = false;
+        if (!built) {
+            built = true;
+            SetConsumes(BuildingManager.manager.productionCost[name]);
+            ChangeSprite();
+            producing = false;
+            return;
+        }
         productionOffset.x = (numProduced % 10) * 0.1f;
         Vector3 position = transform.position;
         TargetBucket.bucket.InstantiateResource(
             position + baseOffset + productionOffset, ResourcePrefabs.resources.gatherableResourceSprites[props.produces]
         );
         numProduced++;
-        producing = false;
         InitializeStock();
     }
 

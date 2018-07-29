@@ -5,7 +5,9 @@ using UnityEngine.EventSystems;
 
 public class RemoveVillager : EventTrigger {
 
+    public string job;
+
     public override void OnPointerClick(PointerEventData eventData) {
-        VillagerBucket.bucket.ReassignVillager(tag, "hauler");
+        VillagerBucket.bucket.ReassignVillager(job, "hauler");
     }
 }

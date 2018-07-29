@@ -29,7 +29,7 @@ public class Properties : MonoBehaviour {
         SetDefaults();
     }
 
-    private void SetDefaults() {
+    public void SetDefaults() {
         targeted = false;
         engaged = false;
         targetedBy = 0;

@@ -25,7 +25,7 @@ public class BuildingManager : MonoBehaviour {
         productionCost = new Dictionary<string, Dictionary<string, int>>();
         productionCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}});
         buildCost = new Dictionary<string, Dictionary<string, int>>();
-        buildCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 5}, {"rock", 5}});
+        buildCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}, {"rock", 1}});
     }
 
     public void PlaceBuilding(string targetType) {
@@ -34,12 +34,6 @@ public class BuildingManager : MonoBehaviour {
             print("no prefab found for " + targetType);
         }
         if (Input.GetMouseButtonDown(0)) {
-            Dictionary<string, int> materialsNeeded = buildCost[targetType];
-            if (!CanConstruct(materialsNeeded)) {
-                print ("not enough materials, need " + GetMaterialsRepr(materialsNeeded));
-                return;
-            }
-            ConsumeMaterials(materialsNeeded);
             InstantiateBuildingObject(targetType, targetPrefab);
         }
     }
@@ -61,17 +55,11 @@ public class BuildingManager : MonoBehaviour {
         return repr;
     }
 
-    void ConsumeMaterials(Dictionary<string, int> materialsNeeded) {
-        foreach (KeyValuePair<string, int> entry in materialsNeeded) {
-            ResourceCounter.counter.counts[entry.Key] -= entry.Value;
-        }
-    }
-
     void InstantiateBuildingObject(string targetType, Object targetPrefab) {
         Vector3 placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
         GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
-        theObject.GetComponent<Building>().SetConsumes(productionCost[targetType]);
+        theObject.GetComponent<Building>().SetConsumes(buildCost[targetType]);
         theObject.GetComponent<Building>().SetName(targetType);
         TargetBucket.bucket.targets.Add(theObject);
         theObject.transform.SetParent(transform);

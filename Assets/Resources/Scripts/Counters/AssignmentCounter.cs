@@ -22,7 +22,7 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void BuildAssignments() {
-        availableJobs = new List<string>() {"hauler", "harvester", "sawyer"};
+        availableJobs = new List<string>() {"hauler", "harvester", "sawyer", "builder"};
         jobs = new Dictionary<string, int>();
         counters = new Dictionary<string, Text>();
 
@@ -60,10 +60,10 @@ public class AssignmentCounter : MonoBehaviour {
             if (job != "hauler") {
                 Object assignPrefab = Resources.Load("Prefabs/villager-assign", typeof(GameObject));
                 GameObject assign = Instantiate(assignPrefab, jobContainer.transform) as GameObject;
-                assign.tag = job;
+                assign.GetComponent<AddVillager>().job = job;
                 Object unassignPrefab = Resources.Load("Prefabs/villager-unassign", typeof(GameObject));
                 GameObject unassign = Instantiate(unassignPrefab, jobContainer.transform) as GameObject;
-                unassign.tag = job;
+                unassign.GetComponent<RemoveVillager>().job = job;
             }
 
             counters.Add(job, jobText.GetComponent<Text>());

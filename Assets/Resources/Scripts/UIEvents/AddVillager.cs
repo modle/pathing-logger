@@ -5,7 +5,9 @@ using UnityEngine.EventSystems;
 
 public class AddVillager : EventTrigger {
 
+    public string job;
+
     public override void OnPointerClick(PointerEventData eventData) {
-        VillagerBucket.bucket.ReassignVillager("hauler", tag);
+        VillagerBucket.bucket.ReassignVillager("hauler", job);
     }
 }

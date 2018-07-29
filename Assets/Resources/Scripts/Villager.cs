@@ -138,6 +138,9 @@ public class Villager : MonoBehaviour {
     void DoBuildingThings() {
         if (building.Producing()) {
             building.Produce();
+            if (job == "builder") {
+                StopWorking();
+            }
         }
     }
 
@@ -158,6 +161,9 @@ public class Villager : MonoBehaviour {
         anim.SetBool("side", true);
         working = false;
         target = null;
+        if (building != null) {
+            building.GetComponent<Properties>().SetDefaults();
+        }
         building = null;
         retrigger = false;
         triggerObject = null;
@@ -323,6 +329,9 @@ public class Villager : MonoBehaviour {
         building.AddStock(material);
         haveMaterials = false;
         material = "";
+        if (!building.built) {
+            return;
+        }
         workStart = Time.time;
     }
 
