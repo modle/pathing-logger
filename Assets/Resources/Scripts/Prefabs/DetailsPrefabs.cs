@@ -22,5 +22,6 @@ public class DetailsPrefabs : MonoBehaviour {
     void LoadPrefabs() {
         objects = new Dictionary<string, Object>();
         objects.Add("building", Resources.Load("Prefabs/details-panel", typeof(GameObject)));
+        objects.Add("villager", Resources.Load("Prefabs/details-panel", typeof(GameObject)));
     }
 }

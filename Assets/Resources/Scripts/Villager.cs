@@ -57,7 +57,7 @@ public class Villager : MonoBehaviour {
     }
 
     void Update () {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = GetRepr();
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job;
         if (retrigger && triggerObject != null) {
             ProcessTrigger(triggerObject);
             return;
@@ -69,6 +69,7 @@ public class Villager : MonoBehaviour {
         SetDefaults();
         if (working && IsStillWorking()) {
             PerformWorkActions();
+            return;
         }
         if (working && job != "hauler" && target != null && material == "" && !IsStillWorking()) {
             ProcessWorking();
@@ -383,8 +384,18 @@ public class Villager : MonoBehaviour {
         }
     }
 
-    string GetRepr() {
-        return id.ToString() + " - " + job;
-        // return id + " | " + job + (target != null ? "\n" + target.name + " | " + target.tag : "");
+    public string GetRepr() {
+        return CapitalizeFirstLetter(job) + " (" + id.ToString() + ")" +
+            "\n" + (working ? "working" : "idle") + " " +
+            string.Format("{0:0.0}", (Time.time - workStart < 2.0f ? Time.time - workStart : 0f)) +
+            "\ntarget: " + (target == null ? "" : CapitalizeFirstLetter(target.name)) +
+            "\nbuilding: " + (building == null ? "" : CapitalizeFirstLetter(building.name)) +
+            "\n" + (haveMaterials ? "carrying: " : "finding: ") + material;
+    }
+
+    string CapitalizeFirstLetter(string s) {
+        char[] a = s.ToCharArray();
+        a[0] = char.ToUpper(a[0]);
+        return new string(a);
     }
 }

@@ -26,6 +26,7 @@ public class DetailsDisplay : EventTrigger {
         shown = true;
         display.SetActive(shown);
         display.GetComponent<DisplayUpdater>().building = transform.gameObject.GetComponent<Building>();
+        display.GetComponent<DisplayUpdater>().villager = transform.gameObject.GetComponent<Villager>();
     }
 
     public void DeactivateDisplay() {
