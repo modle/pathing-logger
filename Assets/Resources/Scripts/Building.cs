@@ -82,6 +82,26 @@ public class Building : MonoBehaviour {
     }
 
     public string GetRepr() {
-        return name + "\n" + (built ? "Construction complete" : "Constructing...");
+        string materialsNeeded = "";
+        foreach (KeyValuePair<string, int> entry in consumes) {
+            materialsNeeded += entry.Key + ": " + entry.Value;
+        }
+
+        string baseString = CapitalizeFirstLetter(name);
+
+        if (!built) {
+            return baseString + "\nConstructing...";
+        } else {
+            return baseString + "\nActive" +
+                "\nconsumes: " + materialsNeeded +
+                "\nproduces: " + props.produces +
+                "\nassignee: " + (props.targetedBy > 0 ? props.targetedBy.ToString() : "nobody");
+        }
+    }
+
+    string CapitalizeFirstLetter(string s) {
+        char[] a = s.ToCharArray();
+        a[0] = char.ToUpper(a[0]);
+        return new string(a);
     }
 }

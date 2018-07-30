@@ -32,7 +32,7 @@ public class Properties : MonoBehaviour {
     public void SetDefaults() {
         targeted = false;
         engaged = false;
-        targetedBy = 0;
+        targetedBy = -1;
     }
 
     public void AbandonTask() {
@@ -43,5 +43,10 @@ public class Properties : MonoBehaviour {
         name = produces;
         GetComponent<SpriteRenderer>().sprite =
             TargetManager.manager.harvestedSprites[type].GetComponent<SpriteRenderer>().sprite;
+    }
+
+    public void SetTargeted(int id) {
+        targetedBy = id;
+        targeted = true;
     }
 }
