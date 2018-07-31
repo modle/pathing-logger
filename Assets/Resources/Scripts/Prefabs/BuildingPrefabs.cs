@@ -18,6 +18,9 @@ public class BuildingPrefabs : MonoBehaviour {
         } else if (buildings != this) {
             Destroy(gameObject);
         }
+    }
+
+    void Start() {
         LoadPrefabs();
     }
 

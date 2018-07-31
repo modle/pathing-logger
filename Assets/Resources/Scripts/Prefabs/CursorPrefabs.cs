@@ -15,6 +15,9 @@ public class CursorPrefabs : MonoBehaviour {
         } else if (cursors != this) {
             Destroy(gameObject);
         }
+    }
+
+    void Start() {
         LoadPrefabs();
     }
 
