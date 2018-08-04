@@ -12,10 +12,11 @@ public class DetailsDisplay : EventTrigger {
     void Awake() {
         string type = GetComponent<Properties>().type;
         Object uninstantiated = DetailsPrefabs.details.objects[type];
+
         Vector3 position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
         display = Instantiate(uninstantiated, position, Quaternion.identity) as GameObject;
-        display.transform.SetParent(GameObject.Find("Canvas").transform);
+        display.transform.SetParent(GameObject.Find("DetailsPanels").transform);
         display.SetActive(false);
     }
 
@@ -24,9 +25,12 @@ public class DetailsDisplay : EventTrigger {
             return;
         }
         shown = true;
+        float xPos = Input.mousePosition.x;
+        float yPos = Input.mousePosition.y - display.GetComponent<RectTransform>().rect.height / 2;
+        Vector3 position = new Vector3(xPos, yPos, 0);
+        display.transform.position = position;
         display.SetActive(shown);
-        display.GetComponent<DisplayUpdater>().building = transform.gameObject.GetComponent<Building>();
-        display.GetComponent<DisplayUpdater>().villager = transform.gameObject.GetComponent<Villager>();
+        display.GetComponent<DisplayUpdater>().target = transform;
     }
 
     public void DeactivateDisplay() {
