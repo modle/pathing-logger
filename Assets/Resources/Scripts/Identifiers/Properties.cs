@@ -49,4 +49,5 @@ public class Properties : MonoBehaviour {
         targetedBy = id;
         targeted = true;
     }
+
 }

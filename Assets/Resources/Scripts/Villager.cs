@@ -25,8 +25,8 @@ public class Villager : MonoBehaviour {
     public int id;
     private Rect idRect;
     public string material;
-    private bool retrigger;
-    GameObject triggerObject;
+    private bool recollide;
+    GameObject collisionObject;
     private BoxCollider2D boxCollider;
     public LayerMask blockingLayer;
     Animator anim;
@@ -60,8 +60,8 @@ public class Villager : MonoBehaviour {
 
     void Update () {
         transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job + "/" + baseJob;
-        if (retrigger && triggerObject != null) {
-            ProcessTrigger(triggerObject);
+        if (recollide && collisionObject != null) {
+            ProcessCollision(collisionObject);
             return;
         }
         Move();
@@ -169,8 +169,8 @@ public class Villager : MonoBehaviour {
             building.GetComponent<Properties>().SetDefaults();
         }
         building = null;
-        retrigger = false;
-        triggerObject = null;
+        recollide = false;
+        collisionObject = null;
     }
 
     void GetTargetCoordinates() {
@@ -207,7 +207,7 @@ public class Villager : MonoBehaviour {
             target = closest;
             target.GetComponent<Properties>().SetTargeted(id);
             if (target.GetComponent<Properties>().type == "building") {
-                ProcessTrigger(target);
+                ProcessCollision(target);
             }
         }
     }
@@ -303,17 +303,21 @@ public class Villager : MonoBehaviour {
         material = "";
     }
 
-    private void OnTriggerStay2D(Collider2D other) {
+    private void OnCollisionStay2D(Collision2D other) {
         if (target != null && !working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
-            ProcessTrigger(other.gameObject);
+            ProcessCollision(other.gameObject);
+            return;
+        }
+        if (target != null && target.name == "Storage") {
+            ProcessCollision(other.gameObject);
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
-        ProcessTrigger(other.gameObject);
+    private void OnCollisionEnter2D(Collision2D other) {
+        ProcessCollision(other.gameObject);
     }
 
-    void ProcessTrigger(GameObject other) {
+    void ProcessCollision(GameObject other) {
         if (target == null || other.GetComponent<Properties>() == null) {
             // nothing to do
             return;
@@ -411,12 +415,11 @@ public class Villager : MonoBehaviour {
             target = building.transform.gameObject;
             haveMaterials = true;
             ResourceCounter.counter.counts[material]--;
-            retrigger = false;
-            triggerObject = null;
+            recollide = false;
+            collisionObject = null;
         } else {
-            print ("retriggering");
-            retrigger = true;
-            triggerObject = other;
+            recollide = true;
+            collisionObject = other;
         }
     }
 
