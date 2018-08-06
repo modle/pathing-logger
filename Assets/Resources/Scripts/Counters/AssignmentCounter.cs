@@ -87,7 +87,7 @@ public class AssignmentCounter : MonoBehaviour {
             theJobs.Add(job, 0);
         }
         foreach(Transform villager in VillagerBucket.bucket.villagers) {
-            theJobs[villager.gameObject.GetComponent<Villager>().job]++;
+            theJobs[villager.gameObject.GetComponent<Villager>().baseJob]++;
         }
         jobs = theJobs;
     }

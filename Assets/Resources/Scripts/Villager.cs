@@ -21,6 +21,7 @@ public class Villager : MonoBehaviour {
     public AudioClip workClip;
     public AudioClip storageClip;
     public string job;
+    public string baseJob;
     public int id;
     private Rect idRect;
     public string material;
@@ -46,6 +47,7 @@ public class Villager : MonoBehaviour {
 
     void Start () {
         SetInitialReferences();
+        StartCoroutine("CheckJob");
     }
 
     void SetInitialReferences() {
@@ -57,12 +59,14 @@ public class Villager : MonoBehaviour {
     }
 
     void Update () {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job;
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job + "/" + baseJob;
         if (retrigger && triggerObject != null) {
             ProcessTrigger(triggerObject);
             return;
         }
         Move();
+
+        // every 5 seconds
     }
 
     void Move() {
@@ -255,16 +259,40 @@ public class Villager : MonoBehaviour {
     }
 
     public string GetJob() {
-        return job;
+        return baseJob;
+    }
+
+    IEnumerator CheckJob() {
+        while (true) {
+            if (baseJob != "hauler" && target == null) {
+                job = "hauler";
+                foreach (GameObject go in TargetBucket.bucket.targets) {
+                    if (go == null) {
+                        continue;
+                    }
+                    Properties props = go.GetComponent<Properties>();
+                    if (props.selected && !props.targeted && props.job == baseJob) {
+                        job = baseJob;
+                        break;
+                    }
+                }
+            }
+            yield return new WaitForSeconds(2.0f);
+        }
     }
 
     public void ChangeJob(string newJob) {
-        job = newJob;
+        SetJob(newJob);
         DropMaterial();
         if (target != null) {
             target.GetComponent<Properties>().AbandonTask();
             StopWorking();
         }
+    }
+
+    public void SetJob(string newJob) {
+        job = newJob;
+        baseJob = newJob;
     }
 
     private void DropMaterial() {
@@ -372,6 +400,10 @@ public class Villager : MonoBehaviour {
         audioSource.PlayOneShot(storageClip, 0.7F);
         ResourceCounter.counter.counts[material]++;
         material = "";
+
+        // allows villager to pivot roles on hauler task completion
+        StopCoroutine("CheckJob");
+        StartCoroutine("CheckJob");
     }
 
     void GetFromStorage(GameObject other) {
@@ -389,7 +421,7 @@ public class Villager : MonoBehaviour {
     }
 
     public string GetRepr() {
-        return CapitalizeFirstLetter(job) + " (" + id.ToString() + ")" +
+        return CapitalizeFirstLetter(job) + "/" + CapitalizeFirstLetter(baseJob) + " (" + id.ToString() + ")" +
             "\n" + (working ? "working" : "idle") + " " +
             string.Format("{0:0.0}", (Time.time - workStart < 2.0f ? Time.time - workStart : 0f)) +
             "\ntarget: " + (target == null ? "" : CapitalizeFirstLetter(target.name)) +
