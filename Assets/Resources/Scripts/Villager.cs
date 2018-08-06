@@ -195,13 +195,23 @@ public class Villager : MonoBehaviour {
     }
 
     private void GetClosest() {
-        GameObject closest = null;
-        float distance = Mathf.Infinity;
-        Vector3 position = transform.position;
         if (target != null) {
             return;
         }
-        // TODO: subfunction, closest = CompareToTargets();
+        GameObject closest = CompareToTargets();
+        if (closest != null) {
+            target = closest;
+            target.GetComponent<Properties>().SetTargeted(id);
+            if (target.GetComponent<Properties>().type == "building") {
+                ProcessTrigger(target);
+            }
+        }
+    }
+
+    private GameObject CompareToTargets() {
+        Vector3 position = transform.position;
+        float distance = Mathf.Infinity;
+        GameObject match = null;
         foreach (GameObject go in TargetBucket.bucket.targets) {
             if (go == null) {
                 continue;
@@ -213,17 +223,11 @@ public class Villager : MonoBehaviour {
             Vector3 diff = go.transform.position - position;
             float curDistance = diff.sqrMagnitude;
             if (curDistance < distance) {
-                closest = go;
+                match = go;
                 distance = curDistance;
             }
         }
-        if (closest != null) {
-            target = closest;
-            target.GetComponent<Properties>().SetTargeted(id);
-            if (target.GetComponent<Properties>().type == "building") {
-                ProcessTrigger(target);
-            }
-        }
+        return match;
     }
 
     void SetDirections() {
