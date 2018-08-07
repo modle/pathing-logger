@@ -264,16 +264,24 @@ public class Villager : MonoBehaviour {
 
     IEnumerator CheckJob() {
         while (true) {
-            if (baseJob != "hauler" && target == null) {
+            if (target == null) {
                 job = "hauler";
                 foreach (GameObject go in TargetBucket.bucket.targets) {
                     if (go == null) {
                         continue;
                     }
                     Properties props = go.GetComponent<Properties>();
-                    if (props.selected && !props.targeted && props.job == baseJob) {
+                    if (!props.selected || props.targeted) {
+                        continue;
+                    }
+                    // reassigns villagers to baseJob if job is needed
+                    if (props.job == baseJob && baseJob != "hauler") {
                         job = baseJob;
                         break;
+                    }
+                    // reassigns job to builder if building in progress needs materials
+                    if (props.job == "builder") {
+                        job = "builder";
                     }
                 }
             }
@@ -308,6 +316,7 @@ public class Villager : MonoBehaviour {
             ProcessCollision(other.gameObject);
             return;
         }
+        // prevents villager from getting stuck when inside storage
         if (target != null && target.name == "Storage") {
             ProcessCollision(other.gameObject);
         }
