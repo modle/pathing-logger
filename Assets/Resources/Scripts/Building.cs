@@ -86,6 +86,10 @@ public class Building : MonoBehaviour {
         foreach (KeyValuePair<string, int> entry in consumes) {
             materialsNeeded += entry.Key + ": " + entry.Value;
         }
+        string materialsStocked = "";
+        foreach (KeyValuePair<string, int> entry in rawStock) {
+            materialsStocked += entry.Key + ": " + entry.Value;
+        }
 
         string baseString = CapitalizeFirstLetter(name);
 
@@ -94,6 +98,7 @@ public class Building : MonoBehaviour {
         } else {
             return baseString + "\nActive" +
                 "\nconsumes: " + materialsNeeded +
+                "\nstock: " + materialsStocked +
                 "\nproduces: " + props.produces +
                 "\nassignee: " + (props.targetedBy > 0 ? props.targetedBy.ToString() : "nobody");
         }
