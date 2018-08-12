@@ -19,6 +19,7 @@ public class TargetManager : MonoBehaviour {
     public Dictionary<string, GameObject> harvestedSprites = new Dictionary<string, GameObject>();
     public bool placeable;
     public bool targetMode;
+    public Dictionary<string, string> hotKeys = new Dictionary<string, string>();
 
     void Awake() {
         // singleton pattern
@@ -29,6 +30,7 @@ public class TargetManager : MonoBehaviour {
             Destroy(gameObject);
         }
         selectors = GameObject.Find("Selectors").transform;
+        SetHotKeys();
     }
 
     void Start() {
@@ -55,7 +57,15 @@ public class TargetManager : MonoBehaviour {
         harvestedSprites.Add("rock", theRubble);
     }
 
+    void SetHotKeys() {
+        hotKeys.Add("1", "tree");
+        hotKeys.Add("2", "rock");
+        hotKeys.Add("escape", "stop");
+        hotKeys.Add("0", "sawyer");
+    }
+
 	void Update() {
+        CheckInput();
         select = false;
         if (UIActive()) {
             return;
@@ -75,6 +85,16 @@ public class TargetManager : MonoBehaviour {
             EndSelection();
         }
 	}
+
+    void CheckInput() {
+        foreach (string key in hotKeys.Keys) {
+            if (Input.GetKeyDown(key)) {
+                string target = hotKeys[key];
+                SetTarget(target);
+                return;
+            }
+        }
+    }
 
     bool UIActive() {
         bool active = false;

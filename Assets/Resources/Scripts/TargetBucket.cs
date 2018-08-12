@@ -9,7 +9,6 @@ public class TargetBucket : MonoBehaviour {
     private HashSet<string> resourcePositions = new HashSet<string>();
     public List<GameObject> targets = new List<GameObject>();
     private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();
-    private List<Object> instantiables;
     private Rect noResourceZone = new Rect(-1.5f, -1.5f, 3.0f, 3.0f);
 
     void Awake() {
