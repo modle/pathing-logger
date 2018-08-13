@@ -12,8 +12,6 @@ public class Villager : MonoBehaviour {
     private float workDone = 2f;
     public AudioClip workClip;
 
-    public string job;
-    public string baseJob;
     public int id;
     private Rect idRect;
     public string material;
@@ -25,14 +23,13 @@ public class Villager : MonoBehaviour {
 
     private Actions actions;
     private Animations animations;
-    private Job jobObj;
+    private Job job;
     private State stateObj;
     private Targets targets;
     private Work work;
 
     void Start () {
         SetInitialReferences();
-        StartCoroutine("CheckJob");
     }
 
     void SetInitialReferences() {
@@ -41,14 +38,14 @@ public class Villager : MonoBehaviour {
 
         actions = GetComponent<Actions>();
         animations = GetComponent<Animations>();
-        jobObj = GetComponent<Job>();
+        job = GetComponent<Job>();
         stateObj = GetComponent<State>();
         targets = GetComponent<Targets>();
         work = GetComponent<Work>();
     }
 
     void Update () {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job + "/" + baseJob;
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job.GetCurrentJob() + "/" + job.GetJob();
         if (recollide && collisionObject != null) {
             targets.ProcessCollision(collisionObject);
             return;
@@ -57,7 +54,7 @@ public class Villager : MonoBehaviour {
             PerformWorkActions();
             return;
         }
-        if (working && job != "hauler" && targets.target != null && material == "" && !IsStillWorking()) {
+        if (working && job.GetCurrentJob() != "hauler" && targets.target != null && material == "" && !IsStillWorking()) {
             ProcessWorking();
             return;
         }
@@ -104,7 +101,7 @@ public class Villager : MonoBehaviour {
     void DoBuildingThings() {
         if (building.Producing()) {
             building.Produce();
-            if (job == "builder") {
+            if (job.GetCurrentJob() == "builder") {
                 StopWorking();
             }
         }
@@ -123,7 +120,7 @@ public class Villager : MonoBehaviour {
         StopWorking();
     }
 
-    void StopWorking() {
+    public void StopWorking() {
         animations.anim.SetBool("side", true);
         working = false;
         targets.target = null;
@@ -135,52 +132,7 @@ public class Villager : MonoBehaviour {
         collisionObject = null;
     }
 
-    public string GetJob() {
-        return baseJob;
-    }
-
-    IEnumerator CheckJob() {
-        while (true) {
-            if (targets.target == null) {
-                job = "hauler";
-                foreach (GameObject go in TargetBucket.bucket.targets) {
-                    if (go == null) {
-                        continue;
-                    }
-                    Properties props = go.GetComponent<Properties>();
-                    if (!props.selected || props.targeted) {
-                        continue;
-                    }
-                    // reassigns villagers to baseJob if job is needed
-                    if (props.job == baseJob && baseJob != "hauler") {
-                        job = baseJob;
-                        break;
-                    }
-                    // reassigns job to builder if building in progress needs materials
-                    if (props.job == "builder") {
-                        job = "builder";
-                    }
-                }
-            }
-            yield return new WaitForSeconds(2.0f);
-        }
-    }
-
-    public void ChangeJob(string newJob) {
-        SetJob(newJob);
-        DropMaterial();
-        if (targets.target != null) {
-            targets.target.GetComponent<Properties>().AbandonTask();
-            StopWorking();
-        }
-    }
-
-    public void SetJob(string newJob) {
-        job = newJob;
-        baseJob = newJob;
-    }
-
-    private void DropMaterial() {
+    public void DropMaterial() {
         if (haveMaterials && material != "") {
             TargetBucket.bucket.InstantiateResource(transform.position, ResourcePrefabs.resources.gatherableResourceSprites[material]);
         }
@@ -250,7 +202,7 @@ public class Villager : MonoBehaviour {
     }
 
     public string GetRepr() {
-        return CapitalizeFirstLetter(job) + "/" + CapitalizeFirstLetter(baseJob) + " (" + id.ToString() + ")" +
+        return CapitalizeFirstLetter(job.GetCurrentJob()) + "/" + CapitalizeFirstLetter(job.GetJob()) + " (" + id.ToString() + ")" +
             "\n" + (working ? "working" : "idle") + " " +
             string.Format("{0:0.0}", (Time.time - workStart < 2.0f ? Time.time - workStart : 0f)) +
             "\ntarget: " + (targets.target == null ? "" : CapitalizeFirstLetter(targets.target.name)) +
@@ -264,9 +216,4 @@ public class Villager : MonoBehaviour {
         return new string(a);
     }
 
-    public void TriggerCheckJob() {
-        // allows villager to pivot roles on hauler task completion
-        StopCoroutine("CheckJob");
-        StartCoroutine("CheckJob");
-    }
 }

@@ -7,11 +7,13 @@ public class Targets : MonoBehaviour {
 
     public GameObject target;
     private Villager villager;
+    private Job job;
     public AudioSource audioSource;
     public AudioClip storageClip;
 
     public void Start() {
         villager = GetComponent<Villager>();
+        job = GetComponent<Job>();
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -48,7 +50,7 @@ public class Targets : MonoBehaviour {
                 continue;
             }
             Properties props = go.GetComponent<Properties>();
-            if (!props.selected || props.targeted || props.job != villager.job) {
+            if (!props.selected || props.targeted || props.job != job.GetCurrentJob()) {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -93,7 +95,6 @@ public class Targets : MonoBehaviour {
         }
         target = GameObject.Find("Storage");
         villager.haveMaterials = true;
-
     }
 
     public void PutInStorage() {
@@ -103,7 +104,7 @@ public class Targets : MonoBehaviour {
         ResourceCounter.counter.counts[villager.material]++;
         villager.material = "";
 
-        villager.TriggerCheckJob();
+        job.TriggerCheckJob();
     }
 
     public void GetFromStorage(GameObject other) {
@@ -119,5 +120,4 @@ public class Targets : MonoBehaviour {
             villager.collisionObject = other;
         }
     }
-
 }
