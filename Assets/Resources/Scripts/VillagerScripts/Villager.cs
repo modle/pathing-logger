@@ -6,21 +6,19 @@ using UnityEngine;
 public class Villager : MonoBehaviour {
 
     private Transform transform;
-    public GameObject target;
     public Building building;
     public bool working;
     private float workStart = 0f;
     private float workDone = 2f;
-    private AudioSource audioSource;
     public AudioClip workClip;
-    public AudioClip storageClip;
+
     public string job;
     public string baseJob;
     public int id;
     private Rect idRect;
     public string material;
-    private bool recollide;
-    GameObject collisionObject;
+    public bool recollide;
+    public GameObject collisionObject;
     private BoxCollider2D boxCollider;
     public LayerMask blockingLayer;
     public bool haveMaterials = false;
@@ -40,7 +38,6 @@ public class Villager : MonoBehaviour {
     void SetInitialReferences() {
         transform = GetComponent<Transform>();
         boxCollider = GetComponent<BoxCollider2D>();
-        audioSource = GetComponent<AudioSource>();
 
         actions = GetComponent<Actions>();
         animations = GetComponent<Animations>();
@@ -53,24 +50,21 @@ public class Villager : MonoBehaviour {
     void Update () {
         transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job + "/" + baseJob;
         if (recollide && collisionObject != null) {
-            ProcessCollision(collisionObject);
+            targets.ProcessCollision(collisionObject);
             return;
         }
         if (working && IsStillWorking()) {
             PerformWorkActions();
             return;
         }
-        if (working && job != "hauler" && target != null && material == "" && !IsStillWorking()) {
+        if (working && job != "hauler" && targets.target != null && material == "" && !IsStillWorking()) {
             ProcessWorking();
             return;
         }
-        if (target == null) {
-            GetClosest();
-        }
-        if (target == null) {
+        if (!targets.HasTarget()) {
             return;
         }
-        animations.Move(target);
+        animations.Move(targets.target);
         // every 5 seconds
     }
 
@@ -78,13 +72,13 @@ public class Villager : MonoBehaviour {
         animations.anim.SetBool("side-attack", true);
         animations.anim.speed = 1;
         if ((int)((Time.time - workStart) * 100) % 30 == 0) {
-            audioSource.PlayOneShot(workClip, 0.7F);
+            targets.audioSource.PlayOneShot(workClip, 0.7F);
         }
     }
 
     void ProcessWorking() {
-        if (target.GetComponent<Properties>().type == "building") {
-            building = target.GetComponent<Building>();
+        if (targets.target.GetComponent<Properties>().type == "building") {
+            building = targets.target.GetComponent<Building>();
         }
 
         if (IsStillWorking() && building == null) {
@@ -118,12 +112,12 @@ public class Villager : MonoBehaviour {
 
     void GoGetTheThing() {
         material = building.NextStockToGet();
-        target = GameObject.Find("Storage");
+        targets.target = GameObject.Find("Storage");
         return;
     }
 
     void FinishWorking() {
-        Properties props = target.GetComponent<Properties>();
+        Properties props = targets.target.GetComponent<Properties>();
         props.Haulify();
         props.ChangeSprite();
         StopWorking();
@@ -132,7 +126,7 @@ public class Villager : MonoBehaviour {
     void StopWorking() {
         animations.anim.SetBool("side", true);
         working = false;
-        target = null;
+        targets.target = null;
         if (building != null) {
             building.GetComponent<Properties>().SetDefaults();
         }
@@ -141,50 +135,13 @@ public class Villager : MonoBehaviour {
         collisionObject = null;
     }
 
-    private void GetClosest() {
-        if (target != null) {
-            return;
-        }
-        GameObject closest = CompareToTargets();
-        if (closest != null) {
-            target = closest;
-            target.GetComponent<Properties>().SetTargeted(id);
-            if (target.GetComponent<Properties>().type == "building") {
-                ProcessCollision(target);
-            }
-        }
-    }
-
-    private GameObject CompareToTargets() {
-        Vector3 position = transform.position;
-        float distance = Mathf.Infinity;
-        GameObject match = null;
-        foreach (GameObject go in TargetBucket.bucket.targets) {
-            if (go == null) {
-                continue;
-            }
-            Properties props = go.GetComponent<Properties>();
-            if (!props.selected || props.targeted || props.job != job) {
-                continue;
-            }
-            Vector3 diff = go.transform.position - position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance) {
-                match = go;
-                distance = curDistance;
-            }
-        }
-        return match;
-    }
-
-
     public string GetJob() {
         return baseJob;
     }
 
     IEnumerator CheckJob() {
         while (true) {
-            if (target == null) {
+            if (targets.target == null) {
                 job = "hauler";
                 foreach (GameObject go in TargetBucket.bucket.targets) {
                     if (go == null) {
@@ -212,8 +169,8 @@ public class Villager : MonoBehaviour {
     public void ChangeJob(string newJob) {
         SetJob(newJob);
         DropMaterial();
-        if (target != null) {
-            target.GetComponent<Properties>().AbandonTask();
+        if (targets.target != null) {
+            targets.target.GetComponent<Properties>().AbandonTask();
             StopWorking();
         }
     }
@@ -231,35 +188,10 @@ public class Villager : MonoBehaviour {
         material = "";
     }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if (target != null && !working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
-            ProcessCollision(other.gameObject);
-            return;
-        }
-        // prevents villager from getting stuck when inside storage
-        if (target != null && target.name == "Storage") {
-            ProcessCollision(other.gameObject);
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D other) {
-        ProcessCollision(other.gameObject);
-    }
-
-    void ProcessCollision(GameObject other) {
-        if (target == null || other.GetComponent<Properties>() == null) {
-            // nothing to do
-            return;
-        }
-        Properties props = target.GetComponent<Properties>();
-        string state = DetermineState(props, other);
-        ExecuteStateAction(props, other, state);
-    }
-
-    string DetermineState(Properties props, GameObject other) {
+    public string DetermineState(Properties props, GameObject other) {
         string state = "";
         state = state == "" && !props.targeted && props.type != "storage" ? "ResetTarget" : state;
-        if (other.gameObject.GetInstanceID() == target.GetInstanceID() && props.targeted) {
+        if (other.gameObject.GetInstanceID() == targets.target.GetInstanceID() && props.targeted) {
             state = state == "" && !props.workable ? "CollectTarget" : state;
             state = state == "" && haveMaterials && building != null ? "AddStock" : state;
             state = state == "" ? "StartWork" : state;
@@ -272,9 +204,9 @@ public class Villager : MonoBehaviour {
         return state;
     }
 
-    void ExecuteStateAction(Properties props, GameObject other, string state) {
+    public void ExecuteStateAction(Properties props, GameObject other, string state) {
         if (state == "ResetTarget") {
-            target = null;
+            targets.target = null;
             return;
         }
         if (state == "AddStock") {
@@ -286,15 +218,15 @@ public class Villager : MonoBehaviour {
             return;
         }
         if (state == "CollectTarget") {
-            CollectTarget(props);
+            targets.CollectTarget(props);
             return;
         }
         if (state == "PutInStorage") {
-            PutInStorage();
+            targets.PutInStorage();
             return;
         }
         if (state == "GetFromStorage") {
-            GetFromStorage(other);
+            targets.GetFromStorage(other);
             return;
         }
     }
@@ -317,46 +249,11 @@ public class Villager : MonoBehaviour {
         }
     }
 
-    void CollectTarget(Properties props) {
-        material = target.GetComponent<Properties>().produces;
-        if (props.destructable) {
-            Destroy(target);
-        }
-        target = GameObject.Find("Storage");
-        haveMaterials = true;
-
-    }
-
-    void PutInStorage() {
-        target = null;
-        haveMaterials = false;
-        audioSource.PlayOneShot(storageClip, 0.7F);
-        ResourceCounter.counter.counts[material]++;
-        material = "";
-
-        // allows villager to pivot roles on hauler task completion
-        StopCoroutine("CheckJob");
-        StartCoroutine("CheckJob");
-    }
-
-    void GetFromStorage(GameObject other) {
-        if (ResourceCounter.counter.counts[material] > 0) {
-            target = building.transform.gameObject;
-            haveMaterials = true;
-            ResourceCounter.counter.counts[material]--;
-            recollide = false;
-            collisionObject = null;
-        } else {
-            recollide = true;
-            collisionObject = other;
-        }
-    }
-
     public string GetRepr() {
         return CapitalizeFirstLetter(job) + "/" + CapitalizeFirstLetter(baseJob) + " (" + id.ToString() + ")" +
             "\n" + (working ? "working" : "idle") + " " +
             string.Format("{0:0.0}", (Time.time - workStart < 2.0f ? Time.time - workStart : 0f)) +
-            "\ntarget: " + (target == null ? "" : CapitalizeFirstLetter(target.name)) +
+            "\ntarget: " + (targets.target == null ? "" : CapitalizeFirstLetter(targets.target.name)) +
             "\nbuilding: " + (building == null ? "" : CapitalizeFirstLetter(building.name)) +
             "\n" + (haveMaterials ? "carrying: " : "finding: ") + material;
     }
@@ -365,5 +262,11 @@ public class Villager : MonoBehaviour {
         char[] a = s.ToCharArray();
         a[0] = char.ToUpper(a[0]);
         return new string(a);
+    }
+
+    public void TriggerCheckJob() {
+        // allows villager to pivot roles on hauler task completion
+        StopCoroutine("CheckJob");
+        StartCoroutine("CheckJob");
     }
 }
