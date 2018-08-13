@@ -9,10 +9,12 @@ public class Job : MonoBehaviour {
     public string baseJob;
     private Targets targets;
     private Villager villager;
+    private Work work;
 
     void Start() {
         targets = GetComponent<Targets>();
         villager = GetComponent<Villager>();
+        work = GetComponent<Work>();
         StartCoroutine("CheckJob");
     }
 
@@ -53,10 +55,10 @@ public class Job : MonoBehaviour {
 
     public void ChangeJob(string newJob) {
         SetJob(newJob);
-        villager.DropMaterial();
+        work.DropMaterial();
         if (targets.target != null) {
             targets.target.GetComponent<Properties>().AbandonTask();
-            villager.StopWorking();
+            work.StopWorking();
         }
     }
 
