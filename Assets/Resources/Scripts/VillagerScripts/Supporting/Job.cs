@@ -7,15 +7,21 @@ public class Job : MonoBehaviour {
 
     public string job;
     public string baseJob;
+    private Properties properties;
     private Targets targets;
     private Villager villager;
     private Work work;
 
     void Start() {
+        properties = GetComponent<Properties>();
         targets = GetComponent<Targets>();
         villager = GetComponent<Villager>();
         work = GetComponent<Work>();
         StartCoroutine("CheckJob");
+    }
+
+    void Update() {
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = properties.id + " - " + job + "/" + baseJob;
     }
 
     public string GetJob() {

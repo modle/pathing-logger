@@ -8,14 +8,10 @@ public class Villager : MonoBehaviour {
     private Transform transform;
 
     public int id;
-    private Rect idRect;
-    private BoxCollider2D boxCollider;
-    public LayerMask blockingLayer;
 
-    private Actions actions;
     private Animations animations;
     private Job job;
-    private State stateObj;
+    private Properties properties;
     private Targets targets;
     private Work work;
 
@@ -25,18 +21,15 @@ public class Villager : MonoBehaviour {
 
     void SetInitialReferences() {
         transform = GetComponent<Transform>();
-        boxCollider = GetComponent<BoxCollider2D>();
 
-        actions = GetComponent<Actions>();
         animations = GetComponent<Animations>();
         job = GetComponent<Job>();
-        stateObj = GetComponent<State>();
+        properties = GetComponent<Properties>();
         targets = GetComponent<Targets>();
         work = GetComponent<Work>();
     }
 
     void Update () {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = id + " - " + job.GetCurrentJob() + "/" + job.GetJob();
         if (targets.ProcessCollision(targets.collisionObject)) {
             return;
         }
@@ -56,7 +49,7 @@ public class Villager : MonoBehaviour {
     }
 
     public string GetRepr() {
-        return CapitalizeFirstLetter(job.GetCurrentJob()) + "/" + CapitalizeFirstLetter(job.GetJob()) + " (" + id.ToString() + ")" +
+        return CapitalizeFirstLetter(job.GetCurrentJob()) + "/" + CapitalizeFirstLetter(job.GetJob()) + " (" + properties.id.ToString() + ")" +
             "\n" + (work.working ? "working" : "idle") + " " +
             string.Format("{0:0.0}", (Time.time - work.workStart < 2.0f ? Time.time - work.workStart : 0f)) +
             "\ntarget: " + (targets.target == null ? "" : CapitalizeFirstLetter(targets.target.name)) +

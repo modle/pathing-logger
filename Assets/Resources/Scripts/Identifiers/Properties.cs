@@ -10,6 +10,7 @@ public class Properties : MonoBehaviour {
     public bool selected;
     public bool destructable;
     public bool workable;
+    public int id;
 
     public void Harvestify() {
         job = "harvester";
