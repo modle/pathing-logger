@@ -116,6 +116,4 @@ public class Work : MonoBehaviour {
             workStart = Time.time;
         }
     }
-
-
 }

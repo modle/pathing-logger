@@ -6,17 +6,20 @@ using UnityEngine;
 public class Targets : MonoBehaviour {
 
     public GameObject target;
-    private Villager villager;
-    private Job job;
-    private Work work;
     public AudioSource audioSource;
     public AudioClip storageClip;
     public bool recollide;
     public GameObject collisionObject;
 
+    private Villager villager;
+    private Job job;
+    private State state;
+    private Work work;
+ 
     public void Start() {
         villager = GetComponent<Villager>();
         job = GetComponent<Job>();
+        state = GetComponent<State>();
         work = GetComponent<Work>();
         audioSource = GetComponent<AudioSource>();
     }
@@ -94,8 +97,8 @@ public class Targets : MonoBehaviour {
             return false;
         }
         Properties props = target.GetComponent<Properties>();
-        string state = villager.DetermineState(props, other);
-        villager.ExecuteStateAction(props, other, state);
+        string currentState = state.DetermineState(props, other);
+        state.ExecuteStateAction(props, other, currentState);
         return true;
     }
 
