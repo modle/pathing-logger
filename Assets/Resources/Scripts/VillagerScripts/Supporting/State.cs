@@ -5,12 +5,34 @@ using UnityEngine;
 
 public class State : MonoBehaviour {
 
+    private Animations animations;
+    private Job job;
     private Targets targets;
     private Work work;
  
     public void Start() {
+        animations = GetComponent<Animations>();
+        job = GetComponent<Job>();
         work = GetComponent<Work>();
         targets = GetComponent<Targets>();
+    }
+
+    void Update () {
+        if (targets.ProcessCollision(targets.collisionObject)) {
+            return;
+        }
+        if (work.working && work.IsStillWorking()) {
+            work.PerformWorkActions();
+            return;
+        }
+        if (work.working && job.GetCurrentJob() != "hauler" && targets.target != null && work.material == "" && !work.IsStillWorking()) {
+            work.ProcessWorking();
+            return;
+        }
+        if (!targets.HasTarget()) {
+            return;
+        }
+        animations.Move(targets.target);
     }
 
     public string DetermineState(Properties props, GameObject other) {

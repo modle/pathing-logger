@@ -5,11 +5,8 @@ using UnityEngine;
 
 public class Villager : MonoBehaviour {
 
-    private Transform transform;
-
     public int id;
 
-    private Animations animations;
     private Job job;
     private Properties properties;
     private Targets targets;
@@ -20,32 +17,10 @@ public class Villager : MonoBehaviour {
     }
 
     void SetInitialReferences() {
-        transform = GetComponent<Transform>();
-
-        animations = GetComponent<Animations>();
         job = GetComponent<Job>();
         properties = GetComponent<Properties>();
         targets = GetComponent<Targets>();
         work = GetComponent<Work>();
-    }
-
-    void Update () {
-        if (targets.ProcessCollision(targets.collisionObject)) {
-            return;
-        }
-        if (work.working && work.IsStillWorking()) {
-            work.PerformWorkActions();
-            return;
-        }
-        if (work.working && job.GetCurrentJob() != "hauler" && targets.target != null && work.material == "" && !work.IsStillWorking()) {
-            work.ProcessWorking();
-            return;
-        }
-        if (!targets.HasTarget()) {
-            return;
-        }
-        animations.Move(targets.target);
-        // every 5 seconds
     }
 
     public string GetRepr() {
