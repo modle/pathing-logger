@@ -9,16 +9,25 @@ public class State : MonoBehaviour {
     private Job job;
     private Targets targets;
     private Work work;
- 
+    private Properties props;
+
     public void Start() {
         animations = GetComponent<Animations>();
         job = GetComponent<Job>();
-        work = GetComponent<Work>();
         targets = GetComponent<Targets>();
+        work = GetComponent<Work>();
     }
 
     void Update () {
-        if (targets.ProcessCollision(targets.collisionObject)) {
+        if (targets.collided) {
+            Properties props = targets.target.GetComponent<Properties>();
+            string currentState = DetermineState(props, targets.collisionObject);
+            ExecuteStateAction(props, targets.collisionObject, currentState);
+            targets.collided = false;
+            return;
+        }
+        if (targets.recollide) {
+            targets.ProcessCollision(targets.collisionObject);
             return;
         }
         if (work.working && work.IsStillWorking()) {

@@ -8,6 +8,7 @@ public class Targets : MonoBehaviour {
     public GameObject target;
     public AudioSource audioSource;
     public AudioClip storageClip;
+    public bool collided;
     public bool recollide;
     public GameObject collisionObject;
 
@@ -71,12 +72,19 @@ public class Targets : MonoBehaviour {
     }
 
     private void OnCollisionStay2D(Collision2D other) {
-        if (target != null && !work.working && other.gameObject.GetInstanceID() == target.GetInstanceID()) {
+        if (target == null) {
+            return;
+        }
+        if (other.gameObject.GetInstanceID() != target.GetInstanceID()) {
+            return;
+        }
+        // why?
+        if (!work.working) {
             ProcessCollision(other.gameObject);
             return;
         }
         // prevents villager from getting stuck when inside storage
-        if (target != null && target.name == "Storage") {
+        if (target.name == "Storage") {
             ProcessCollision(other.gameObject);
         }
     }
@@ -85,21 +93,22 @@ public class Targets : MonoBehaviour {
         ProcessCollision(other.gameObject);
     }
 
-    public bool ProcessCollision(GameObject other) {
+    public void ProcessCollision(GameObject other) {
+        if (collided) {
+            return;
+        }
         if (other == null) {
-            return false;
+            return;
         }
         if (target == null || other.GetComponent<Properties>() == null) {
             // nothing to do
-            return false;
+            return;
         }
         if (recollide && collisionObject != null) {
-            return false;
+            return;
         }
-        Properties props = target.GetComponent<Properties>();
-        string currentState = state.DetermineState(props, other);
-        state.ExecuteStateAction(props, other, currentState);
-        return true;
+        collided = true;
+        collisionObject = other;
     }
 
     public void CollectTarget(Properties props) {

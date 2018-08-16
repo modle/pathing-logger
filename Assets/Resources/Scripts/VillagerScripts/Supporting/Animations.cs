@@ -26,7 +26,7 @@ public class Animations : MonoBehaviour {
         {"0,0", "idle"}
     };
 
-    void Start () {
+    public void Start () {
         SetInitialReferences();
     }
 
