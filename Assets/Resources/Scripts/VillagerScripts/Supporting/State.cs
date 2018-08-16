@@ -5,13 +5,17 @@ using UnityEngine;
 
 public class State : MonoBehaviour {
 
+    private Actions actions;
     private Animations animations;
     private Job job;
     private Targets targets;
     private Work work;
     private Properties props;
 
+    public bool move;
+
     public void Start() {
+        actions = GetComponent<Actions>();
         animations = GetComponent<Animations>();
         job = GetComponent<Job>();
         targets = GetComponent<Targets>();
@@ -22,7 +26,7 @@ public class State : MonoBehaviour {
         if (targets.collided) {
             Properties props = targets.target.GetComponent<Properties>();
             string currentState = DetermineState(props, targets.collisionObject);
-            ExecuteStateAction(props, targets.collisionObject, currentState);
+            actions.Execute(props, targets.collisionObject, currentState);
             targets.collided = false;
             return;
         }
@@ -58,32 +62,5 @@ public class State : MonoBehaviour {
             state = state == "" && work.building != null && !work.haveMaterials ? "GetFromStorage" : state;
         }
         return state;
-    }
-
-    public void ExecuteStateAction(Properties props, GameObject other, string state) {
-        if (state == "ResetTarget") {
-            targets.target = null;
-            return;
-        }
-        if (state == "AddStock") {
-            work.AddStock();
-            return;
-        }
-        if (state == "StartWork") {
-            work.StartWork(props);
-            return;
-        }
-        if (state == "CollectTarget") {
-            targets.CollectTarget(props);
-            return;
-        }
-        if (state == "PutInStorage") {
-            targets.PutInStorage();
-            return;
-        }
-        if (state == "GetFromStorage") {
-            targets.GetFromStorage(other);
-            return;
-        }
     }
 }
