@@ -11,8 +11,8 @@ public class DisplayUpdater : EventTrigger {
         // TODO: this is ugly. Generics?
         if (target.GetComponent<Building>() != null) {
             transform.Find("text").GetComponent<Text>().text = target.GetComponent<Building>().GetRepr();
-        } else if (target.GetComponent<Villager>() != null) {
-            transform.Find("text").GetComponent<Text>().text = target.GetComponent<Villager>().GetRepr();
+        } else if (target.GetComponent<State>() != null) {
+            transform.Find("text").GetComponent<Text>().text = target.GetComponent<State>().GetRepr();
         }
         if (dragging) {
             Drag();

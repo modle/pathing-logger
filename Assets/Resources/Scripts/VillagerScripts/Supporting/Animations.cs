@@ -98,5 +98,4 @@ public class Animations : MonoBehaviour {
         }
         return false;
     }
-
 }

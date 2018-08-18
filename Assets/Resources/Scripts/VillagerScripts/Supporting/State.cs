@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class State : MonoBehaviour {
 
-    private Actions actions;
     private Animations animations;
     private Targets targets;
     private Work work;
@@ -14,7 +13,6 @@ public class State : MonoBehaviour {
     public bool move;
 
     public void Start() {
-        actions = GetComponent<Actions>();
         animations = GetComponent<Animations>();
         properties = GetComponent<Properties>();
         targets = GetComponent<Targets>();
@@ -25,7 +23,7 @@ public class State : MonoBehaviour {
         if (targets.collided) {
             Properties targetProps = targets.target.GetComponent<Properties>();
             properties.currentState = DetermineState(targetProps, targets.collisionObject);
-            actions.Execute(targetProps, targets.collisionObject, properties.currentState);
+            work.Execute(targetProps, targets.collisionObject, properties.currentState);
             targets.collided = false;
             return;
         }
@@ -57,5 +55,15 @@ public class State : MonoBehaviour {
             state = state == "" && work.building != null && !work.haveMaterials ? "GetFromStorage" : state;
         }
         return state;
+    }
+
+    public string GetRepr() {
+        return Representation.repr.CapitalizeFirstLetter(properties.job) + "/" + Representation.repr.CapitalizeFirstLetter(properties.baseJob) + " (" + properties.id.ToString() + ")" +
+            "\n" + (work.working ? "working" : "idle") + " " +
+            string.Format("{0:0.0}", (Time.time - work.workStart < 2.0f ? Time.time - work.workStart : 0f)) +
+            "\ntarget: " + (targets.target == null ? "" : Representation.repr.CapitalizeFirstLetter(targets.target.name)) +
+            "\nbuilding: " + (work.building == null ? "" : Representation.repr.CapitalizeFirstLetter(work.building.name)) +
+            "\n" + (work.haveMaterials ? "carrying: " : "finding: ") + work.material +
+            "\nstate: " + properties.currentState;
     }
 }

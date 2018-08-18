@@ -50,7 +50,7 @@ public class AssignmentCounter : MonoBehaviour {
             jobText.GetComponent<RectTransform>().localPosition = counterVector;
 
             GameObject jobNameText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-            jobNameText.GetComponent<Text>().text = CapitalizeFirstLetter(job);
+            jobNameText.GetComponent<Text>().text = Representation.repr.CapitalizeFirstLetter(job);
             jobNameText.name = "label";
             jobNameText.GetComponent<RectTransform>().anchorMin = leftAlignVector;
             jobNameText.GetComponent<RectTransform>().anchorMax = leftAlignVector;
@@ -68,12 +68,6 @@ public class AssignmentCounter : MonoBehaviour {
 
             counters.Add(job, jobText.GetComponent<Text>());
         }
-    }
-
-    string CapitalizeFirstLetter(string s) {
-        char[] a = s.ToCharArray();
-        a[0] = char.ToUpper(a[0]);
-        return new string(a);
     }
 
     void Update() {

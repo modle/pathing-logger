@@ -6,23 +6,8 @@ using UnityEngine;
 public class Targets : MonoBehaviour {
 
     public GameObject target;
-    public AudioSource audioSource;
-    public AudioClip storageClip;
     public bool collided;
     public GameObject collisionObject;
-
-    private Villager villager;
-    private Job job;
-    private State state;
-    private Work work;
- 
-    public void Start() {
-        villager = GetComponent<Villager>();
-        job = GetComponent<Job>();
-        state = GetComponent<State>();
-        work = GetComponent<Work>();
-        audioSource = GetComponent<AudioSource>();
-    }
 
     public int CountAvailableTargets() {
         int count = 0;
@@ -38,7 +23,6 @@ public class Targets : MonoBehaviour {
         }
         return count;
     }
-
 
     public bool HasTarget() {
         if (target == null) {
@@ -57,7 +41,7 @@ public class Targets : MonoBehaviour {
         GameObject closest = CompareToTargets();
         if (closest != null) {
             target = closest;
-            target.GetComponent<Properties>().SetTargeted(villager.id);
+            target.GetComponent<Properties>().SetTargeted(GetComponent<Properties>().id);
             if (target.GetComponent<Properties>().type == "building") {
                 ProcessCollision(target);
             }
@@ -93,11 +77,6 @@ public class Targets : MonoBehaviour {
         if (other.gameObject.GetInstanceID() != target.GetInstanceID()) {
             return;
         }
-        // why?
-        if (!work.working) {
-            ProcessCollision(other.gameObject);
-            return;
-        }
         // prevents villager from getting stuck when inside storage
         if (target.name == "Storage") {
             ProcessCollision(other.gameObject);
@@ -125,36 +104,10 @@ public class Targets : MonoBehaviour {
         }
     }
 
-    public void CollectTarget(Properties props) {
-        work.material = props.produces;
-        if (props.destructable) {
+    public void DecomposeTarget() {
+        if (target.GetComponent<Properties>().destructable) {
             Destroy(target);
         }
         target = GameObject.Find("Storage");
-        work.haveMaterials = true;
-    }
-
-    public void PutInStorage() {
-        target = null;
-        work.haveMaterials = false;
-        audioSource.PlayOneShot(storageClip, 0.7F);
-        ResourceCounter.counter.counts[work.material]++;
-        work.material = "";
-
-        // use messaging here
-        job.TriggerCheckJob();
-    }
-
-    public void GetFromStorage(GameObject other) {
-        if (ResourceCounter.counter.counts[work.material] > 0) {
-            target = work.building.transform.gameObject;
-            work.haveMaterials = true;
-            ResourceCounter.counter.counts[work.material]--;
-            collided = false;
-            collisionObject = null;
-        } else {
-            collided = true;
-            collisionObject = other;
-        }
     }
 }
