@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Job : MonoBehaviour {
 
-    public string job;
-    public string baseJob;
     private Properties properties;
     private Targets targets;
     private Villager villager;
@@ -21,37 +19,29 @@ public class Job : MonoBehaviour {
     }
 
     void Update() {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = properties.id + " - " + job + "/" + baseJob;
-    }
-
-    public string GetJob() {
-        return baseJob;
-    }
-
-    public string GetCurrentJob() {
-        return job;
+        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = properties.id + " - " + properties.job + "/" + properties.baseJob;
     }
 
     IEnumerator CheckJob() {
         while (true) {
             if (targets.target == null) {
-                job = "hauler";
+                properties.job = "hauler";
                 foreach (GameObject go in TargetBucket.bucket.targets) {
                     if (go == null) {
                         continue;
                     }
-                    Properties props = go.GetComponent<Properties>();
-                    if (!props.selected || props.targeted) {
+                    Properties checkProps = go.GetComponent<Properties>();
+                    if (!checkProps.selected || checkProps.targeted) {
                         continue;
                     }
                     // reassigns villagers to baseJob if job is needed
-                    if (props.job == baseJob && baseJob != "hauler") {
-                        job = baseJob;
+                    if (checkProps.job == properties.baseJob && properties.baseJob != "hauler") {
+                        properties.job = properties.baseJob;
                         break;
                     }
                     // reassigns job to builder if building in progress needs materials
-                    if (props.job == "builder") {
-                        job = "builder";
+                    if (checkProps.job == "builder") {
+                        properties.job = "builder";
                     }
                 }
             }
@@ -60,17 +50,12 @@ public class Job : MonoBehaviour {
     }
 
     public void ChangeJob(string newJob) {
-        SetJob(newJob);
+        properties.SetJob(newJob);
         work.DropMaterial();
         if (targets.target != null) {
             targets.target.GetComponent<Properties>().AbandonTask();
             work.StopWorking();
         }
-    }
-
-    public void SetJob(string newJob) {
-        job = newJob;
-        baseJob = newJob;
     }
 
     public void TriggerCheckJob() {

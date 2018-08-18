@@ -8,7 +8,6 @@ public class Work : MonoBehaviour {
     private Targets targets;
     public Building building;
     public Animations animations;
-    public Job job;
 
     public bool working;
     public float workStart = 0f;
@@ -21,7 +20,6 @@ public class Work : MonoBehaviour {
     void Start() {
         targets = GetComponent<Targets>();
         animations = GetComponent<Animations>();
-        job = GetComponent<Job>();
     }
 
     public void ProcessWorking() {
@@ -60,7 +58,7 @@ public class Work : MonoBehaviour {
     void DoBuildingThings() {
         if (building.Producing()) {
             building.Produce();
-            if (job.GetCurrentJob() == "builder") {
+            if (GetComponent<Properties>().job == "builder") {
                 StopWorking();
             }
         }
@@ -87,7 +85,7 @@ public class Work : MonoBehaviour {
             building.GetComponent<Properties>().SetDefaults();
         }
         building = null;
-        targets.recollide = false;
+        targets.collided = false;
         targets.collisionObject = null;
     }
 

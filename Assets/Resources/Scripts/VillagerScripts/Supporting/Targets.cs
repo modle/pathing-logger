@@ -9,7 +9,6 @@ public class Targets : MonoBehaviour {
     public AudioSource audioSource;
     public AudioClip storageClip;
     public bool collided;
-    public bool recollide;
     public GameObject collisionObject;
 
     private Villager villager;
@@ -24,6 +23,22 @@ public class Targets : MonoBehaviour {
         work = GetComponent<Work>();
         audioSource = GetComponent<AudioSource>();
     }
+
+    public int CountAvailableTargets() {
+        int count = 0;
+        foreach (GameObject go in TargetBucket.bucket.targets) {
+            if (go == null) {
+                continue;
+            }
+            Properties compareProps = go.GetComponent<Properties>();
+            if (compareProps.targeted) {
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
 
     public bool HasTarget() {
         if (target == null) {
@@ -57,8 +72,8 @@ public class Targets : MonoBehaviour {
             if (go == null) {
                 continue;
             }
-            Properties props = go.GetComponent<Properties>();
-            if (!props.selected || props.targeted || props.job != job.GetCurrentJob()) {
+            Properties compareProps = go.GetComponent<Properties>();
+            if (!compareProps.selected || compareProps.targeted || compareProps.job != GetComponent<Properties>().job) {
                 continue;
             }
             Vector3 diff = go.transform.position - position;
@@ -104,15 +119,14 @@ public class Targets : MonoBehaviour {
             // nothing to do
             return;
         }
-        if (recollide && collisionObject != null) {
-            return;
+        if (other.gameObject.GetInstanceID() == target.GetInstanceID()) {
+            collided = true;
+            collisionObject = other;
         }
-        collided = true;
-        collisionObject = other;
     }
 
     public void CollectTarget(Properties props) {
-        work.material = target.GetComponent<Properties>().produces;
+        work.material = props.produces;
         if (props.destructable) {
             Destroy(target);
         }
@@ -127,19 +141,19 @@ public class Targets : MonoBehaviour {
         ResourceCounter.counter.counts[work.material]++;
         work.material = "";
 
+        // use messaging here
         job.TriggerCheckJob();
     }
 
     public void GetFromStorage(GameObject other) {
-        // every instruction accesses villager; move it to Villager?
         if (ResourceCounter.counter.counts[work.material] > 0) {
             target = work.building.transform.gameObject;
             work.haveMaterials = true;
             ResourceCounter.counter.counts[work.material]--;
-            recollide = false;
+            collided = false;
             collisionObject = null;
         } else {
-            recollide = true;
+            collided = true;
             collisionObject = other;
         }
     }

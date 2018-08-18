@@ -36,15 +36,15 @@ public class VillagerBucket : MonoBehaviour {
             label.transform.SetParent(sprite.transform);
             label.GetComponent<TextMesh>().text = villagerCount.ToString();
             sprite.GetComponent<Properties>().id = villagerCount;
-            sprite.GetComponent<Job>().SetJob(AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)]);
-            AssignmentCounter.counter.jobs[sprite.GetComponent<Job>().GetCurrentJob()]++;
+            sprite.GetComponent<Properties>().SetJob(AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)]);
+            AssignmentCounter.counter.jobs[sprite.GetComponent<Properties>().job]++;
             sprite.transform.SetParent(villagers);
         }
     }
 
     public void ReassignVillager(string from, string to) {
         foreach(Transform villager in villagers) {
-            if (villager.gameObject.GetComponent<Job>().GetJob() == from) {
+            if (villager.gameObject.GetComponent<Properties>().baseJob == from) {
                 villager.gameObject.GetComponent<Job>().ChangeJob(to);
                 return;
             }

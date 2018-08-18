@@ -4,6 +4,7 @@ public class Properties : MonoBehaviour {
     public string type;
     public string produces;
     public string job;
+    public string baseJob;
     public bool targeted;
     public bool engaged;
     public int targetedBy = 0;
@@ -11,16 +12,11 @@ public class Properties : MonoBehaviour {
     public bool destructable;
     public bool workable;
     public int id;
+    public string currentState;
 
-    public void Harvestify() {
-        job = "harvester";
-        Workify();
-    }
-
-    public void Workify() {
-        workable = true;
-        destructable = false;
-        SetDefaults();
+    public void SetJob(string newJob) {
+        job = newJob;
+        baseJob = newJob;
     }
 
     public void Haulify() {
