@@ -13,6 +13,7 @@ public class Animations : MonoBehaviour {
     private float vertical = 0f;
     private float theX = 0f;
     private float theY = 0f;
+    public string currentDirection = "";
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -28,6 +29,11 @@ public class Animations : MonoBehaviour {
 
     public void Start () {
         SetInitialReferences();
+    }
+
+    public void SetAnimation(string direction, bool state) {
+        anim.SetBool(direction, state);
+        currentDirection = state ? direction : currentDirection;
     }
 
     void SetInitialReferences() {
@@ -46,10 +52,10 @@ public class Animations : MonoBehaviour {
     }
 
     void SetDefaults() {
-        anim.SetBool("side", false);
-        anim.SetBool("up", false);
-        anim.SetBool("down", false);
-        anim.SetBool("side-attack", false);
+        SetAnimation("side", false);
+        SetAnimation("up", false);
+        SetAnimation("down", false);
+        SetAnimation("side-attack", false);
         theX = 0f;
         theY = 0f;
         horizontal = 0;
@@ -65,7 +71,7 @@ public class Animations : MonoBehaviour {
             spriteRenderer.flipX = idleFlipX;
         } else {
             anim.speed = 1;
-            anim.SetBool(direction, true);
+            SetAnimation(direction, true);
         }
     }
 

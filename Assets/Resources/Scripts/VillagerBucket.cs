@@ -6,7 +6,7 @@ public class VillagerBucket : MonoBehaviour {
     public static VillagerBucket bucket;
     public Transform villagers;
     private int villagerCount;
-    private int maxVillagers = 10;
+    private int maxVillagers = 1;
 
     void Awake() {
         // singleton pattern

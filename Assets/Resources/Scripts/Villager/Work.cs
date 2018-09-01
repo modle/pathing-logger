@@ -54,7 +54,7 @@ public class Work : MonoBehaviour {
     }
 
     public void PerformWorkActions() {
-        animations.anim.SetBool("side-attack", true);
+        animations.SetAnimation("side-attack", true);
         animations.anim.speed = 1;
         if ((int)((Time.time - workStart) * 100) % 30 == 0) {
             audioSource.PlayOneShot(workClip, 0.7F);
@@ -84,7 +84,7 @@ public class Work : MonoBehaviour {
     }
 
     public void StopWorking() {
-        animations.anim.SetBool("side", true);
+        animations.SetAnimation("side", true);
         working = false;
         targets.target = null;
         if (building != null) {
@@ -145,6 +145,7 @@ public class Work : MonoBehaviour {
 
     public void StartWork(Properties props) {
         working = true;
+        PerformWorkActions();
         props.engaged = true;
         if (props.type != "building" || haveMaterials) {
             workStart = Time.time;

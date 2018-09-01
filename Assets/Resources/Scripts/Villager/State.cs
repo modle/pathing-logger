@@ -20,15 +20,17 @@ public class State : MonoBehaviour {
     }
 
     void Update () {
+        print ("current direction: " + animations.currentDirection);
+        if (work.working && work.IsStillWorking()) {
+            print ("still working");
+            // work.PerformWorkActions();
+            return;
+        }
         if (targets.collided) {
             Properties targetProps = targets.target.GetComponent<Properties>();
             properties.currentState = DetermineState(targetProps, targets.collisionObject);
             work.Execute(targetProps, targets.collisionObject, properties.currentState);
             targets.collided = false;
-            return;
-        }
-        if (work.working && work.IsStillWorking()) {
-            work.PerformWorkActions();
             return;
         }
         if (work.working && properties.job != "hauler" && targets.target != null && work.material == "" && !work.IsStillWorking()) {
