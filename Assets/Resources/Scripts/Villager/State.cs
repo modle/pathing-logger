@@ -20,10 +20,7 @@ public class State : MonoBehaviour {
     }
 
     void Update () {
-        print ("current direction: " + animations.currentDirection);
         if (work.working && work.IsStillWorking()) {
-            print ("still working");
-            // work.PerformWorkActions();
             return;
         }
         if (targets.collided) {

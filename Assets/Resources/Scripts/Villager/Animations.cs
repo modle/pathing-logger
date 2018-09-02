@@ -42,7 +42,7 @@ public class Animations : MonoBehaviour {
     }
 
     public void Move(GameObject target) {
-        SetDefaults();
+        SetDefaultDirections();
         GetTargetCoordinates(target);
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
@@ -51,7 +51,7 @@ public class Animations : MonoBehaviour {
         MoveSprite();
     }
 
-    void SetDefaults() {
+    public void SetDefaultDirections() {
         SetAnimation("side", false);
         SetAnimation("up", false);
         SetAnimation("down", false);

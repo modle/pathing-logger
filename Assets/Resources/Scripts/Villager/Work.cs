@@ -80,11 +80,11 @@ public class Work : MonoBehaviour {
         Properties props = targets.target.GetComponent<Properties>();
         props.Haulify();
         props.ChangeSprite();
+        animations.SetDefaultDirections();
         StopWorking();
     }
 
     public void StopWorking() {
-        animations.SetAnimation("side", true);
         working = false;
         targets.target = null;
         if (building != null) {
@@ -144,6 +144,7 @@ public class Work : MonoBehaviour {
     }
 
     public void StartWork(Properties props) {
+        animations.SetDefaultDirections();
         working = true;
         PerformWorkActions();
         props.engaged = true;
