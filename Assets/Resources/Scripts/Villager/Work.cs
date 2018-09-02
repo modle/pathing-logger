@@ -81,6 +81,7 @@ public class Work : MonoBehaviour {
         props.Haulify();
         props.ChangeSprite();
         animations.SetDefaultDirections();
+        animations.SetAnimation("side", true);
         StopWorking();
     }
 

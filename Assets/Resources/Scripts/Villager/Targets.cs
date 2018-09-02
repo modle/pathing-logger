@@ -8,6 +8,13 @@ public class Targets : MonoBehaviour {
     public GameObject target;
     public bool collided;
     public GameObject collisionObject;
+    private Vector3 lastPosition = new Vector3(0, 0, 0);
+    public float lastCollisionRecheck;
+    private float collisionRecheck = 3.0f;
+
+    public void Start() {
+        lastCollisionRecheck = Time.time;
+    }
 
     public int CountAvailableTargets() {
         int count = 0;
@@ -70,19 +77,6 @@ public class Targets : MonoBehaviour {
         return match;
     }
 
-    private void OnCollisionStay2D(Collision2D other) {
-        if (target == null) {
-            return;
-        }
-        if (other.gameObject.GetInstanceID() != target.GetInstanceID()) {
-            return;
-        }
-        // prevents villager from getting stuck when inside storage
-        if (target.name == "Storage") {
-            ProcessCollision(other.gameObject);
-        }
-    }
-
     private void OnCollisionEnter2D(Collision2D other) {
         ProcessCollision(other.gameObject);
     }
@@ -104,9 +98,25 @@ public class Targets : MonoBehaviour {
         }
     }
 
+    public void CheckForRecollision() {
+        // if position has not changed after a set time and target is not null, trigger collision;
+        // prevents villager from getting stuck on objects when target changes
+        // while villager is inside collision border
+        if (Time.time - lastCollisionRecheck < collisionRecheck) {
+            return;
+        }
+        if (transform.position == lastPosition && target != null) {
+            ProcessCollision(target);
+            lastCollisionRecheck = Time.time;
+            return;
+        }
+        lastPosition = transform.position;
+    }
+
     public void DecomposeTarget() {
         if (target.GetComponent<Properties>().destructable) {
             Destroy(target);
+            lastCollisionRecheck = Time.time;
         }
         target = GameObject.Find("Storage");
     }

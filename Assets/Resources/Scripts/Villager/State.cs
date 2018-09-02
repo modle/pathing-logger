@@ -37,6 +37,8 @@ public class State : MonoBehaviour {
         if (!targets.HasTarget()) {
             return;
         }
+
+        targets.CheckForRecollision();
         animations.Move(targets.target);
     }
 
