@@ -21,6 +21,7 @@ public class State : MonoBehaviour {
 
     void Update () {
         if (work.working && work.IsStillWorking()) {
+            work.PlayChopSound();
             return;
         }
         if (targets.collided) {

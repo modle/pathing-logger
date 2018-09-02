@@ -53,12 +53,15 @@ public class Work : MonoBehaviour {
         return (Time.time - workStart) < workDone;
     }
 
+    public void PlayChopSound() {
+        if ((int)((Time.time - workStart) * 50) % 20 == 0) {
+            audioSource.PlayOneShot(workClip, 0.7F);
+        }
+    }
+
     public void PerformWorkActions() {
         animations.SetAnimation("side-attack", true);
         animations.anim.speed = 1;
-        if ((int)((Time.time - workStart) * 100) % 30 == 0) {
-            audioSource.PlayOneShot(workClip, 0.7F);
-        }
     }
 
     void DoBuildingThings() {
