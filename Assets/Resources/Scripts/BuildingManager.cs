@@ -9,6 +9,7 @@ public class BuildingManager : MonoBehaviour {
 
     public Dictionary<string, Dictionary<string, int>> productionCost;
     public Dictionary<string, Dictionary<string, int>> buildCost;
+    public Dictionary<string, GameObject> buildingSelectors = new Dictionary<string, GameObject>();
 
     void Awake() {
         // singleton pattern
@@ -26,6 +27,21 @@ public class BuildingManager : MonoBehaviour {
         productionCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}});
         buildCost = new Dictionary<string, Dictionary<string, int>>();
         buildCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}, {"rock", 1}});
+        GetBuildingSelectors();
+        HideBuildings();
+    }
+
+    private void GetBuildingSelectors() {
+        Transform selectorsTransform = GameObject.Find("BuildingSelectors").transform;
+        foreach (Transform t in selectorsTransform) {
+            buildingSelectors.Add(t.gameObject.name, t.gameObject);
+        }
+    }
+
+    private void HideBuildings() {
+        foreach (string key in buildingSelectors.Keys) {
+            buildingSelectors[key].SetActive(false);
+        }
     }
 
     public void PlaceBuilding(string targetType) {
