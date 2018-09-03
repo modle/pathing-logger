@@ -44,6 +44,12 @@ public class BuildingManager : MonoBehaviour {
         }
     }
 
+    public void EnableBuilding(string building) {
+        if (buildingSelectors.ContainsKey(building)) {
+            buildingSelectors[building].SetActive(true);
+        }
+    }
+
     public void PlaceBuilding(string targetType) {
         Object targetPrefab = BuildingPrefabs.buildings.inProgressSprites[targetType];
         if (targetPrefab == null) {
