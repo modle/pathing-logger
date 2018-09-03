@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HotKeyWatcher : MonoBehaviour {
+public class MenuToggler : MonoBehaviour {
 
     public Dictionary<string, string> hotKeys = new Dictionary<string, string>();
     public Dictionary<string, GameObject> toggleables = new Dictionary<string, GameObject>();
