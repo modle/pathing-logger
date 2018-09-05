@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class DetailsDisplay : EventTrigger {
 
-    bool shown;
     GameObject display;
 
     void Awake() {
@@ -24,12 +23,11 @@ public class DetailsDisplay : EventTrigger {
         if (CursorManager.manager.transform.gameObject.activeSelf) {
             return;
         }
-        shown = true;
         float xPos = Input.mousePosition.x;
         float yPos = Input.mousePosition.y - display.GetComponent<RectTransform>().rect.height / 2;
         Vector3 position = new Vector3(xPos, yPos, 0);
         display.transform.position = position;
-        display.SetActive(shown);
+        display.SetActive(true);
         display.GetComponent<DisplayUpdater>().target = transform;
     }
 
