@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class AssignmentCounter : MonoBehaviour {
     public static AssignmentCounter counter;
     public Dictionary<string, int> jobs;
-    public Dictionary<string, Text> counters;
+    public Dictionary<string, TextMeshProUGUI> counters;
     [HideInInspector]
     public List<string> availableJobs;
 
@@ -22,13 +23,14 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void BuildAssignments() {
+        // a lot going on here
         availableJobs = new List<string>() {"hauler", "harvester", "excavator", "builder", "sawyer"};
         jobs = new Dictionary<string, int>();
-        counters = new Dictionary<string, Text>();
+        counters = new Dictionary<string, TextMeshProUGUI>();
 
         Vector3 baseVector = new Vector3(25, 60, 0);
         Vector3 addRowVector = new Vector3(0, -25, 0);
-        Vector3 counterVector = new Vector3(20, 5, 0);
+        Vector3 counterVector = new Vector3(80, -10, 0);
         Vector3 nameVector = new Vector3(-40, 5, 0);
         Vector2 leftAlignVector = new Vector2(0, 0.5f);
         foreach (string job in availableJobs) {
@@ -50,7 +52,7 @@ public class AssignmentCounter : MonoBehaviour {
             jobText.GetComponent<RectTransform>().localPosition = counterVector;
 
             GameObject jobNameText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-            jobNameText.GetComponent<Text>().text = Representation.repr.CapitalizeFirstLetter(job);
+            jobNameText.GetComponent<TextMeshProUGUI>().text = Representation.repr.CapitalizeFirstLetter(job);
             jobNameText.name = "label";
             jobNameText.GetComponent<RectTransform>().anchorMin = leftAlignVector;
             jobNameText.GetComponent<RectTransform>().anchorMax = leftAlignVector;
@@ -66,7 +68,7 @@ public class AssignmentCounter : MonoBehaviour {
                 unassign.GetComponent<RemoveVillager>().job = job;
             }
 
-            counters.Add(job, jobText.GetComponent<Text>());
+            counters.Add(job, jobText.GetComponent<TextMeshProUGUI>());
         }
     }
 
