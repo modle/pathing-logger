@@ -27,49 +27,79 @@ public class AssignmentCounter : MonoBehaviour {
         availableJobs = new List<string>() {"hauler", "harvester", "excavator", "builder", "sawyer"};
         jobs = new Dictionary<string, int>();
         counters = new Dictionary<string, TextMeshProUGUI>();
+        Object textPrefab = Resources.Load("Prefabs/text-default", typeof(GameObject));
 
-        Vector3 baseVector = new Vector3(25, 60, 0);
-        Vector3 addRowVector = new Vector3(0, -25, 0);
-        Vector3 counterVector = new Vector3(80, -10, 0);
-        Vector3 nameVector = new Vector3(-40, 5, 0);
-        Vector2 leftAlignVector = new Vector2(0, 0.5f);
+        Dictionary<string, Vector3> vectors = MakeVectors();
+
         foreach (string job in availableJobs) {
             jobs.Add(job, 0);
 
-            GameObject jobContainer = new GameObject(job, typeof(RectTransform));
-            jobContainer.transform.SetParent(transform);
-            jobContainer.GetComponent<RectTransform>().anchorMin = leftAlignVector;
-            jobContainer.GetComponent<RectTransform>().anchorMax = leftAlignVector;
-            jobContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 20);
-            jobContainer.GetComponent<RectTransform>().localPosition = baseVector + (addRowVector * counters.Count);
-            jobContainer.layer = 5;
+            GameObject jobContainer = ConstructJobContainer(job, vectors);
+            GameObject jobText = ConstructJobText(job, vectors, jobContainer, textPrefab);
+            GameObject jobNameText = ConstructJobNameText(job, vectors, jobContainer, textPrefab);
 
-            Object textPrefab = Resources.Load("Prefabs/text-default", typeof(GameObject));
-            GameObject jobText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-            jobText.name = "counter";
-            jobText.GetComponent<RectTransform>().anchorMin = leftAlignVector;
-            jobText.GetComponent<RectTransform>().anchorMax = leftAlignVector;
-            jobText.GetComponent<RectTransform>().localPosition = counterVector;
-
-            GameObject jobNameText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-            jobNameText.GetComponent<TextMeshProUGUI>().text = Representation.repr.CapitalizeFirstLetter(job);
-            jobNameText.name = "label";
-            jobNameText.GetComponent<RectTransform>().anchorMin = leftAlignVector;
-            jobNameText.GetComponent<RectTransform>().anchorMax = leftAlignVector;
-            jobNameText.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 20);
-            jobNameText.GetComponent<RectTransform>().localPosition = nameVector;
+            SetAnchor(jobContainer, vectors["leftAlignVector"]);
+            SetAnchor(jobText, vectors["leftAlignVector"]);
+            SetAnchor(jobNameText, vectors["leftAlignVector"]);
 
             if (job != "hauler") {
-                Object assignPrefab = Resources.Load("Prefabs/villager-assign", typeof(GameObject));
-                GameObject assign = Instantiate(assignPrefab, jobContainer.transform) as GameObject;
-                assign.GetComponent<AddVillager>().job = job;
-                Object unassignPrefab = Resources.Load("Prefabs/villager-unassign", typeof(GameObject));
-                GameObject unassign = Instantiate(unassignPrefab, jobContainer.transform) as GameObject;
-                unassign.GetComponent<RemoveVillager>().job = job;
+                SetAdjustArrows(job, jobContainer.transform);
             }
 
             counters.Add(job, jobText.GetComponent<TextMeshProUGUI>());
         }
+    }
+
+    Dictionary<string, Vector3> MakeVectors() {
+        Dictionary<string, Vector3> vectors = new Dictionary<string, Vector3>();
+        vectors.Add("baseVector", new Vector3(110, 60, 0));
+        vectors.Add("addRowVector", new Vector3(0, -25, 0));
+        vectors.Add("counterVector", new Vector3(80, -10, 0));
+        vectors.Add("nameVector", new Vector3(-40, 5, 0));
+        vectors.Add("leftAlignVector", new Vector3(0, 0.5f, 0));
+        vectors.Add("sizeDelta", new Vector3(100, 20, 0));
+        return vectors;
+    }
+
+    GameObject ConstructJobContainer(string job, Dictionary<string, Vector3> vectors) {
+        GameObject jobContainer = new GameObject(job, typeof(RectTransform));
+        jobContainer.transform.SetParent(transform);
+        jobContainer.GetComponent<RectTransform>().sizeDelta = vectors["sizeDelta"];
+        jobContainer.GetComponent<RectTransform>().localPosition = vectors["baseVector"] + (vectors["addRowVector"] * counters.Count);
+        jobContainer.layer = 5;
+        return jobContainer;
+    }
+
+    GameObject ConstructJobText(string job, Dictionary<string, Vector3> vectors, GameObject jobContainer, Object textPrefab) {
+        GameObject jobText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
+        jobText.name = "counter";
+        SetAnchor(jobText, vectors["leftAlignVector"]);
+        jobText.GetComponent<RectTransform>().localPosition = vectors["counterVector"];
+        return jobText;
+    }
+
+    GameObject ConstructJobNameText(string job, Dictionary<string, Vector3> vectors, GameObject jobContainer, Object textPrefab) {
+        GameObject jobNameText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
+        jobNameText.GetComponent<TextMeshProUGUI>().text = Representation.repr.CapitalizeFirstLetter(job);
+        jobNameText.name = "label";
+        SetAnchor(jobNameText, vectors["leftAlignVector"]);
+        jobNameText.GetComponent<RectTransform>().sizeDelta = vectors["sizeDelta"];
+        jobNameText.GetComponent<RectTransform>().localPosition = vectors["nameVector"];
+        return jobNameText;
+    }
+
+    void SetAnchor(GameObject obj, Vector2 alignVector) {
+        obj.GetComponent<RectTransform>().anchorMin = alignVector;
+        obj.GetComponent<RectTransform>().anchorMax = alignVector;
+    }
+
+    void SetAdjustArrows(string job, Transform transform) {
+        Object assignPrefab = Resources.Load("Prefabs/villager-assign", typeof(GameObject));
+        Object unassignPrefab = Resources.Load("Prefabs/villager-unassign", typeof(GameObject));
+        GameObject assign = Instantiate(assignPrefab, transform) as GameObject;
+        assign.GetComponent<AddVillager>().job = job;
+        GameObject unassign = Instantiate(unassignPrefab, transform) as GameObject;
+        unassign.GetComponent<RemoveVillager>().job = job;
     }
 
     void Update() {
