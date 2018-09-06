@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class VillagerBucket : MonoBehaviour {
     public static VillagerBucket bucket;
     public Transform villagers;
     private int villagerCount;
-    private int maxVillagers = 1;
+    private int maxVillagers = 20;
 
     void Awake() {
         // singleton pattern
@@ -26,7 +27,7 @@ public class VillagerBucket : MonoBehaviour {
         villagers = GameObject.Find("VillagerBucket").transform;
         Object toInstantiateSprite = Resources.Load("Prefabs/villager", typeof(GameObject));
         Object toInstantiateLabel = Resources.Load("Prefabs/villager-label", typeof(GameObject));
-        Vector3 labelOffset = new Vector3(0.125f, 0.125f, 0);
+        Vector3 labelOffset = new Vector3(1.15f, -1.0f, 0);
         while (villagerCount < maxVillagers) {
             villagerCount++;
             Vector3 spritePosition = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0);
@@ -34,7 +35,7 @@ public class VillagerBucket : MonoBehaviour {
             GameObject sprite = Instantiate(toInstantiateSprite, spritePosition, Quaternion.identity) as GameObject;
             GameObject label = Instantiate(toInstantiateLabel, labelPosition, Quaternion.identity) as GameObject;
             label.transform.SetParent(sprite.transform);
-            label.GetComponent<TextMesh>().text = villagerCount.ToString();
+            label.GetComponent<TextMeshPro>().text = villagerCount.ToString();
             sprite.GetComponent<Properties>().id = villagerCount;
             sprite.GetComponent<Properties>().SetJob(AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)]);
             AssignmentCounter.counter.jobs[sprite.GetComponent<Properties>().job]++;

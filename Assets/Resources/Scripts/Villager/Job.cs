@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class Job : MonoBehaviour {
 
@@ -17,7 +18,7 @@ public class Job : MonoBehaviour {
     }
 
     void Update() {
-        transform.Find("villager-label(Clone)").GetComponent<TextMesh>().text = properties.id + " - " + properties.job + "/" + properties.baseJob;
+        transform.Find("villager-label(Clone)").GetComponent<TextMeshPro>().text = properties.id + " - " + properties.job + "/" + properties.baseJob;
     }
 
     IEnumerator CheckJob() {
