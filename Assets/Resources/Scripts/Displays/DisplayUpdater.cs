@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class DisplayUpdater : EventTrigger {
 
@@ -10,9 +11,9 @@ public class DisplayUpdater : EventTrigger {
     public void Update() {
         // TODO: this is ugly. Generics?
         if (target.GetComponent<Building>() != null) {
-            transform.Find("text").GetComponent<Text>().text = target.GetComponent<Building>().GetRepr();
+            transform.Find("text").GetComponent<TextMeshProUGUI>().text = target.GetComponent<Building>().GetRepr();
         } else if (target.GetComponent<State>() != null) {
-            transform.Find("text").GetComponent<Text>().text = target.GetComponent<State>().GetRepr();
+            transform.Find("text").GetComponent<TextMeshProUGUI>().text = target.GetComponent<State>().GetRepr();
         }
         if (dragging) {
             Drag();
@@ -29,7 +30,6 @@ public class DisplayUpdater : EventTrigger {
 
     private void Drag() {
         Vector3 touchPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        print ("touch position " + touchPosition + "; transformPosition " + transform.position);
         transform.position = touchPosition;
     }
 }
