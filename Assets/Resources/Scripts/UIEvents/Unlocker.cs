@@ -16,9 +16,29 @@ public class Unlocker : EventTrigger {
         if (unlocked) {
             return;
         }
+        if (!CanUnlock()) {
+            return;
+        }
         BuildingManager.manager.EnableBuilding(name);
         TechTreeManager.manager.MarkEntryComplete(name);
         unlocked = true;
+    }
+
+    private bool CanUnlock() {
+        // TODO use methods in ResourceCounter instead
+        bool canConsume = true;
+        foreach (ResearchCosting.Material material in GetComponent<ResearchCosting>().researchMaterials) {
+            if (!ResourceCounter.counter.counts.ContainsKey(material.name) || ResourceCounter.counter.counts[material.name] < material.amount) {
+                canConsume = false;
+                break;
+            }
+        }
+        if (canConsume) {
+            foreach (ResearchCosting.Material material in GetComponent<ResearchCosting>().researchMaterials) {
+                ResourceCounter.counter.counts[material.name] -= material.amount;
+            }
+        }
+        return canConsume;
     }
 
     public override void OnPointerEnter(PointerEventData eventData) {

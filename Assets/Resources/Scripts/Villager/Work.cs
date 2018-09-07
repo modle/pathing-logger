@@ -117,6 +117,7 @@ public class Work : MonoBehaviour {
         targets.target = null;
         haveMaterials = false;
         audioSource.PlayOneShot(storageClip, 0.7F);
+        // TODO use methods in ResourceCounter instead
         ResourceCounter.counter.counts[material]++;
         material = "";
 
@@ -125,6 +126,7 @@ public class Work : MonoBehaviour {
     }
 
     public void GetFromStorage(GameObject other) {
+        // TODO use methods in ResourceCounter instead
         if (ResourceCounter.counter.counts[material] > 0) {
             targets.target = building.transform.gameObject;
             haveMaterials = true;
