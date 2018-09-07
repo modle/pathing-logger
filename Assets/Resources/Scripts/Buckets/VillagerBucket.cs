@@ -24,7 +24,7 @@ public class VillagerBucket : MonoBehaviour {
     }
 
     void SpawnVillagers() {
-        villagers = GameObject.Find("VillagerBucket").transform;
+        villagers = GameObject.Find("GameScripts/VillagerBucket").transform;
         Object toInstantiateSprite = Resources.Load("Prefabs/villager", typeof(GameObject));
         Object toInstantiateLabel = Resources.Load("Prefabs/villager-label", typeof(GameObject));
         Vector3 labelOffset = new Vector3(1.15f, -1.0f, 0);
