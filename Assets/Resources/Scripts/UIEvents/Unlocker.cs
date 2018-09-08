@@ -20,6 +20,7 @@ public class Unlocker : EventTrigger {
             return;
         }
         BuildingManager.manager.EnableBuilding(name);
+        AssignmentCounter.counter.EnableJob(name);
         CursorPrefabs.cursors.EnablePrefab(name);
         TechTreeManager.manager.MarkEntryComplete(name);
         unlocked = true;

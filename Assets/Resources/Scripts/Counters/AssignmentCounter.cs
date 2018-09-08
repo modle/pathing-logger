@@ -11,7 +11,8 @@ public class AssignmentCounter : MonoBehaviour {
     public Dictionary<string, TextMeshProUGUI> counters = new Dictionary<string, TextMeshProUGUI>();
 
     // making this public causes it to not be set at load time, even with [HideInInspector]
-    private List<string> availableJobs = new List<string>() {"hauler", "harvester", "excavator", "builder", "sawyer"};
+    private List<string> availableJobs = new List<string>() {"hauler", "harvester", "builder", "sawyer", "excavator"};
+    private List<string> disableTheseJobs = new List<string>() {"sawyer", "excavator"};
 
     void Awake() {
         // singleton pattern
@@ -45,6 +46,9 @@ public class AssignmentCounter : MonoBehaviour {
             jobs.Add(job, 0);
             counters.Add(job, theJob.transform.Find("counter").GetComponent<TextMeshProUGUI>());
             theJob.transform.SetParent(transform);
+            if (disableTheseJobs.Contains(job)) {
+                theJob.SetActive(false);
+            }
         }
     }
 
@@ -71,8 +75,28 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     public string AssignJob() {
-        string job = availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)];
+        List<string> activeJobs = GetActiveJobs();
+        string job = activeJobs[Random.Range(0, activeJobs.Count)];
         jobs[job]++;
         return job;
+    }
+
+    private List<string> GetActiveJobs() {
+        List<string> activeJobs = new List<string>();
+        foreach (Transform child in transform) {
+            if (child.gameObject.activeSelf) {
+                activeJobs.Add(child.gameObject.name);
+            }
+        }
+        return activeJobs;
+    }
+
+    public void EnableJob(string job) {
+        foreach (Transform child in transform) {
+            if (child.gameObject.name == job) {
+                child.gameObject.SetActive(true);
+                break;
+            }
+        }
     }
 }
