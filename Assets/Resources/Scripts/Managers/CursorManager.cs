@@ -29,7 +29,7 @@ public class CursorManager : MonoBehaviour {
 
     public bool SetCursorImage(string name) {
         cursor = CursorPrefabs.cursors.cursorSprites[name];
-        if (cursor == null) {
+        if (cursor == null || !cursor.activeSelf) {
             selectable = false;
             transform.gameObject.SetActive(false);
             return false;

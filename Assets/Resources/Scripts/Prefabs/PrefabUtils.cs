@@ -20,7 +20,6 @@ public class PrefabUtils : MonoBehaviour {
         Dictionary<string, GameObject> prefabBucket = new Dictionary<string, GameObject>();
         foreach (KeyValuePair<string, Object> entry in targetPrefabs) {
             GameObject theObject = Instantiate(entry.Value, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
-            theObject.SetActive(false);
             prefabBucket.Add(entry.Key, theObject);
         }
         return prefabBucket;

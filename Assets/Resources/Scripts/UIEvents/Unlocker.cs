@@ -20,6 +20,7 @@ public class Unlocker : EventTrigger {
             return;
         }
         BuildingManager.manager.EnableBuilding(name);
+        CursorPrefabs.cursors.EnablePrefab(name);
         TechTreeManager.manager.MarkEntryComplete(name);
         unlocked = true;
     }
@@ -43,7 +44,7 @@ public class Unlocker : EventTrigger {
 
     public override void OnPointerEnter(PointerEventData eventData) {
         float xPos = transform.position.x + GetComponent<RectTransform>().rect.width * 2;
-        float yPos = transform.position.y; // - tooltip.GetComponent<RectTransform>().rect.height / 2;
+        float yPos = transform.position.y;
         Vector3 position = new Vector3(xPos, yPos, 0);
         tooltip.transform.position = position;
         tooltip.SetActive(true);

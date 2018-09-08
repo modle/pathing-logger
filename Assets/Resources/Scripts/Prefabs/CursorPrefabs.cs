@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class CursorPrefabs : MonoBehaviour {
     public static CursorPrefabs cursors;
     public Dictionary<string, GameObject> cursorSprites = new Dictionary<string, GameObject>();
+    public List<string> disableTargetsOnLoad = new List<string>() {"sawyer"};
 
     void Awake() {
         // singleton pattern
@@ -29,5 +30,21 @@ public class CursorPrefabs : MonoBehaviour {
 
         cursorSprites = PrefabUtils.utils.Load(instantiables);
         cursorSprites.Add("stop", null);
+
+        DisableTargetPrefabs();
+    }
+
+    void DisableTargetPrefabs() {
+        foreach (string target in disableTargetsOnLoad) {
+            if (cursorSprites.ContainsKey(target)) {
+                cursorSprites[target].SetActive(false);
+            }
+        }
+    }
+
+    public void EnablePrefab(string name) {
+        if (cursorSprites.ContainsKey(name)) {
+            cursorSprites[name].SetActive(true);
+        }
     }
 }

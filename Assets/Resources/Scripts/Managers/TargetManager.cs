@@ -134,6 +134,10 @@ public class TargetManager : MonoBehaviour {
     }
 
     void OnGUI() {
+        DrawSelectionBox();
+    }
+
+    private void DrawSelectionBox() {
         if (Input.GetMouseButton(0) && select && targetType != "" && !placeable) {
             Vector3 currentPos = Input.mousePosition;
             Rect boxRect = new Rect(downMousePos.x, Screen.height - downMousePos.y, currentPos.x - downMousePos.x, downMousePos.y - currentPos.y);
