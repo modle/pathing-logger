@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 
 public class ResourceCounter : MonoBehaviour {
+    // TODO Rename to ResourceManager
     public static ResourceCounter counter;
     public Dictionary<string, int> counts;
     public Dictionary<string, TextMeshProUGUI> counters;

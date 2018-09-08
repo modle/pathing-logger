@@ -37,8 +37,7 @@ public class VillagerBucket : MonoBehaviour {
             label.transform.SetParent(sprite.transform);
             label.GetComponent<TextMeshPro>().text = villagerCount.ToString();
             sprite.GetComponent<Properties>().id = villagerCount;
-            sprite.GetComponent<Properties>().SetJob(AssignmentCounter.counter.availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)]);
-            AssignmentCounter.counter.jobs[sprite.GetComponent<Properties>().job]++;
+            sprite.GetComponent<Properties>().SetJob(AssignmentCounter.counter.AssignJob());
             sprite.transform.SetParent(villagers);
         }
     }

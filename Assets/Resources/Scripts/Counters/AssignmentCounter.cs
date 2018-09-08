@@ -5,11 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 
 public class AssignmentCounter : MonoBehaviour {
+    // TODO rename to AssignmentManager
     public static AssignmentCounter counter;
-    public Dictionary<string, int> jobs;
-    public Dictionary<string, TextMeshProUGUI> counters;
-    [HideInInspector]
-    public List<string> availableJobs;
+    public Dictionary<string, int> jobs = new Dictionary<string, int>();
+    public Dictionary<string, TextMeshProUGUI> counters = new Dictionary<string, TextMeshProUGUI>();
+
+    // making this public causes it to not be set at load time, even with [HideInInspector]
+    private List<string> availableJobs = new List<string>() {"hauler", "harvester", "excavator", "builder", "sawyer"};
 
     void Awake() {
         // singleton pattern
@@ -23,83 +25,27 @@ public class AssignmentCounter : MonoBehaviour {
     }
 
     void BuildAssignments() {
-        // a lot going on here
-        availableJobs = new List<string>() {"hauler", "harvester", "excavator", "builder", "sawyer"};
-        jobs = new Dictionary<string, int>();
-        counters = new Dictionary<string, TextMeshProUGUI>();
-        Object textPrefab = Resources.Load("Prefabs/text-default", typeof(GameObject));
-
-        Dictionary<string, Vector3> vectors = MakeVectors();
+        Object assignmentPrefab = Resources.Load("Prefabs/assignment-base", typeof(GameObject));
+        Vector3 baseVector = new Vector3(30, 60, 0);
 
         foreach (string job in availableJobs) {
-            jobs.Add(job, 0);
+            Vector3 offsetVector = new Vector3(0, -25 * jobs.Count, 0);
+            GameObject theJob = Instantiate(assignmentPrefab) as GameObject;
 
-            GameObject jobContainer = ConstructJobContainer(job, vectors);
-            GameObject jobText = ConstructJobText(job, vectors, jobContainer, textPrefab);
-            GameObject jobNameText = ConstructJobNameText(job, vectors, jobContainer, textPrefab);
-
-            SetAnchor(jobContainer, vectors["leftAlignVector"]);
-            SetAnchor(jobText, vectors["leftAlignVector"]);
-            SetAnchor(jobNameText, vectors["leftAlignVector"]);
-
-            if (job != "hauler") {
-                SetAdjustArrows(job, jobContainer.transform);
+            theJob.name = job;
+            theJob.transform.Find("label").GetComponent<TextMeshProUGUI>().text = Representation.repr.CapitalizeFirstLetter(job);
+            theJob.transform.Find("assign").GetComponent<AddVillager>().job = job;
+            theJob.transform.Find("unassign").GetComponent<RemoveVillager>().job = job;
+            theJob.GetComponent<RectTransform>().localPosition = transform.position + baseVector + offsetVector;
+            if (job == "hauler") {
+                Destroy(theJob.transform.Find("assign").gameObject);
+                Destroy(theJob.transform.Find("unassign").gameObject);
             }
 
-            counters.Add(job, jobText.GetComponent<TextMeshProUGUI>());
+            jobs.Add(job, 0);
+            counters.Add(job, theJob.transform.Find("counter").GetComponent<TextMeshProUGUI>());
+            theJob.transform.SetParent(transform);
         }
-    }
-
-    Dictionary<string, Vector3> MakeVectors() {
-        Dictionary<string, Vector3> vectors = new Dictionary<string, Vector3>();
-        vectors.Add("baseVector", new Vector3(110, 60, 0));
-        vectors.Add("addRowVector", new Vector3(0, -25, 0));
-        vectors.Add("counterVector", new Vector3(80, -10, 0));
-        vectors.Add("nameVector", new Vector3(-40, 5, 0));
-        vectors.Add("leftAlignVector", new Vector3(0, 0.5f, 0));
-        vectors.Add("sizeDelta", new Vector3(100, 20, 0));
-        return vectors;
-    }
-
-    GameObject ConstructJobContainer(string job, Dictionary<string, Vector3> vectors) {
-        GameObject jobContainer = new GameObject(job, typeof(RectTransform));
-        jobContainer.transform.SetParent(transform);
-        jobContainer.GetComponent<RectTransform>().sizeDelta = vectors["sizeDelta"];
-        jobContainer.GetComponent<RectTransform>().localPosition = vectors["baseVector"] + (vectors["addRowVector"] * counters.Count);
-        jobContainer.layer = 5;
-        return jobContainer;
-    }
-
-    GameObject ConstructJobText(string job, Dictionary<string, Vector3> vectors, GameObject jobContainer, Object textPrefab) {
-        GameObject jobText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-        jobText.name = "counter";
-        SetAnchor(jobText, vectors["leftAlignVector"]);
-        jobText.GetComponent<RectTransform>().localPosition = vectors["counterVector"];
-        return jobText;
-    }
-
-    GameObject ConstructJobNameText(string job, Dictionary<string, Vector3> vectors, GameObject jobContainer, Object textPrefab) {
-        GameObject jobNameText = Instantiate(textPrefab, jobContainer.transform) as GameObject;
-        jobNameText.GetComponent<TextMeshProUGUI>().text = Representation.repr.CapitalizeFirstLetter(job);
-        jobNameText.name = "label";
-        SetAnchor(jobNameText, vectors["leftAlignVector"]);
-        jobNameText.GetComponent<RectTransform>().sizeDelta = vectors["sizeDelta"];
-        jobNameText.GetComponent<RectTransform>().localPosition = vectors["nameVector"];
-        return jobNameText;
-    }
-
-    void SetAnchor(GameObject obj, Vector2 alignVector) {
-        obj.GetComponent<RectTransform>().anchorMin = alignVector;
-        obj.GetComponent<RectTransform>().anchorMax = alignVector;
-    }
-
-    void SetAdjustArrows(string job, Transform transform) {
-        Object assignPrefab = Resources.Load("Prefabs/villager-assign", typeof(GameObject));
-        Object unassignPrefab = Resources.Load("Prefabs/villager-unassign", typeof(GameObject));
-        GameObject assign = Instantiate(assignPrefab, transform) as GameObject;
-        assign.GetComponent<AddVillager>().job = job;
-        GameObject unassign = Instantiate(unassignPrefab, transform) as GameObject;
-        unassign.GetComponent<RemoveVillager>().job = job;
     }
 
     void Update() {
@@ -122,5 +68,11 @@ public class AssignmentCounter : MonoBehaviour {
         foreach (string job in availableJobs) {
             counters[job].text = jobs[job].ToString();
         }
+    }
+
+    public string AssignJob() {
+        string job = availableJobs[Random.Range(0, AssignmentCounter.counter.availableJobs.Count)];
+        jobs[job]++;
+        return job;
     }
 }
