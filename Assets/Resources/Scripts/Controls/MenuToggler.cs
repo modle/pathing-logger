@@ -7,6 +7,7 @@ public class MenuToggler : MonoBehaviour {
     public Dictionary<string, string> hotKeys = new Dictionary<string, string>();
     public Dictionary<string, GameObject> toggleables = new Dictionary<string, GameObject>();
     GameObject techTree;
+    GameObject messageLog;
 
     void Start() {
         SetHotKeys();
@@ -15,12 +16,16 @@ public class MenuToggler : MonoBehaviour {
 
     void SetHotKeys() {
         hotKeys.Add("i", "techTree");
+        hotKeys.Add("l", "messageLog");
     }
 
     void SetObjects() {
         techTree = GameObject.Find("TechTree");
         techTree.SetActive(false);
         toggleables["techTree"] = techTree;
+        messageLog = GameObject.Find("MessageLog");
+        messageLog.SetActive(false);
+        toggleables["messageLog"] = messageLog;
     }
 
 	void Update() {
@@ -30,7 +35,8 @@ public class MenuToggler : MonoBehaviour {
     void CheckInput() {
         foreach (string key in hotKeys.Keys) {
             if (Input.GetKeyDown(key)) {
-                toggleables[hotKeys[key]].SetActive(!techTree.activeSelf);
+                GameObject obj = toggleables[hotKeys[key]];
+                obj.SetActive(!obj.activeSelf);
                 return;
             }
         }
