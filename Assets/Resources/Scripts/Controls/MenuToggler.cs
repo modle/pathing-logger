@@ -9,23 +9,32 @@ public class MenuToggler : MonoBehaviour {
     GameObject techTree;
     GameObject messageLog;
 
+    // child object structure might make more sense here
+    // each child object could be given a ScriptableObject containing a single property: hotkey
+
+    private List<string> menus = new List<string>() {"TechTree", "MessageLog"};
+
     void Start() {
         SetHotKeys();
         SetObjects();
+        DisableObjects();
     }
 
     void SetHotKeys() {
-        hotKeys.Add("i", "techTree");
-        hotKeys.Add("l", "messageLog");
+        hotKeys.Add("i", "TechTree");
+        hotKeys.Add("l", "MessageLog");
     }
 
     void SetObjects() {
-        techTree = GameObject.Find("TechTree");
-        techTree.SetActive(false);
-        toggleables["techTree"] = techTree;
-        messageLog = GameObject.Find("MessageLog");
-        messageLog.SetActive(false);
-        toggleables["messageLog"] = messageLog;
+        foreach (string menu in menus) {
+            toggleables[menu] = GameObject.Find(menu);
+        }
+    }
+
+    void DisableObjects() {
+        foreach (KeyValuePair<string, GameObject> entry in toggleables) {
+            entry.Value.SetActive(false);
+        }
     }
 
 	void Update() {
