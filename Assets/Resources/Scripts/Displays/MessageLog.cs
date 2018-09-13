@@ -9,6 +9,7 @@ public class MessageLog : MonoBehaviour {
 
     private List<string> messages = new List<string>();
     private GameObject messageContainer;
+    private int maxLength = 10;
 
     void Awake() {
         // singleton pattern
@@ -31,7 +32,7 @@ public class MessageLog : MonoBehaviour {
 
     public void Publish(string message) {
         messages.Insert(0, message);
-        if (messages.Count > 20) {
+        if (messages.Count > maxLength) {
             messages.RemoveAt(messages.Count - 1);
         }
     }
