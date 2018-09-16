@@ -31,12 +31,8 @@ public class QuestManager : MonoBehaviour {
     }
 
     void Update() {
-        questContainer.GetComponent<TextMeshProUGUI>().text = currentQuest.GetRepr();
-        if (currentQuest.things[currentQuest.toCount] >= currentQuest.start + currentQuest.amount) {
-            currentQuest.state = false;
-            currentQuestIndex += 1;
-            SetQuest();
-        }
+        SetText();
+        UpdateQuest();
     }
 
     void DefineQuests() {
@@ -45,13 +41,26 @@ public class QuestManager : MonoBehaviour {
     }
 
     void SetQuest() {
-        string text = "";
         if (quests.Count - 1 >= currentQuestIndex) {
             currentQuest = quests[currentQuestIndex];
-            text = currentQuest.GetRepr();
             currentQuest.start = currentQuest.things[currentQuest.toCount];
         }
-        questContainer.GetComponent<TextMeshProUGUI>().text = text;
+    }
+
+    void SetText() {
+        questContainer.GetComponent<TextMeshProUGUI>().text = "Quest: " +
+            (currentQuest == null ? "" : currentQuest.GetRepr());
+    }
+
+    void UpdateQuest() {
+        if (currentQuest == null) {
+            return;
+        }
+        if (currentQuest.IsComplete()) {
+            currentQuest = null;
+            currentQuestIndex += 1;
+            SetQuest();
+        }
     }
 
     private class CountingQuest {
@@ -61,7 +70,7 @@ public class QuestManager : MonoBehaviour {
         public int amount;
 
         public int start;
-        public bool state;
+        public bool complete;
 
         public CountingQuest(string text, Dictionary<string, int> things, string toCount, int amount) {
             this.text = text;
@@ -69,6 +78,18 @@ public class QuestManager : MonoBehaviour {
             this.toCount = toCount;
             this.amount = amount;
             start = things[toCount];
+        }
+
+        public bool IsComplete() {
+            if (things[toCount] >= start + amount) {
+                Complete();
+            }
+            return complete;
+        }
+
+        public void Complete() {
+            complete = true;
+            MessageLog.log.Publish(string.Format("Quest: {0} COMPLETED", GetRepr()));
         }
 
         public string GetRepr() {
