@@ -8,11 +8,10 @@ public class QuestManager : MonoBehaviour {
 
     public static QuestManager manager;
 
-    private List<CountingQuest> quests = new List<CountingQuest>();
+    private List<Quest> quests = new List<Quest>();
     private int currentQuestIndex = 0;
-    private CountingQuest currentQuest;
+    private Quest currentQuest;
     private GameObject questContainer;
-    private Dictionary<string, int> resources;
 
     void Awake() {
         // singleton pattern
@@ -25,7 +24,6 @@ public class QuestManager : MonoBehaviour {
     }
 
     void Start() {
-        resources = ResourceCounter.counter.counts;
         DefineQuests();
         SetQuest();
     }
@@ -36,14 +34,16 @@ public class QuestManager : MonoBehaviour {
     }
 
     void DefineQuests() {
+        Dictionary<string, int> resources = ResourceCounter.counter.counts;
         quests.Add(new CountingQuest("harvest trees", resources, "wood", 2));
         quests.Add(new CountingQuest("harvest rocks", resources, "rock", 2));
+        quests.Add(new UnlockingQuest("unlock the Sawyer"));
     }
 
     void SetQuest() {
         if (quests.Count - 1 >= currentQuestIndex) {
             currentQuest = quests[currentQuestIndex];
-            currentQuest.start = currentQuest.things[currentQuest.toCount];
+            currentQuest.Init();
         }
     }
 
@@ -63,14 +63,24 @@ public class QuestManager : MonoBehaviour {
         }
     }
 
-    private class CountingQuest {
+    private abstract class Quest {
+        // protected allows subclass to access
+        protected bool complete;
+        public abstract void Init();
+        public abstract bool IsComplete();
+        public void Complete() {
+            complete = true;
+            MessageLog.log.Publish(string.Format("Quest: {0} COMPLETED", GetRepr()));
+        }
+        public abstract string GetRepr();
+    }
+
+    private class CountingQuest : Quest {
         public string text;
         public Dictionary<string, int> things;
         public string toCount;
         public int amount;
-
         public int start;
-        public bool complete;
 
         public CountingQuest(string text, Dictionary<string, int> things, string toCount, int amount) {
             this.text = text;
@@ -80,20 +90,41 @@ public class QuestManager : MonoBehaviour {
             start = things[toCount];
         }
 
-        public bool IsComplete() {
+        public override void Init() {
+            start = things[toCount];
+        }
+
+        public override bool IsComplete() {
             if (things[toCount] >= start + amount) {
                 Complete();
             }
             return complete;
         }
 
-        public void Complete() {
-            complete = true;
-            MessageLog.log.Publish(string.Format("Quest: {0} COMPLETED", GetRepr()));
+        public override string GetRepr() {
+            return string.Format("{0}: {1}/{2}", text, things[toCount] - start, amount);
+        }
+    }
+
+    private class UnlockingQuest : Quest {
+        public string text;
+        public int start;
+
+        public UnlockingQuest(string text) {
+            this.text = text;
+            this.start = 0;
         }
 
-        public string GetRepr() {
-            return string.Format("{0}: {1}/{2}", text, things[toCount] - start, amount);
+        public override void Init() {
+            // implement me
+        }
+
+        public override bool IsComplete() {
+            return false;
+        }
+
+        public override string GetRepr() {
+            return string.Format("{0}", text);
         }
     }
 }
