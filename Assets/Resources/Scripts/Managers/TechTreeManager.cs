@@ -18,7 +18,7 @@ public class TechTreeManager : MonoBehaviour {
         }
         GetTechTreeSelectors();
     }
-    
+
     private void GetTechTreeSelectors() {
         Transform selectorsTransform = GameObject.Find("TechTree").transform.Find("Entries").transform;
         foreach (Transform t in selectorsTransform) {

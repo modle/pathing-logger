@@ -35,9 +35,10 @@ public class QuestManager : MonoBehaviour {
 
     void DefineQuests() {
         Dictionary<string, int> resources = ResourceCounter.counter.counts;
-        quests.Add(new CountingQuest("harvest trees", resources, "wood", 2));
-        quests.Add(new CountingQuest("harvest rocks", resources, "rock", 2));
+        quests.Add(new CountingQuest("harvest trees", resources, "wood", 1));
         quests.Add(new UnlockingQuest("unlock the Sawyer", "sawyer", BuildingManager.manager.buildingSelectors));
+        quests.Add(new BuildingQuest("construct the Sawyer", "sawyer", BuildingManager.manager.gameObject, 1));
+        quests.Add(new CountingQuest("harvest rocks", resources, "rock", 2));
     }
 
     void SetQuest() {

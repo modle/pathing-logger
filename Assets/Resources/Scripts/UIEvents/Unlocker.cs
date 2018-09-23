@@ -28,6 +28,7 @@ public class Unlocker : EventTrigger {
 
     private bool CanUnlock() {
         // TODO use methods in ResourceCounter instead
+        // material definitions are set through the Unity editor, Menus > TechTree > Entries > sawyer, etc.
         bool canConsume = true;
         foreach (ResearchCosting.Material material in GetComponent<ResearchCosting>().researchMaterials) {
             if (!ResourceCounter.counter.counts.ContainsKey(material.name) || ResourceCounter.counter.counts[material.name] < material.amount) {
