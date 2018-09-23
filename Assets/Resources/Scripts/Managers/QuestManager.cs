@@ -37,7 +37,7 @@ public class QuestManager : MonoBehaviour {
         Dictionary<string, int> resources = ResourceCounter.counter.counts;
         quests.Add(new CountingQuest("harvest trees", resources, "wood", 2));
         quests.Add(new CountingQuest("harvest rocks", resources, "rock", 2));
-        quests.Add(new UnlockingQuest("unlock the Sawyer"));
+        quests.Add(new UnlockingQuest("unlock the Sawyer", "sawyer", BuildingManager.manager.buildingSelectors));
     }
 
     void SetQuest() {
@@ -92,6 +92,7 @@ public class QuestManager : MonoBehaviour {
 
         public override void Init() {
             start = things[toCount];
+            MessageLog.log.Publish(string.Format("New Quest: {0}", GetRepr()));
         }
 
         public override bool IsComplete() {
@@ -108,19 +109,24 @@ public class QuestManager : MonoBehaviour {
 
     private class UnlockingQuest : Quest {
         public string text;
-        public int start;
+        public string target;
+        public Dictionary<string, GameObject> unlockTargets = new Dictionary<string, GameObject>();
 
-        public UnlockingQuest(string text) {
+        public UnlockingQuest(string text, string target, Dictionary<string, GameObject> unlockTargets) {
             this.text = text;
-            this.start = 0;
+            this.target = target;
+            this.unlockTargets = unlockTargets;
         }
 
         public override void Init() {
-            // implement me
+            MessageLog.log.Publish(string.Format("New Quest: {0}", GetRepr()));
         }
 
         public override bool IsComplete() {
-            return false;
+            if (unlockTargets[target].activeSelf) {
+                Complete();
+            }
+            return complete;
         }
 
         public override string GetRepr() {
