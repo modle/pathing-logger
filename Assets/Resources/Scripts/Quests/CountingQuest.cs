@@ -12,7 +12,6 @@ public class CountingQuest : Quest {
         this.things = things;
         this.toCount = toCount;
         this.amount = amount;
-        start = things[toCount];
     }
 
     public override void Init() {

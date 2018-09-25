@@ -8,6 +8,7 @@ public class ResourceCounter : MonoBehaviour {
     // TODO Rename to ResourceManager
     public static ResourceCounter counter;
     public Dictionary<string, int> counts;
+    public Dictionary<string, int> resourceGains;
     public Dictionary<string, TextMeshProUGUI> counters;
     private int startingCount = 100;
 
@@ -22,6 +23,7 @@ public class ResourceCounter : MonoBehaviour {
         }
 
         counts = new Dictionary<string, int>();
+        resourceGains = new Dictionary<string, int>();
         counters = new Dictionary<string, TextMeshProUGUI>();
         resources = new List<string>() {"wood", "rock", "plank"};
 
@@ -29,6 +31,7 @@ public class ResourceCounter : MonoBehaviour {
             if (resources.Contains(child.gameObject.name)) {
                 counters.Add(child.gameObject.name, child.Find("count").GetComponent<TextMeshProUGUI>());
                 counts.Add(child.gameObject.name, startingCount);
+                resourceGains.Add(child.gameObject.name, 0);
             }
         }
     }
@@ -38,4 +41,9 @@ public class ResourceCounter : MonoBehaviour {
             entry.Value.text = counts[entry.Key].ToString();
         }
 	}
+
+    public void AddToStorage(string target) {
+        counts[target]++;
+        resourceGains[target]++;
+    }
 }

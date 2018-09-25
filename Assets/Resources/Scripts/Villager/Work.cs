@@ -117,8 +117,7 @@ public class Work : MonoBehaviour {
         targets.target = null;
         haveMaterials = false;
         audioSource.PlayOneShot(storageClip, 0.7F);
-        // TODO use methods in ResourceCounter instead
-        ResourceCounter.counter.counts[material]++;
+        ResourceCounter.counter.AddToStorage(material);
         material = "";
 
         // use messaging here to remove Targets dependency on Job
