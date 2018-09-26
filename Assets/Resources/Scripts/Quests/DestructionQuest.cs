@@ -32,6 +32,10 @@ public class DestructionQuest : Quest {
         return string.Format("{0}: {1}", text, start - current);
     }
 
+    public override string GetCompletedRepr() {
+        return string.Format("{0}: {1}", text, start, start);
+    }
+
     public override string GetRepr() {
         return string.Format("{0}: {1}", text, current);
     }

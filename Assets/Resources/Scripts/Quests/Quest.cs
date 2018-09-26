@@ -5,7 +5,10 @@ public abstract class Quest {
     public abstract bool IsComplete();
     public void Complete() {
         complete = true;
-        MessageLog.log.Publish(string.Format("Quest: {0} COMPLETED", GetRepr()));
+        MessageLog.log.Publish(string.Format("Completed Quest: {0}", GetCompletedRepr()));
     }
     public abstract string GetRepr();
+    public virtual string GetCompletedRepr() {
+        return GetRepr();
+    }
 }
