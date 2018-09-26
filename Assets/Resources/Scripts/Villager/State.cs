@@ -36,6 +36,7 @@ public class State : MonoBehaviour {
             return;
         }
         if (!targets.HasTarget()) {
+            animations.MoveRandomly();
             return;
         }
 

@@ -18,7 +18,9 @@ public class Job : MonoBehaviour {
     }
 
     void Update() {
-        transform.Find("villager-label(Clone)").GetComponent<TextMeshPro>().text = properties.id + " - " + properties.job + "/" + properties.baseJob;
+        // adds job label
+        // transform.Find("villager-label(Clone)").GetComponent<TextMeshPro>().text = properties.id + " - " + properties.job + "/" + properties.baseJob;
+        transform.Find("villager-label(Clone)").GetComponent<TextMeshPro>().text = properties.id + " - " + properties.job;
     }
 
     IEnumerator CheckJob() {

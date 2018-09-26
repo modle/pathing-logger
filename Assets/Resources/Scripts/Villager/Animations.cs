@@ -8,12 +8,14 @@ public class Animations : MonoBehaviour {
     public Animator anim;
     private SpriteRenderer spriteRenderer;
     bool idleFlipX = false;
-    private int speedMod = 50;
+    private int speedMod = 20;
     private float horizontal = 0f;
     private float vertical = 0f;
     private float theX = 0f;
     private float theY = 0f;
     public string currentDirection = "";
+    private float lastMoved = 0f;
+    float maxMoveDist = 1.5f;
 
     public Dictionary<string, string> directions = new Dictionary<string, string>() {
         {"-1,0", "side"},
@@ -43,6 +45,7 @@ public class Animations : MonoBehaviour {
 
     public void Move(GameObject target) {
         SetDefaultDirections();
+        SetDefaultCoordinates();
         GetTargetCoordinates(target);
         SetDirections();
         if (horizontal == 0 && vertical == 0) {
@@ -56,10 +59,14 @@ public class Animations : MonoBehaviour {
         SetAnimation("up", false);
         SetAnimation("down", false);
         SetAnimation("side-attack", false);
+    }
+
+    public void SetDefaultCoordinates() {
         theX = 0f;
         theY = 0f;
         horizontal = 0;
         vertical = 0;
+        speedMod = 20;
     }
 
     public void SetDirections() {
@@ -103,5 +110,36 @@ public class Animations : MonoBehaviour {
             return true;
         }
         return false;
+    }
+
+    public void MoveRandomly() {
+        // if we get here, it's because we have no target; so drift aimlessly
+        // set check that we're within a max distance from storage here
+        // only set if it's been x time since last set
+
+        // slow them down
+        speedMod = 100;
+        if (Time.time - lastMoved > 0.4f) {
+            SetDefaultDirections();
+            vertical = Random.Range(0, 3) - 1;
+            horizontal = Random.Range(0, 3) - 1;
+            SetDirections();
+            lastMoved = Time.time;
+        }
+
+        // boundary check
+        if (transform.position.x > maxMoveDist) {
+            horizontal = -1;
+        }
+        if (transform.position.x < -maxMoveDist) {
+            horizontal = 1;
+        }
+        if (transform.position.y > maxMoveDist) {
+            vertical = -1;
+        }
+        if (transform.position.y < -maxMoveDist) {
+            vertical = 1;
+        }
+        MoveSprite();
     }
 }
