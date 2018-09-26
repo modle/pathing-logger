@@ -14,7 +14,6 @@ public class TargetManager : MonoBehaviour {
     public GUISkin skin;
     private bool select;
     public string targetType;
-    private Transform selectors;
     Dictionary<string, GameObject> selectedSprites = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> harvestedSprites = new Dictionary<string, GameObject>();
     public bool placeable;
@@ -29,7 +28,6 @@ public class TargetManager : MonoBehaviour {
         } else if (manager != this) {
             Destroy(gameObject);
         }
-        selectors = GameObject.Find("Selectors").transform;
         SetHotKeys();
     }
 
