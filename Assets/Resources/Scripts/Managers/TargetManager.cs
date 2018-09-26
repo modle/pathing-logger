@@ -36,7 +36,7 @@ public class TargetManager : MonoBehaviour {
     void Start() {
 
         // use PrefabUtils here
-        Object borderTreePrefab = Resources.Load("Prefabs/tree-orange-highlighted", typeof(GameObject));
+        Object borderTreePrefab = Resources.Load("Prefabs/tree-highlighted", typeof(GameObject));
         GameObject theTree = Instantiate(borderTreePrefab, new Vector2(-10000, -10000), Quaternion.identity) as GameObject;
         theTree.SetActive(false);
         selectedSprites.Add("tree", theTree);

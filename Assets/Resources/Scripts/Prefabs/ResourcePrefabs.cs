@@ -22,7 +22,7 @@ public class ResourcePrefabs : MonoBehaviour {
 
     void LoadPrefabs() {
         rawResourceSprites = new Dictionary<string, Object>();
-        rawResourceSprites.Add("wood", Resources.Load("Prefabs/tree-orange", typeof(GameObject)));
+        rawResourceSprites.Add("wood", Resources.Load("Prefabs/tree", typeof(GameObject)));
         rawResourceSprites.Add("rock", Resources.Load("Prefabs/rock", typeof(GameObject)));
 
         gatherableResourceSprites = new Dictionary<string, Object>();
