@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TargetBucket : MonoBehaviour {
     public static TargetBucket bucket;
     private int resourceCount;
-    private int maxResources = 100;
+    private int maxResources = 10;
     private HashSet<string> resourcePositions = new HashSet<string>();
     public List<GameObject> targets = new List<GameObject>();
     private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();
@@ -83,5 +84,9 @@ public class TargetBucket : MonoBehaviour {
         Vector2 instanceSize = instance.GetComponent<SpriteRenderer>().bounds.size;
         instanceSize.x *= colliderWidths[type];
         ((BoxCollider2D)instance.GetComponent<BoxCollider2D>()).size = instanceSize;
+    }
+
+    public int CountAll(string target) {
+        return targets.Count(n => n != null && n.name == target + "(Clone)");
     }
 }

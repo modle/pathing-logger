@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/*
+ * This object is attached to the villager prefab
+ */
 public class Targets : MonoBehaviour {
-
     public GameObject target;
     public bool collided;
     public GameObject collisionObject;
@@ -99,9 +101,11 @@ public class Targets : MonoBehaviour {
     }
 
     public void CheckForRecollision() {
-        // if position has not changed after a set time and target is not null, trigger collision;
-        // prevents villager from getting stuck on objects when target changes
-        // while villager is inside collision border
+        /*
+            if position has not changed after a set time and target is not null, trigger collision;
+            prevents villager from getting stuck on objects when target changes
+            while villager is inside collision border
+        */
         if (Time.time - lastCollisionRecheck < collisionRecheck) {
             return;
         }
