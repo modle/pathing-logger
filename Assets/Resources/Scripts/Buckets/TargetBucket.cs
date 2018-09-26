@@ -66,6 +66,7 @@ public class TargetBucket : MonoBehaviour {
 
     public GameObject InstantiateResource(Vector3 theVector, Object theObject) {
         GameObject instance = Instantiate(theObject, theVector, Quaternion.identity) as GameObject;
+        instance.name = theObject.name;
 
         SetColliderWidth(instance, instance.GetComponent<Properties>().type);
 
@@ -87,6 +88,6 @@ public class TargetBucket : MonoBehaviour {
     }
 
     public int CountAll(string target) {
-        return targets.Count(n => n != null && n.name == target + "(Clone)");
+        return targets.Count(n => n != null && n.name == target);
     }
 }

@@ -38,7 +38,7 @@ public class ResourcePrefabs : MonoBehaviour {
             // we'll use this later for randomly spawned gatherable resources, maybe
             return GetRandomFromDict(gatherableResourceSprites);
         } else {
-            // yep
+            // yep. deal with it.
             return null;
         }
     }
