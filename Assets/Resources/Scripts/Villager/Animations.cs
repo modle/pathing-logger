@@ -8,7 +8,8 @@ public class Animations : MonoBehaviour {
     public Animator anim;
     private SpriteRenderer spriteRenderer;
     bool idleFlipX = false;
-    private int speedMod = 20;
+    private int speedMod = 50;
+    private int defaultSpeedMod = 50;
     private float horizontal = 0f;
     private float vertical = 0f;
     private float theX = 0f;
@@ -66,7 +67,7 @@ public class Animations : MonoBehaviour {
         theY = 0f;
         horizontal = 0;
         vertical = 0;
-        speedMod = 20;
+        speedMod = defaultSpeedMod;
     }
 
     public void SetDirections() {
