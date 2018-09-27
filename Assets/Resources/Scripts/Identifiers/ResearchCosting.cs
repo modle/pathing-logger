@@ -11,4 +11,12 @@ public class ResearchCosting : MonoBehaviour {
     }
 
     public List<Material> researchMaterials = new List<Material>();
+
+    public string GetRepr() {
+        string repr = "\n\nresources needed:";
+        foreach (Material item in researchMaterials) {
+            repr += "\n" + item.name + ": " + item.amount;
+        }
+        return repr;
+    }
 }

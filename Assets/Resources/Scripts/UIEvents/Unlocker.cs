@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class Unlocker : EventTrigger {
 
@@ -9,7 +10,12 @@ public class Unlocker : EventTrigger {
 
     void Awake() {
         tooltip = transform.Find("tooltip").gameObject;
-        tooltip.SetActive(false);
+        SetText();
+    }
+
+    void SetText() {
+        string text = tooltip.GetComponent<TextMeshProUGUI>().text;
+        tooltip.GetComponent<TextMeshProUGUI>().text = text + GetComponent<ResearchCosting>().GetRepr();
     }
 
     public override void OnPointerClick(PointerEventData eventData) {

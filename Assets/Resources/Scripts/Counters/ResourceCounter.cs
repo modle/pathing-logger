@@ -10,7 +10,7 @@ public class ResourceCounter : MonoBehaviour {
     public Dictionary<string, int> counts;
     public Dictionary<string, int> resourceGains;
     public Dictionary<string, TextMeshProUGUI> counters;
-    private int startingCount = 100;
+    private int startingCount = 0;
 
     public List<string> resources;
 
