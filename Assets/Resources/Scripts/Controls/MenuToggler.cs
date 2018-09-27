@@ -5,6 +5,7 @@ using UnityEngine;
 public class MenuToggler : MonoBehaviour {
 
     Transform menus;
+    List<string> doNotHideThese = new List<string>() {"MessageLog", "QuestPane"};
 
     void Start() {
         SetObjects();
@@ -13,6 +14,9 @@ public class MenuToggler : MonoBehaviour {
     void SetObjects() {
         menus = GameObject.Find("Menus").transform;
         foreach (Transform t in menus) {
+            if (doNotHideThese.Contains(t.name)) {
+                continue;
+            }
             t.gameObject.SetActive(false);
         }
     }
