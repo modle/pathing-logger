@@ -11,7 +11,9 @@ public class Building : MonoBehaviour {
     Dictionary<string, int> consumes;
     Dictionary<string, int> rawStock;
     bool producing;
+    public bool constructionStarted;
     public bool built;
+    float buildingTimer = 0f;
 
     public void Start() {
         props = GetComponent<Properties>();
@@ -19,13 +21,6 @@ public class Building : MonoBehaviour {
 
     public void Produce() {
         producing = false;
-        if (!built) {
-            built = true;
-            SetConsumes(BuildingManager.manager.productionCost[name]);
-            ChangeSprite();
-            producing = false;
-            return;
-        }
         productionOffset.x = (numProduced % 10) * 0.1f;
         Vector3 position = transform.position;
         TargetBucket.bucket.InstantiateResource(
@@ -33,6 +28,15 @@ public class Building : MonoBehaviour {
         );
         numProduced++;
         InitializeStock();
+    }
+
+    public void BuildIt() {
+        // only want this to happen once
+        // need to use built flag for 'building' action by builder
+        built = true;
+        SetConsumes(BuildingManager.manager.productionCost[name]);
+        ChangeSprite();
+        producing = false;
     }
 
     public void SetConsumes(Dictionary<string, int> materials) {
@@ -63,6 +67,8 @@ public class Building : MonoBehaviour {
         return producing;
     }
 
+    // this is being used for initial build and for restocking for production
+    // this duality is making it hard to add a 'build' delay
     public string NextStockToGet() {
         foreach (KeyValuePair<string, int> entry in rawStock) {
             if (consumes[entry.Key] > entry.Value) {

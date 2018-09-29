@@ -32,25 +32,53 @@ public class Work : MonoBehaviour {
         if (targets.target.GetComponent<Properties>().type == "building") {
             building = targets.target.GetComponent<Building>();
         }
-
+        // this will only be true if target is a resource
         if (IsStillWorking() && building == null) {
             return;
         }
-
-        if (building != null) {
-            if (!building.ReadyToProduce() && !building.Producing() && material == "") {
-                GoGetTheThing();
-                return;
-            }
-            DoBuildingThings();
+        if (IsBuilding()) {
             return;
         }
-
         FinishWorking();
     }
 
     public bool IsStillWorking() {
         return (Time.time - workStart) < workDone;
+    }
+
+    public bool IsBuilding() {
+        if (building == null) {
+            return false;
+        }
+        if (NeedMaterials() || IsStillWorking() || IsBuilder()) {
+            return true;
+        }
+        DoBuildingThings();
+        return true;
+    }
+
+    public bool NeedMaterials() {
+        if (!building.ReadyToProduce() && !building.Producing() && material == "") {
+            // gets materials for building and for producing
+            GoGetTheThing();
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsBuilder() {
+        if (GetComponent<Properties>().job != "builder") {
+            return false;
+        }
+        if (!building.constructionStarted && !building.built) {
+            // restart the work timer to 'build' the building if not built and not constructing
+            building.constructionStarted = true;
+            workStart = Time.time;
+        } else {
+            building.BuildIt();
+            StopWorking();
+        }
+        return true;
     }
 
     public void PlayChopSound() {
@@ -68,6 +96,8 @@ public class Work : MonoBehaviour {
         if (building.Producing()) {
             building.Produce();
             if (GetComponent<Properties>().job == "builder") {
+                // why stop working?
+                // because otherwise builder will act as the producer of the target building
                 StopWorking();
             }
         }
@@ -160,6 +190,7 @@ public class Work : MonoBehaviour {
 
     public void AbandonTarget() {
         targets.target = null;
+        building = null;
     }
 
     public void Execute(Properties props, GameObject other, string state) {

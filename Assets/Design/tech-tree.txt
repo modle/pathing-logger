@@ -1,0 +1,47 @@
+Tech Tree
+- Tool strength
+- Efficiency - villager and building
+- Scrap processing
+- Insulation
+- Housing
+    - mud > stone > manuf bricks > steel > ?
+- Mining
+- Forestry
+- Foraging
+- Hauling
+- Schematics
+- Building techniques
+- Aqueducts
+- Roads
+- Fishing
+- Hunting
+- Cultivating
+- Animal husbandry
+- Lodging - hotels and such
+- Sanitarium
+- Rock quarrying
+- iron Mining
+- Achaeology
+- Steamology/Steamworks
+- Clockworks
+- Airships
+- Steam Engine
+- Horology
+- Teleportation
+- Automation
+- Trains
+- Free-range prairie farming
+- Vertical farms
+- Hydroponics (desert)
+- Crop tweaking
+- Gene therapy
+- Automations
+- Strip vs bore Mining
+    - mining requires reservoir/runoff
+
+Side effects of Manuf/Mass Production
+- Possible penalties for deciding certain tech paths in game, perks for others
+- ultimate penalty is that resource becomes too scarce or edible plants become exponentially more expensive to cultivate
+- MegaFauna extinction
+- The rhino horn thing? Engineer fake horns to flood the market
+- Divided habitats -> less diverse gene pools -> extinction -> or evolution into aggressive competitor species

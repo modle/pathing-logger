@@ -1,5 +1,8 @@
 using UnityEngine;
 
+// this class is being used for both villager and building properties
+// this violates SRP
+// use a base abstract class?
 public class Properties : MonoBehaviour {
     public string type;
     public string produces;

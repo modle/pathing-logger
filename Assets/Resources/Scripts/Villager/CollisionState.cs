@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class State : MonoBehaviour {
+public class CollisionState : MonoBehaviour {
 
     private Animations animations;
     private Targets targets;
@@ -44,15 +44,25 @@ public class State : MonoBehaviour {
         animations.Move(targets.target);
     }
 
+    /*
+     * This function determines how to handle the villager on collision.
+     * Sequence matters. The first state set is the state that will get executed.
+     * Work.Execute() will trigger the appropriate function based on the state.
+     * State gets updated each Update cycle if villager has collided with a target.
+     */
     public string DetermineState(Properties targetProps, GameObject other) {
         string state = "";
         state = state == "" && !targetProps.targeted && targetProps.type != "storage" ? "ResetTarget" : state;
+
+        // non-storage collision states
         if (other.gameObject.GetInstanceID() == targets.target.GetInstanceID() && targetProps.targeted) {
             state = state == "" && !targetProps.workable ? "CollectTarget" : state;
             state = state == "" && work.haveMaterials && work.building != null ? "AddStock" : state;
             state = state == "" ? "StartWork" : state;
             return state;
         }
+
+        // storage collision states
         if (targetProps.type == "storage" && other.GetComponent<Properties>().type == "storage") {
             state = state == "" && work.haveMaterials && ResourceCounter.counter.resources.Contains(work.material) ? "PutInStorage" : state;
             state = state == "" && work.building != null && !work.haveMaterials ? "GetFromStorage" : state;

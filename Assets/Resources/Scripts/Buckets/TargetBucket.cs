@@ -6,7 +6,7 @@ using System.Linq;
 public class TargetBucket : MonoBehaviour {
     public static TargetBucket bucket;
     private int resourceCount;
-    private int maxResources = 150;
+    private int maxResources = 100;
     private HashSet<string> resourcePositions = new HashSet<string>();
     public List<GameObject> targets = new List<GameObject>();
     private Dictionary<string, float> colliderWidths = new Dictionary<string, float>();

@@ -12,8 +12,8 @@ public class DisplayUpdater : EventTrigger {
         // TODO: this is ugly. Generics?
         if (target.GetComponent<Building>() != null) {
             transform.Find("text").GetComponent<TextMeshProUGUI>().text = target.GetComponent<Building>().GetRepr();
-        } else if (target.GetComponent<State>() != null) {
-            transform.Find("text").GetComponent<TextMeshProUGUI>().text = target.GetComponent<State>().GetRepr();
+        } else if (target.GetComponent<CollisionState>() != null) {
+            transform.Find("text").GetComponent<TextMeshProUGUI>().text = target.GetComponent<CollisionState>().GetRepr();
         }
         if (dragging) {
             Drag();
