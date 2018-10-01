@@ -47,7 +47,7 @@ public class Targets : MonoBehaviour {
         if (target != null) {
             return;
         }
-        GameObject closest = CompareToTargets();
+        GameObject closest = CompareToTargets(TargetBucket.bucket.targets);
         if (closest != null) {
             target = closest;
             target.GetComponent<Properties>().SetTargeted(GetComponent<Properties>().id);
@@ -57,11 +57,11 @@ public class Targets : MonoBehaviour {
         }
     }
 
-    private GameObject CompareToTargets() {
+    private GameObject CompareToTargets(List<GameObject> targets) {
         Vector3 position = transform.position;
         float distance = Mathf.Infinity;
         GameObject match = null;
-        foreach (GameObject go in TargetBucket.bucket.targets) {
+        foreach (GameObject go in targets) {
             if (go == null) {
                 continue;
             }
@@ -122,6 +122,24 @@ public class Targets : MonoBehaviour {
             Destroy(target);
             lastCollisionRecheck = Time.time;
         }
-        target = GameObject.Find("Storage");
+        GetClosestStorage();
+    }
+
+    private void GetClosestStorage() {
+        Vector3 position = transform.position;
+        float distance = Mathf.Infinity;
+        GameObject match = null;
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("storage")) {
+            if (go == null) {
+                continue;
+            }
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance) {
+                match = go;
+                distance = curDistance;
+            }
+        }
+        target = match;
     }
 }

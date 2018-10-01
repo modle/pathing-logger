@@ -27,6 +27,7 @@ public class CursorPrefabs : MonoBehaviour {
         instantiables.Add("tree", Resources.Load("Prefabs/tree-cursor", typeof(GameObject)));
         instantiables.Add("rock", Resources.Load("Prefabs/rock-cursor", typeof(GameObject)));
         instantiables.Add("sawyer", Resources.Load("Prefabs/sawyer-cursor", typeof(GameObject)));
+        instantiables.Add("storage", Resources.Load("Prefabs/storage-cursor", typeof(GameObject)));
 
         cursorSprites = PrefabUtils.utils.Load(instantiables);
         cursorSprites.Add("stop", null);

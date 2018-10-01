@@ -27,9 +27,11 @@ public class BuildingPrefabs : MonoBehaviour {
     void LoadPrefabs() {
         inProgressSprites = new Dictionary<string, Object>();
         inProgressSprites.Add("sawyer", Resources.Load("Prefabs/sawyer-building-incomplete", typeof(GameObject)));
+        inProgressSprites.Add("storage", Resources.Load("Prefabs/storage-building-incomplete", typeof(GameObject)));
 
         buildingSprites = new Dictionary<string, Object>();
         buildingSprites.Add("sawyer", Resources.Load("Prefabs/sawyer-building", typeof(GameObject)));
+        buildingSprites.Add("storage", Resources.Load("Prefabs/storage-building", typeof(GameObject)));
 
         templateSprites = PrefabUtils.utils.Load(buildingSprites);
     }

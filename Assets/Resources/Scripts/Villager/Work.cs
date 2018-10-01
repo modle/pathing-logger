@@ -50,6 +50,7 @@ public class Work : MonoBehaviour {
         if (building == null) {
             return false;
         }
+        // order matters here; counting on short-circuit boolean
         if (NeedMaterials() || IsStillWorking() || IsBuilder()) {
             return true;
         }
@@ -59,7 +60,6 @@ public class Work : MonoBehaviour {
 
     public bool NeedMaterials() {
         if (!building.ReadyToProduce() && !building.Producing() && material == "") {
-            // gets materials for building and for producing
             GoGetTheThing();
             return true;
         }
@@ -103,9 +103,10 @@ public class Work : MonoBehaviour {
         }
     }
 
+    // gets materials for building and for producing
     void GoGetTheThing() {
         material = building.NextStockToGet();
-        targets.target = GameObject.Find("Storage");
+        targets.target = GameObject.Find("storage");
         return;
     }
 

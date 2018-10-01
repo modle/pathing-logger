@@ -10,6 +10,7 @@ public class BuildingManager : MonoBehaviour {
     public Dictionary<string, Dictionary<string, int>> productionCost;
     public Dictionary<string, Dictionary<string, int>> buildCost;
     public Dictionary<string, GameObject> buildingSelectors = new Dictionary<string, GameObject>();
+    List<string> doNotHideThese = new List<string>() {"storage"};
 
     void Awake() {
         // singleton pattern
@@ -27,6 +28,7 @@ public class BuildingManager : MonoBehaviour {
         productionCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}});
         buildCost = new Dictionary<string, Dictionary<string, int>>();
         buildCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}, {"rock", 1}});
+        buildCost.Add("storage", new Dictionary<string, int>() {{"wood", 2}});
         GetBuildingSelectors();
         HideBuildings();
     }
@@ -40,7 +42,9 @@ public class BuildingManager : MonoBehaviour {
 
     private void HideBuildings() {
         foreach (string key in buildingSelectors.Keys) {
-            buildingSelectors[key].SetActive(false);
+            if (!doNotHideThese.Contains(key)) {
+                buildingSelectors[key].SetActive(false);
+            }
         }
     }
 
