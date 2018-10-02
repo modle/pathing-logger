@@ -46,4 +46,12 @@ public class ResourceCounter : MonoBehaviour {
         counts[target]++;
         resourceGains[target]++;
     }
+
+    public string GetCountsAsString() {
+        string countsAsString = "";
+        foreach (KeyValuePair<string, int> entry in counts) {
+            countsAsString += "\n    " + entry.Key + ": " + entry.Value;
+        }
+        return countsAsString;
+    }
 }

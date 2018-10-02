@@ -11,6 +11,7 @@ public class BuildingManager : MonoBehaviour {
     public Dictionary<string, Dictionary<string, int>> buildCost;
     public Dictionary<string, GameObject> buildingSelectors = new Dictionary<string, GameObject>();
     List<string> doNotHideThese = new List<string>() {"storage"};
+    private bool instantiating;
 
     void Awake() {
         // singleton pattern
@@ -23,9 +24,14 @@ public class BuildingManager : MonoBehaviour {
         GenerateBuildings();
     }
 
+    void Start() {
+        Invoke("PlaceStarterBuildings", 0.1f);
+    }
+
     private void GenerateBuildings() {
         productionCost = new Dictionary<string, Dictionary<string, int>>();
         productionCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}});
+        productionCost.Add("storage", new Dictionary<string, int>() {{"wood", 0}});
         buildCost = new Dictionary<string, Dictionary<string, int>>();
         buildCost.Add("sawyer", new Dictionary<string, int>() {{"wood", 1}, {"rock", 1}});
         buildCost.Add("storage", new Dictionary<string, int>() {{"wood", 2}});
@@ -48,6 +54,12 @@ public class BuildingManager : MonoBehaviour {
         }
     }
 
+    public void PlaceStarterBuildings() {
+        instantiating = true;
+        PlaceBuilding("storage");
+        instantiating = false;
+    }
+
     public void EnableBuilding(string building) {
         if (buildingSelectors.ContainsKey(building)) {
             buildingSelectors[building].SetActive(true);
@@ -59,9 +71,7 @@ public class BuildingManager : MonoBehaviour {
         if (targetPrefab == null) {
             print("no prefab found for " + targetType);
         }
-        if (Input.GetMouseButtonDown(0)) {
-            InstantiateBuildingObject(targetType, targetPrefab);
-        }
+        InstantiateBuildingObject(targetType, targetPrefab);
     }
 
     bool CanConstruct(Dictionary<string, int> materialsNeeded) {
@@ -82,7 +92,14 @@ public class BuildingManager : MonoBehaviour {
     }
 
     void InstantiateBuildingObject(string targetType, Object targetPrefab) {
-        Vector3 placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 placementLocation;
+        if (Input.GetMouseButtonDown(0)) {
+            placementLocation = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        } else if (instantiating) {
+            placementLocation = new Vector3(0, 0, 0);
+        } else {
+            return;
+        }
         Vector3 actualPlacement = new Vector3(placementLocation.x, placementLocation.y, 0);
         GameObject theObject = Instantiate(targetPrefab, actualPlacement, Quaternion.identity) as GameObject;
         theObject.GetComponent<Building>().SetConsumes(buildCost[targetType]);
@@ -90,5 +107,8 @@ public class BuildingManager : MonoBehaviour {
         TargetBucket.bucket.targets.Add(theObject);
         theObject.transform.SetParent(transform);
         theObject.name = targetType;
+        if (instantiating) {
+            theObject.GetComponent<Building>().BuildIt();
+        }
     }
 }

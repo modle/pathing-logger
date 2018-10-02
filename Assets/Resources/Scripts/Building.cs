@@ -15,7 +15,7 @@ public class Building : MonoBehaviour {
     public bool built;
     float buildingTimer = 0f;
 
-    public void Start() {
+    public void Awake() {
         props = GetComponent<Properties>();
     }
 
@@ -68,7 +68,6 @@ public class Building : MonoBehaviour {
     }
 
     // this is being used for initial build and for restocking for production
-    // this duality is making it hard to add a 'build' delay
     public string NextStockToGet() {
         foreach (KeyValuePair<string, int> entry in rawStock) {
             if (consumes[entry.Key] > entry.Value) {
@@ -84,6 +83,8 @@ public class Building : MonoBehaviour {
 
     void ChangeSprite() {
         GetComponent<SpriteRenderer>().sprite = BuildingPrefabs.buildings.templateSprites[name].GetComponent<SpriteRenderer>().sprite;
+        tag = BuildingPrefabs.buildings.templateSprites[name].tag;
+        GetComponent<Properties>().MatchProps(BuildingPrefabs.buildings.templateSprites[name].GetComponent<Properties>());
         props.job = name;
         MessageLog.log.Publish(name + " construction complete");
     }
@@ -102,6 +103,9 @@ public class Building : MonoBehaviour {
 
         if (!built) {
             return baseString + "\nConstructing...";
+        } else if (name == "storage") {
+            return baseString + "\nActive" +
+                "\nstock: " + ResourceCounter.counter.GetCountsAsString();
         } else {
             return baseString + "\nActive" +
                 "\nconsumes: " + materialsNeeded +

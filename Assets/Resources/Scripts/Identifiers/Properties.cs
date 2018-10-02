@@ -50,4 +50,19 @@ public class Properties : MonoBehaviour {
         targeted = true;
     }
 
+    public void MatchProps(Properties props) {
+        type = props.type;
+        produces = props.produces;
+        job = props.job;
+        baseJob = props.baseJob;
+        targeted = props.targeted;
+        engaged = props.engaged;
+        targetedBy = props.targetedBy;
+        selected = props.selected;
+        destructable = props.destructable;
+        workable = props.workable;
+        id = props.id;
+        currentState = props.currentState;
+    }
+
 }
