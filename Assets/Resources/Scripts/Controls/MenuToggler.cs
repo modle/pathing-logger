@@ -27,6 +27,10 @@ public class MenuToggler : MonoBehaviour {
 
     void CheckInput() {
         foreach (Transform t in menus) {
+            if (Input.GetKeyDown("escape") && !doNotHideThese.Contains(t.name)) {
+                t.gameObject.SetActive(false);
+                continue;
+            }
             if (Input.GetKeyDown(t.gameObject.GetComponent<MenuProps>().hotKey)) {
                 t.gameObject.SetActive(!t.gameObject.activeSelf);
                 break;
