@@ -5,7 +5,7 @@ using UnityEngine;
 public class MenuToggler : MonoBehaviour {
 
     Transform menus;
-    List<string> doNotHideThese = new List<string>() {"MessageLog", "QuestPane"};
+    List<string> doNotHideThese = new List<string>() {"MessageLog", "QuestPane", "HelpPane"};
 
     void Start() {
         SetObjects();
