@@ -58,7 +58,6 @@ public class TargetManager : MonoBehaviour {
     void SetHotKeys() {
         hotKeys.Add("1", "tree");
         hotKeys.Add("2", "rock");
-        hotKeys.Add("escape", "stop");
         hotKeys.Add("9", "sawyer");
         hotKeys.Add("0", "storage");
     }
