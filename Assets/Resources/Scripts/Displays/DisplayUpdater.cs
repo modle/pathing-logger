@@ -8,6 +8,10 @@ public class DisplayUpdater : EventTrigger {
     public Transform target;
     private bool dragging;
 
+    public void Awake() {
+        target = transform.parent;
+    }
+
     public void Update() {
         // TODO: this is ugly. Generics?
         if (target.GetComponent<Building>() != null) {
