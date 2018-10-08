@@ -6,9 +6,9 @@ public class TargetManager : MonoBehaviour {
 
     public static TargetManager manager;
 
-    Vector3 hitDown;
+    public Vector3 hitDown;
     Vector3 hitUp;
-    Vector3 downMousePos;
+    public Vector3 downMousePos;
     float selectionAngle = 0f;
     Vector2 selectionDirection = new Vector2(0, 0);
     public GUISkin skin;
@@ -107,10 +107,14 @@ public class TargetManager : MonoBehaviour {
 
     void StartSelection() {
         downMousePos = Input.mousePosition;
-        hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        // downMousePos = WorldToScreenPoint?
+        // does it make sense to calculate hitDown here?
+        hitDown = UnityEngine.Camera.main.ScreenToWorldPoint(downMousePos);
     }
 
     void EndSelection() {
+        // hitDown is changing; need to track camera movement if hitDown
+        // hitDown could be calculated here from downMousePos;
         hitUp = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 center = (hitDown + hitUp) * 0.5f;
         Vector2 size = new Vector2(Mathf.Abs(hitUp.x - hitDown.x), Mathf.Abs(hitDown.y - hitUp.y));
