@@ -27,7 +27,8 @@ public class VillagerBucket : MonoBehaviour {
         villagers = GameObject.Find("GameScripts/VillagerBucket").transform;
         Object toInstantiateSprite = Resources.Load("Prefabs/villager", typeof(GameObject));
         Object toInstantiateLabel = Resources.Load("Prefabs/villager-label", typeof(GameObject));
-        Vector3 labelOffset = new Vector3(1.15f, -1.0f, 0);
+        Vector3 labelOffset = new Vector3(0.7f, 0, 0);
+        // Vector3 labelOffset = Vector3.zero;
         while (villagerCount < maxVillagers) {
             villagerCount++;
             Vector3 spritePosition = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0);
